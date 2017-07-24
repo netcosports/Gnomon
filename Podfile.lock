@@ -10,12 +10,12 @@ PODS:
     - RxSwift (~> 3)
     - SwiftyJSON (~> 3)
   - Nimble (7.0.1)
-  - RxBlocking (3.5.0):
-    - RxSwift (~> 3.4)
-  - RxCocoa (3.5.0):
-    - RxSwift (~> 3.4)
-  - RxSwift (3.5.0)
-  - SwiftLint (0.20.0)
+  - RxBlocking (3.6.1):
+    - RxSwift (~> 3.6)
+  - RxCocoa (3.6.1):
+    - RxSwift (~> 3.6)
+  - RxSwift (3.6.1)
+  - SwiftLint (0.20.1)
   - SwiftyJSON (3.1.4)
 
 DEPENDENCIES:
@@ -33,10 +33,10 @@ SPEC CHECKSUMS:
   FormatterKit: 4b8f29acc9b872d5d12a63efb560661e8f2e1b98
   Gnomon: 4b64b0d1ca6552d0770970cb71481b3120f1d907
   Nimble: 657d000e11df8aebe27cdaf9d244de7f30ed87f7
-  RxBlocking: 471315e18b87c5ed4b9d0c69a57dfdbca5c01af1
-  RxCocoa: a0a09f45d0e5b48ecb6a4a7b4b4c89c88d3f633f
-  RxSwift: 18ee9d78b45edb3b0b7e79916b47a116e6dbc842
-  SwiftLint: 3f7543509c931d1291395335f34e245d3919b7f2
+  RxBlocking: 4f4bd5732e8b952e54ae8a57739bcfb645de12bc
+  RxCocoa: 84a08739ab186248c7f31ce4ee92d6f8a947d690
+  RxSwift: f9de85ea20cd2f7716ee5409fc13523dc638e4e4
+  SwiftLint: f60095dc173a3f3ec505bb34f5229c3dfd779a54
   SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
 
 PODFILE CHECKSUM: 7f744c28b65ae1409a00e36cf9c063994bcce039
