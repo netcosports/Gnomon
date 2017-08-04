@@ -28,7 +28,7 @@ class RequestSpec: XCTestCase {
 
   func testPlainSingleRequest() {
     do {
-      let request = try RequestBuilder<SingleResult<TestModel5>>().setURLString("http://httpbin.org/get?key=123")
+      let request = try RequestBuilder<SingleResult<TestModel5>>().setURLString("\(Params.API.baseURL)/get?key=123")
         .setMethod(.GET).build()
 
       let response = try Gnomon.models(for: request).toBlocking().first()
@@ -42,7 +42,7 @@ class RequestSpec: XCTestCase {
 
   func testPlainMultipleRequest() {
     do {
-      let request = try RequestBuilder<MultipleResults<TestModel1>>().setURLString("http://httpbin.org/post")
+      let request = try RequestBuilder<MultipleResults<TestModel1>>().setURLString("\(Params.API.baseURL)/post")
         .setMethod(.POST).setParams(.json(["array": [
           ["key": "123"],
           ["key": "234"],
@@ -63,7 +63,7 @@ class RequestSpec: XCTestCase {
   func testPlainSingleOptionalRequest() {
     do {
       let request = try RequestBuilder<SingleOptionalResult<TestModel1>>()
-        .setURLString("http://httpbin.org/get?key=123").setMethod(.GET)
+        .setURLString("\(Params.API.baseURL)/get?key=123").setMethod(.GET)
         .setXPath("args").build()
 
       let response = try Gnomon.models(for: request).toBlocking().first()
@@ -79,7 +79,7 @@ class RequestSpec: XCTestCase {
 
   func testPlainMultipleOptionalRequest() {
     do {
-      let request = try RequestBuilder<MultipleOptionalResults<TestModel1>>().setURLString("http://httpbin.org/post")
+      let request = try RequestBuilder<MultipleOptionalResults<TestModel1>>().setURLString("\(Params.API.baseURL)/post")
         .setMethod(.POST).setParams(.json(["array": [
           ["key": "123"],
           ["key": "234"],
@@ -101,7 +101,7 @@ class RequestSpec: XCTestCase {
   func testSingleGETWithParamsRequest() {
     do {
       let request = try RequestBuilder<SingleResult<TestModel3>>()
-        .setURLString("http://httpbin.org/get?key1=123").setMethod(.GET)
+        .setURLString("\(Params.API.baseURL)/get?key1=123").setMethod(.GET)
         .setParams(["key2": "234", "key3": [345, 456]]).build()
 
       let response = try Gnomon.models(for: request).toBlocking().first()
@@ -118,7 +118,7 @@ class RequestSpec: XCTestCase {
 
   func testPlainSinglePOSTWithParamsRequest() {
     do {
-      let request = try RequestBuilder<SingleResult<TestModel4>>().setURLString("http://httpbin.org/post?key1=123")
+      let request = try RequestBuilder<SingleResult<TestModel4>>().setURLString("\(Params.API.baseURL)/post?key1=123")
         .setMethod(.POST).setParams(["key2": "234"]).build()
 
       let response = try Gnomon.models(for: request).toBlocking().first()
@@ -141,7 +141,7 @@ class RequestSpec: XCTestCase {
   func testPlainSinglePOSTWithJSONParamsRequest() {
     do {
       let request: Request<SingleResult<TestModel6>> = try RequestBuilder()
-        .setURLString("http://httpbin.org/post").setMethod(.POST)
+        .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
         .setParams(.json(["key": "123"])).build()
 
       let response = try Gnomon.models(for: request).toBlocking().first()
@@ -163,7 +163,7 @@ class RequestSpec: XCTestCase {
   func testPlainSinglePOSTWithMixedParamsRequest() {
     do {
       let request: Request<SingleResult<TestModel7>> = try RequestBuilder()
-        .setURLString("http://httpbin.org/post?key1=123").setMethod(.POST)
+        .setURLString("\(Params.API.baseURL)/post?key1=123").setMethod(.POST)
         .setParams(.json(["key2": "234"])).build()
 
       let response = try Gnomon.models(for: request).toBlocking().first()
@@ -185,7 +185,7 @@ class RequestSpec: XCTestCase {
   func testPlainXMLRequest() {
     do {
       let request = try RequestBuilder<SingleResult<TestXMLModel>>()
-        .setURLString("http://httpbin.org/xml").setMethod(.GET).build()
+        .setURLString("\(Params.API.baseURL)/xml").setMethod(.GET).build()
 
       let response = try Gnomon.models(for: request).toBlocking().first()
       guard let result = response?.result else { throw "can't extract response" }
@@ -200,7 +200,7 @@ class RequestSpec: XCTestCase {
   func testPlainMultipleXMLRequest() {
     do {
       let request = try RequestBuilder<MultipleResults<TestXMLSlideModel>>()
-        .setURLString("http://httpbin.org/xml").setXPath("slideshow/slide")
+        .setURLString("\(Params.API.baseURL)/xml").setXPath("slideshow/slide")
         .setMethod(.GET).build()
 
       let response = try Gnomon.models(for: request).toBlocking().first()
@@ -217,7 +217,7 @@ class RequestSpec: XCTestCase {
   func testStringRequest() {
     do {
       let request = try RequestBuilder<SingleResult<String>>()
-        .setURLString("http://httpbin.org/robots.txt").setMethod(.GET).build()
+        .setURLString("\(Params.API.baseURL)/robots.txt").setMethod(.GET).build()
       let response = try Gnomon.models(for: request).toBlocking().first()
       expect(response).toNot(beNil())
 
@@ -236,7 +236,7 @@ class RequestSpec: XCTestCase {
   func testErrorStatusCode() {
     do {
       let request = try RequestBuilder<SingleResult<TestModel1>>()
-        .setURLString("http://httpbin.org/status/403").setMethod(.GET).build()
+        .setURLString("\(Params.API.baseURL)/status/403").setMethod(.GET).build()
 
       _ = try Gnomon.models(for: request).toBlocking().first()
     } catch let e {
@@ -299,7 +299,7 @@ class RequestSpec: XCTestCase {
     }
 
     do {
-      let request = try RequestBuilder<SingleResult<TestModel8>>().setURLString("http://httpbin.org/post")
+      let request = try RequestBuilder<SingleResult<TestModel8>>().setURLString("\(Params.API.baseURL)/post")
         .setParams(["test": "test"]).setMethod(.POST).build()
       guard let response = try Gnomon.models(for: request).toBlocking().first() else { throw "empty response" }
       expect(response.result.model.headers["X-Sha1-Signature"]) == "b3cefbcce711f8574b0e66c41fc1dcf06eb5b6db"
@@ -308,7 +308,7 @@ class RequestSpec: XCTestCase {
     }
 
     do {
-      let request = try RequestBuilder<SingleResult<TestModel8>>().setURLString("http://httpbin.org/get")
+      let request = try RequestBuilder<SingleResult<TestModel8>>().setURLString("\(Params.API.baseURL)/get")
         .setMethod(.GET).build()
       guard let response = try Gnomon.models(for: request).toBlocking().first() else { throw "empty response" }
       expect(response.result.model.headers["X-Sha1-Signature"]).to(beNil())
@@ -334,7 +334,7 @@ class RequestSpec: XCTestCase {
         }
         return request
       }
-      let request = try RequestBuilder<SingleResult<TestModel8>>().setURLString("http://httpbin.org/post")
+      let request = try RequestBuilder<SingleResult<TestModel8>>().setURLString("\(Params.API.baseURL)/post")
         .setParams(["test": "test"]).setMethod(.POST).setInterceptor(interceptor, exclusive: true).build()
       guard let response = try Gnomon.models(for: request).toBlocking().first() else { throw "empty response" }
       expect(response.result.model.headers["X-Md5-Signature"]) == "d14091e1796351152f0ba2a5940606d7"
@@ -361,7 +361,7 @@ class RequestSpec: XCTestCase {
         }
         return request
       }
-      let request = try RequestBuilder<SingleResult<TestModel8>>().setURLString("http://httpbin.org/post")
+      let request = try RequestBuilder<SingleResult<TestModel8>>().setURLString("\(Params.API.baseURL)/post")
         .setParams(["test": "test"]).setMethod(.POST).setInterceptor(interceptor, exclusive: false).build()
       guard let response = try Gnomon.models(for: request).toBlocking().first() else { throw "empty response" }
       expect(response.result.model.headers["X-Md5-Signature"]) == "d14091e1796351152f0ba2a5940606d7"
@@ -388,7 +388,7 @@ class RequestSpec: XCTestCase {
         }
         return request
       }
-      let request = try RequestBuilder<SingleResult<TestModel8>>().setURLString("http://httpbin.org/post")
+      let request = try RequestBuilder<SingleResult<TestModel8>>().setURLString("\(Params.API.baseURL)/post")
         .setParams(["test": "test"]).setMethod(.POST).setInterceptor(interceptor, exclusive: false).build()
       guard let response = try Gnomon.models(for: request).toBlocking().first() else { throw "empty response" }
       expect(response.result.model.headers["X-Signature"]) == "d14091e1796351152f0ba2a5940606d7," +

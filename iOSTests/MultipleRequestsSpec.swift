@@ -30,7 +30,7 @@ class MultipleRequestsSpec: XCTestCase {
     do {
       requests = try (0 ... 2).map { 123 + 111 * $0 }.map {
         return try RequestBuilder()
-          .setURLString("http://httpbin.org/get?key=\($0)")
+          .setURLString("\(Params.API.baseURL)/get?key=\($0)")
           .setMethod(.GET).setXPath("args").build()
       }
     } catch let error {
@@ -65,11 +65,11 @@ class MultipleRequestsSpec: XCTestCase {
     do {
       requests = try (0 ... 2).map { 123 + 111 * $0 }.map {
         return try RequestBuilder()
-          .setURLString("http://httpbin.org/get?key=\($0)")
+          .setURLString("\(Params.API.baseURL)/get?key=\($0)")
           .setMethod(.GET).setXPath("args").build()
       }
       requests.append(try RequestBuilder()
-        .setURLString("http://httpbin.org/get?failKey=123")
+        .setURLString("\(Params.API.baseURL)/get?failKey=123")
         .setMethod(.GET).setXPath("args").build())
     } catch let error {
       fail("\(error)")
@@ -104,13 +104,13 @@ class MultipleRequestsSpec: XCTestCase {
     do {
       requests = [
         try RequestBuilder()
-          .setURLString("http://httpbin.org/delay/0.3?key=123")
+          .setURLString("\(Params.API.baseURL)/delay/0.3?key=123")
           .setMethod(.GET).setXPath("args").build(),
         try RequestBuilder()
-          .setURLString("http://httpbin.org/delay/0.2?key=234")
+          .setURLString("\(Params.API.baseURL)/delay/0.2?key=234")
           .setMethod(.GET).setXPath("args").build(),
         try RequestBuilder()
-          .setURLString("http://httpbin.org/delay/0.1?key=345")
+          .setURLString("\(Params.API.baseURL)/delay/0.1?key=345")
           .setMethod(.GET).setXPath("args").build()
       ]
     } catch let error {
@@ -145,13 +145,13 @@ class MultipleRequestsSpec: XCTestCase {
     do {
       requests = [
         try RequestBuilder()
-          .setURLString("http://httpbin.org/delay/0.3?key=123")
+          .setURLString("\(Params.API.baseURL)/delay/0.3?key=123")
           .setMethod(.GET).setXPath("args").build(),
         try RequestBuilder()
-          .setURLString("http://httpbin.org/status/404?key=234")
+          .setURLString("\(Params.API.baseURL)/status/404?key=234")
           .setMethod(.GET).setXPath("args").build(),
         try RequestBuilder()
-          .setURLString("http://httpbin.org/delay/0.1?key=345")
+          .setURLString("\(Params.API.baseURL)/delay/0.1?key=345")
           .setMethod(.GET).setXPath("args").build()
       ]
     } catch let error {
@@ -178,13 +178,13 @@ class MultipleRequestsSpec: XCTestCase {
     do {
       requests = [
         try RequestBuilder()
-          .setURLString("http://httpbin.org/delay/0.3?key=123")
+          .setURLString("\(Params.API.baseURL)/delay/0.3?key=123")
           .setMethod(.GET).setXPath("args").build(),
         try RequestBuilder()
-          .setURLString("http://httpbin.org/status/404?key=234")
+          .setURLString("\(Params.API.baseURL)/status/404?key=234")
           .setMethod(.GET).setXPath("args").build(),
         try RequestBuilder()
-          .setURLString("http://httpbin.org/delay/0.1?key=345")
+          .setURLString("\(Params.API.baseURL)/delay/0.1?key=345")
           .setMethod(.GET).setXPath("args").build()
       ]
     } catch let error {
@@ -219,10 +219,10 @@ class MultipleRequestsSpec: XCTestCase {
 
     do {
       request1 = try RequestBuilder()
-        .setURLString("http://httpbin.org/get?key=1")
+        .setURLString("\(Params.API.baseURL)/get?key=1")
         .setMethod(.GET).setXPath("args").build()
       request2 = try RequestBuilder()
-        .setURLString("http://httpbin.org/get?otherKey=2")
+        .setURLString("\(Params.API.baseURL)/get?otherKey=2")
         .setMethod(.GET).setXPath("args").build()
     } catch let error {
       fail("\(error)")
@@ -256,10 +256,10 @@ class MultipleRequestsSpec: XCTestCase {
 
     do {
       request1 = try RequestBuilder()
-        .setURLString("http://httpbin.org/get?key=1")
+        .setURLString("\(Params.API.baseURL)/get?key=1")
         .setMethod(.GET).setXPath("args").build()
       request2 = try RequestBuilder()
-        .setURLString("http://httpbin.org/get?failKey=2")
+        .setURLString("\(Params.API.baseURL)/get?failKey=2")
         .setMethod(.GET).setXPath("args").build()
     } catch let error {
       fail("\(error)")

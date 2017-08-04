@@ -1,12 +1,13 @@
 language: objective-c
 osx_image: xcode8.3
 rvm: 2.3.3
+python: 2.7
 
 cache:
   cocoapods: true
 
 install:
-- gem install cocoapods xcpretty
+- bundle install -j5
 - pod repo update
 - pod install
 - brew install jq
@@ -17,6 +18,9 @@ env:
   - SCHEME=macOSTests
 
 script:
+  - bundle exec fastlane select_httpbin
+  - which gunicorn
+  - which pip2
   - export DESTINATION="$(./scripts/destination.sh $SCHEME)"
   - xcrun simctl list
   - set -o pipefail && env NSUnbufferedIO=YES xcodebuild -workspace Tests.xcworkspace -scheme "$SCHEME" -destination "$DESTINATION" build test | xcpretty

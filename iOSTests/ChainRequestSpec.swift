@@ -27,7 +27,7 @@ class ChainRequestSpec: XCTestCase {
 
     do {
       request = try RequestBuilder()
-        .setURLString("http://httpbin.org/get?key=123")
+        .setURLString("\(Params.API.baseURL)/get?key=123")
         .setMethod(.GET).setXPath("args").build()
     } catch let error {
       fail("\(error)")
@@ -40,7 +40,7 @@ class ChainRequestSpec: XCTestCase {
         Observable<Response<SingleResult<TestModel2>>> in
         let otherKey = response.result.model.key + 1
         let nextRequest = try RequestBuilder<SingleResult<TestModel2>>()
-          .setURLString("http://httpbin.org/get?otherKey=\(otherKey)")
+          .setURLString("\(Params.API.baseURL)/get?otherKey=\(otherKey)")
           .setMethod(.GET).setXPath("args").build()
 
         return Gnomon.models(for: nextRequest)

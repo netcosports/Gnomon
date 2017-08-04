@@ -50,7 +50,7 @@ class MultipartSpec: XCTestCase {
   func testSimpleParams() {
     do {
       let request = try RequestBuilder<SingleResult<MultipartModel>>()
-        .setURLString("http://httpbin.org/post").setMethod(.POST)
+        .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
         .setParams(.multipart(["text": "Hello World", "number": "42"], [:])).build()
       let response = try Gnomon.models(for: request).toBlocking().first()
       expect(response).toNot(beNil())
@@ -78,7 +78,7 @@ class MultipartSpec: XCTestCase {
       let file = MultipartFile(data: data, contentType: "application/zip", filename: "test_file.zip")
 
       let request = try RequestBuilder<SingleResult<MultipartModel>>()
-        .setURLString("http://httpbin.org/post").setMethod(.POST)
+        .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
         .setParams(.multipart([:], ["file": file])).build()
       let response = try Gnomon.models(for: request).toBlocking().first()
       expect(response).toNot(beNil())
@@ -109,7 +109,7 @@ class MultipartSpec: XCTestCase {
       let file = MultipartFile(data: data, contentType: "application/zip", filename: "test_file.zip")
 
       let request = try RequestBuilder<SingleResult<MultipartModel>>()
-        .setURLString("http://httpbin.org/post").setMethod(.POST)
+        .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
         .setParams(.multipart(["text": "Hello World", "number": "42"], ["file": file])).build()
       let response = try Gnomon.models(for: request).toBlocking().first()
       expect(response).toNot(beNil())

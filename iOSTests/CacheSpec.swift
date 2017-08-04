@@ -26,7 +26,7 @@ class CacheSpec: XCTestCase {
     let request: Request<SingleOptionalResult<TestModel1>>
     do {
       request = try RequestBuilder<SingleOptionalResult<TestModel1>>()
-        .setURLString("http://httpbin.org/get?key=123").setMethod(.GET)
+        .setURLString("\(Params.API.baseURL)/get?key=123").setMethod(.GET)
         .setXPath("args").build()
     } catch let error {
       fail("\(error)")
@@ -56,7 +56,7 @@ class CacheSpec: XCTestCase {
     let request: Request<SingleOptionalResult<TestModel1>>
     do {
       request = try RequestBuilder<SingleOptionalResult<TestModel1>>()
-        .setURLString("http://httpbin.org/get?key=123").setMethod(.GET)
+        .setURLString("\(Params.API.baseURL)/get?key=123").setMethod(.GET)
         .setXPath("args").build()
     } catch let error {
       fail("\(error)")
@@ -91,7 +91,7 @@ class CacheSpec: XCTestCase {
     do {
       requests = try (0 ... 2).map { 123 + 111 * $0 }.map {
         return try RequestBuilder()
-          .setURLString("http://httpbin.org/get?key=\($0)")
+          .setURLString("\(Params.API.baseURL)/get?key=\($0)")
           .setMethod(.GET).setXPath("args").build()
       }
     } catch let error {
@@ -129,7 +129,7 @@ class CacheSpec: XCTestCase {
     do {
       requests = try (0 ... 2).map { 123 + 111 * $0 }.map {
         return try RequestBuilder()
-          .setURLString("http://httpbin.org/get?key=\($0)")
+          .setURLString("\(Params.API.baseURL)/get?key=\($0)")
           .setMethod(.GET).setXPath("args").build()
       }
     } catch let error {

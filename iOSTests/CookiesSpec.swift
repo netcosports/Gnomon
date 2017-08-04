@@ -25,7 +25,7 @@ class CookieSpec: XCTestCase {
   func testShouldIgnoreIncomingCookiesByDefault() {
     let request: Request<SingleResult<String>>
     do {
-      let urlString = "http://httpbin.org/cookies"
+      let urlString = "\(Params.API.baseURL)/cookies"
       guard let url = URL(string: urlString) else { return fail() }
 
       for cookie in HTTPCookieStorage.shared.cookies(for: url) ?? [] {
@@ -33,7 +33,7 @@ class CookieSpec: XCTestCase {
       }
 
       let builder = RequestBuilder<SingleResult<String>>()
-        .setURLString("http://httpbin.org/cookies/set?dont_send_me_cookie=true").setMethod(.GET)
+        .setURLString("\(Params.API.baseURL)/cookies/set?dont_send_me_cookie=true").setMethod(.GET)
       request = try builder.build()
 
       let response = try Gnomon.models(for: request).toBlocking().first()
@@ -54,7 +54,7 @@ class CookieSpec: XCTestCase {
 
   func testShouldNotSendLocalCookiesByDefault() {
     do {
-      let urlString = "http://httpbin.org/cookies"
+      let urlString = "\(Params.API.baseURL)/cookies"
       guard let url = URL(string: urlString) else { return fail() }
 
       for cookie in HTTPCookie.cookies(withResponseHeaderFields: ["Set-Cookie": "dont_send_me_cookie=true; Path=/"],
@@ -98,7 +98,7 @@ class CookieSpec: XCTestCase {
   func testShouldHandleIncomingCookiesIfRequested() {
     let request: Request<SingleResult<String>>
     do {
-      let urlString = "http://httpbin.org/cookies"
+      let urlString = "\(Params.API.baseURL)/cookies"
       guard let url = URL(string: urlString) else { return fail() }
 
       for cookie in HTTPCookieStorage.shared.cookies(for: url) ?? [] {
@@ -106,7 +106,7 @@ class CookieSpec: XCTestCase {
       }
 
       let builder = RequestBuilder<SingleResult<String>>()
-        .setURLString("http://httpbin.org/cookies/set?dont_send_me_cookie=true").setMethod(.GET)
+        .setURLString("\(Params.API.baseURL)/cookies/set?dont_send_me_cookie=true").setMethod(.GET)
         .setShouldHandleCookies(true)
       request = try builder.build()
 
@@ -133,7 +133,7 @@ class CookieSpec: XCTestCase {
 
   func testShouldSendLocalCookiesIfRequested() {
     do {
-      let urlString = "http://httpbin.org/cookies"
+      let urlString = "\(Params.API.baseURL)/cookies"
       guard let url = URL(string: urlString) else { return fail() }
 
       for cookie in HTTPCookie.cookies(withResponseHeaderFields: ["Set-Cookie": "dont_send_me_cookie=true; Path=/"],
