@@ -34,6 +34,11 @@ xcode-select --install
 fastlane test
 ```
 
+### select_httpbin
+```
+fastlane select_httpbin
+```
+
 ### local_httpbin
 ```
 fastlane local_httpbin

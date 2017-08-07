@@ -53,7 +53,7 @@ class CacheAndFetchSpec: XCTestCase {
       request = try RequestBuilder<SingleOptionalResult<TestModel1>>()
         .setURLString("\(Params.API.baseURL)/get?key=123").setMethod(.GET)
         .setXPath("args").build()
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
