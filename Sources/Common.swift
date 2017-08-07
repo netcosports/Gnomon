@@ -94,7 +94,7 @@ internal func prepareURL<T: Result>(from request: Request<T>, params: [String: A
   return url
 }
 
-fileprivate func prepare(value: Any, with key: String?) -> [URLQueryItem] {
+private func prepare(value: Any, with key: String?) -> [URLQueryItem] {
   switch value {
   case let dictionary as [String: Any]:
     return dictionary.sorted { $0.0 < $1.0 }.flatMap { nestedKey, nestedValue -> [URLQueryItem] in
