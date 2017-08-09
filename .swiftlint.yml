@@ -1,10 +1,8 @@
 excluded:
   - Pods
 included:
-  - iOS-Tests
-  - tvOS-Tests
+  - iOSTests
+  - tvOSTests
+  - macOSTests
   - Sources
 line_length: 120
-large_tuple:
-  - 5
-  - 6
