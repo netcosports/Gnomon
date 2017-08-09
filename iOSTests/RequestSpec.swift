@@ -241,7 +241,7 @@ class RequestSpec: XCTestCase {
       _ = try Gnomon.models(for: request).toBlocking().first()
     } catch let e {
       switch e {
-      case CommonError.errorStatusCode(let code, _):
+      case Gnomon.Error.errorStatusCode(let code, _):
         expect(code) == 403
       default:
         fail("\(e)")

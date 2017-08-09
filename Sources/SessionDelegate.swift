@@ -57,18 +57,18 @@ internal class SessionDelegate: NSObject, URLSessionDataDelegate {
       dataTaskDidCompletedWithError?(session, task, error)
     } else {
       guard let response = response else {
-        dataTaskDidCompletedWithError?(session, task, CommonError.undefined(message: nil))
+        dataTaskDidCompletedWithError?(session, task, Gnomon.Error.undefined(message: nil))
         return
       }
 
       guard let httpResponse = response as? HTTPURLResponse else {
-        dataTaskDidCompletedWithError?(session, task, CommonError.nonHTTPResponse(response: response))
+        dataTaskDidCompletedWithError?(session, task, Gnomon.Error.nonHTTPResponse(response: response))
         return
       }
 
       guard (200..<400) ~= httpResponse.statusCode else {
         dataTaskDidCompletedWithError?(session, task,
-                                       CommonError.errorStatusCode(httpResponse.statusCode, data))
+                                       Gnomon.Error.errorStatusCode(httpResponse.statusCode, data))
         return
       }
 

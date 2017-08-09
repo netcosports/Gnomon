@@ -122,7 +122,7 @@ public extension JSONModel {
 
     let xpathed = json.xpath(path)
     guard xpathed.error == nil else {
-      throw CommonError.unableToParseModel(message: "invalid response or xpath")
+      throw Gnomon.Error.unableToParseModel(message: "invalid response or xpath")
     }
     return try Self(xpathed)
   }
@@ -133,12 +133,12 @@ public extension JSONModel {
 
     if let path = path {
       guard let xpathed = json.xpath(path).array else {
-        throw CommonError.unableToParseModel(message: "invalid response or xpath")
+        throw Gnomon.Error.unableToParseModel(message: "invalid response or xpath")
       }
       jsonArray = xpathed
     } else {
       guard let array = json.array else {
-        throw CommonError.unableToParseModel(message: "invalid response or xpath")
+        throw Gnomon.Error.unableToParseModel(message: "invalid response or xpath")
       }
       jsonArray = array
     }
@@ -152,12 +152,12 @@ public extension JSONModel {
 
     if let path = path {
       guard let xpathed = json.xpath(path).array else {
-        throw CommonError.unableToParseModel(message: "invalid response or xpath")
+        throw Gnomon.Error.unableToParseModel(message: "invalid response or xpath")
       }
       jsonArray = xpathed
     } else {
       guard let array = json.array else {
-        throw CommonError.unableToParseModel(message: "invalid response or xpath")
+        throw Gnomon.Error.unableToParseModel(message: "invalid response or xpath")
       }
       jsonArray = array
     }
@@ -190,7 +190,7 @@ public extension XMLModel {
     let xpathed = xml.xpath(path)
 
     guard xpathed.error == nil else {
-      throw CommonError.unableToParseModel(message: "invalid response or xpath")
+      throw Gnomon.Error.unableToParseModel(message: "invalid response or xpath")
     }
 
     return try Self(xpathed)
@@ -203,12 +203,12 @@ public extension XMLModel {
     if let path = path {
       let xpathed = xml.xpath(path)
       guard xpathed.error == nil, let all = xpathed.all else {
-        throw CommonError.unableToParseModel(message: "invalid response or xpath")
+        throw Gnomon.Error.unableToParseModel(message: "invalid response or xpath")
       }
       xmlArray = all
     } else {
       guard let all = xml.root.all else {
-        throw CommonError.unableToParseModel(message: "invalid response or xpath")
+        throw Gnomon.Error.unableToParseModel(message: "invalid response or xpath")
       }
       xmlArray = all
     }
@@ -223,12 +223,12 @@ public extension XMLModel {
     if let path = path {
       let xpathed = xml.xpath(path)
       guard xpathed.error == nil, let all = xpathed.all else {
-        throw CommonError.unableToParseModel(message: "invalid response or xpath")
+        throw Gnomon.Error.unableToParseModel(message: "invalid response or xpath")
       }
       xmlArray = all
     } else {
       guard let all = xml.root.all else {
-        throw CommonError.unableToParseModel(message: "invalid response or xpath")
+        throw Gnomon.Error.unableToParseModel(message: "invalid response or xpath")
       }
       xmlArray = all
     }

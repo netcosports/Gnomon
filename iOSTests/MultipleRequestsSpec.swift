@@ -163,7 +163,7 @@ class MultipleRequestsSpec: XCTestCase {
       fail("should fail here")
     } catch {
       switch error {
-      case CommonError.errorStatusCode(let code, let data):
+      case Gnomon.Error.errorStatusCode(let code, let data):
         expect(code).to(equal(404))
         expect(data).toNot(beNil())
       default: fail("should't fail with other type of error")

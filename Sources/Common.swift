@@ -11,13 +11,22 @@ import Foundation
 extension String: Error {
 }
 
-public enum CommonError: Error {
-  case undefined(message: String?)
-  case nonHTTPResponse(response: URLResponse)
-  case invalidResponse
-  case unableToParseModel(message: String)
-  case invalidURL(urlString: String)
-  case errorStatusCode(Int, Data)
+@available(*, deprecated, renamed: "Gnomon.Error")
+public enum CommonError: Swift.Error {
+  case none
+}
+
+public extension Gnomon {
+
+  enum Error: Swift.Error {
+    case undefined(message: String?)
+    case nonHTTPResponse(response: URLResponse)
+    case invalidResponse
+    case unableToParseModel(message: String)
+    case invalidURL(urlString: String)
+    case errorStatusCode(Int, Data)
+  }
+
 }
 
 extension HTTPURLResponse {
@@ -40,7 +49,7 @@ extension HTTPURLResponse {
 
 internal func prepareDataRequest<U: Result>(from request: Request<U>,
                                             cachePolicy: URLRequest.CachePolicy) throws -> URLRequest {
-  guard let url = URL(string: request.URLString) else { throw CommonError.invalidURL(urlString: request.URLString) }
+  guard let url = URL(string: request.URLString) else { throw Gnomon.Error.invalidURL(urlString: request.URLString) }
   var dataRequest = URLRequest(url: url, cachePolicy: cachePolicy)
   dataRequest.httpMethod = request.method.rawValue
   if let headers = request.headers {
@@ -172,7 +181,7 @@ internal func validated(response: Any) throws -> (result: [String: Any], isArray
   switch response {
   case let dictionary as [String: Any]: return (dictionary, false)
   case let array as [AnyObject]: return (["array": array], true)
-  default: throw CommonError.invalidResponse
+  default: throw Gnomon.Error.invalidResponse
   }
 }
 
