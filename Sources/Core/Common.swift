@@ -44,8 +44,8 @@ extension HTTPURLResponse {
 
 }
 
-internal func prepareDataRequest<U: Result>(from request: Request<U>,
-                                            cachePolicy: URLRequest.CachePolicy) throws -> URLRequest {
+internal func prepareDataRequest<U>(from request: Request<U>,
+                                    cachePolicy: URLRequest.CachePolicy) throws -> URLRequest {
   guard let url = URL(string: request.URLString) else { throw Gnomon.Error.invalidURL(urlString: request.URLString) }
   var dataRequest = URLRequest(url: url, cachePolicy: cachePolicy)
   dataRequest.httpMethod = request.method.rawValue
@@ -85,7 +85,7 @@ internal func prepareDataRequest<U: Result>(from request: Request<U>,
   return dataRequest
 }
 
-internal func prepareURL<T: Result>(from request: Request<T>, params: [String: Any]?) throws -> URL {
+internal func prepareURL<T>(from request: Request<T>, params: [String: Any]?) throws -> URL {
   var queryItems = [URLQueryItem]()
   if let params = params {
     queryItems.append(contentsOf: prepare(value: params, with: nil))
@@ -170,7 +170,7 @@ internal func prepareMultipartData(with form: [String: String],
   return (data, "multipart/form-data; boundary=\(boundary)")
 }
 
-internal func processedResult<U: Result>(from data: Data, for request: Request<U>) throws -> U {
+internal func processedResult<U>(from data: Data, for request: Request<U>) throws -> U {
   return try U(data: data, atPath: request.xpath)
 }
 
