@@ -63,7 +63,9 @@ public class Request<ResultType: Result> {
   @available(*, deprecated: 1.2.1, message: "use RequestParams enum")
   public fileprivate(set) var requestBodyAsJSON: Bool = false
 
+  public fileprivate(set) var disableLocalCache: Bool = false
   public fileprivate(set) var disableHttpCache: Bool = false
+
   public fileprivate(set) var shouldHandleCookies: Bool = false
 
   public fileprivate(set) var interceptor: Interceptor?
@@ -136,7 +138,20 @@ public struct RequestBuilder<ResultType: Result> {
   }
 
   @discardableResult
+  public func setDisableLocalCache(_ value: Bool) -> Builder {
+    request.disableLocalCache = value
+    return self
+  }
+
+  @discardableResult
   public func setDisableHttpCache(_ value: Bool) -> Builder {
+    request.disableHttpCache = value
+    return self
+  }
+
+  @discardableResult
+  public func setDisableCache(_ value: Bool) -> Builder {
+    request.disableLocalCache = value
     request.disableHttpCache = value
     return self
   }

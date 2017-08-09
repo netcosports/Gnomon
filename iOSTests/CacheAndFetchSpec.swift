@@ -42,9 +42,9 @@ class CacheAndFetchSpec: XCTestCase {
     }
 
     expect(responses[0].result.model).to(beNil())
-    expect(responses[0].responseType).to(equal(ResponseType.localCache))
-    expect(responses[1].result.model?.key).to(equal(123))
-    expect(responses[1].responseType).to(equal(ResponseType.regular))
+    expect(responses[0].responseType) == ResponseType.localCache
+    expect(responses[1].result.model?.key) == 123
+    expect(responses[1].responseType) == ResponseType.regular
   }
 
   func testNoCachedValueCancel() {
@@ -85,10 +85,97 @@ class CacheAndFetchSpec: XCTestCase {
       return
     }
 
-    expect(responses[0].result.model?.key).to(equal(123))
-    expect(responses[0].responseType).to(equal(ResponseType.localCache))
-    expect(responses[1].result.model?.key).to(equal(123))
-    expect(responses[1].responseType).to(equal(ResponseType.httpCache))
+    expect(responses[0].result.model?.key) == 123
+    expect(responses[0].responseType) == ResponseType.localCache
+    expect(responses[1].result.model?.key) == 123
+    expect(responses[1].responseType) == ResponseType.httpCache
+  }
+
+  func testCachedValueStoredIgnoreCacheEnabled() {
+    let request: Request<SingleOptionalResult<TestModel1>>
+    do {
+      request = try RequestBuilder<SingleOptionalResult<TestModel1>>()
+        .setURLString("\(Params.API.baseURL)/cache/120?key=123").setMethod(.GET).setDisableCache(true)
+        .setXPath("args").build()
+    } catch let error {
+      fail("\(error)")
+      return
+    }
+
+    let responses: [Response<SingleOptionalResult<TestModel1>>]
+    do {
+      responses = try Gnomon.models(for: request).flatMapLatest { response ->
+        Observable<Response<SingleOptionalResult<TestModel1>>> in
+        expect(response.responseType).to(equal(ResponseType.regular))
+        return Gnomon.cachedThenFetch(request)
+      }.toBlocking().toArray()
+    } catch {
+      fail("\(error)")
+      return
+    }
+
+    expect(responses[0].result.model).to(beNil())
+    expect(responses[0].responseType) == ResponseType.localCache
+    expect(responses[1].result.model?.key) == 123
+    expect(responses[1].responseType) == ResponseType.regular
+  }
+
+  func testCachedValueStoredIgnoreLocalCacheEnabled() {
+    let request: Request<SingleOptionalResult<TestModel1>>
+    do {
+      request = try RequestBuilder<SingleOptionalResult<TestModel1>>()
+        .setURLString("\(Params.API.baseURL)/cache/120?key=123").setMethod(.GET).setDisableLocalCache(true)
+        .setXPath("args").build()
+    } catch let error {
+      fail("\(error)")
+      return
+    }
+
+    let responses: [Response<SingleOptionalResult<TestModel1>>]
+    do {
+      responses = try Gnomon.models(for: request).flatMapLatest { response ->
+        Observable<Response<SingleOptionalResult<TestModel1>>> in
+        expect(response.responseType).to(equal(ResponseType.regular))
+        return Gnomon.cachedThenFetch(request)
+      }.toBlocking().toArray()
+    } catch {
+      fail("\(error)")
+      return
+    }
+
+    expect(responses[0].result.model).to(beNil())
+    expect(responses[0].responseType) == ResponseType.localCache
+    expect(responses[1].result.model?.key) == 123
+    expect(responses[1].responseType) == ResponseType.httpCache
+  }
+
+  func testCachedValueStoredIgnoreHttpCacheEnabled() {
+    let request: Request<SingleOptionalResult<TestModel1>>
+    do {
+      request = try RequestBuilder<SingleOptionalResult<TestModel1>>()
+        .setURLString("\(Params.API.baseURL)/cache/120?key=123").setMethod(.GET).setDisableHttpCache(true)
+        .setXPath("args").build()
+    } catch let error {
+      fail("\(error)")
+      return
+    }
+
+    let responses: [Response<SingleOptionalResult<TestModel1>>]
+    do {
+      responses = try Gnomon.models(for: request).flatMapLatest { response ->
+        Observable<Response<SingleOptionalResult<TestModel1>>> in
+        expect(response.responseType).to(equal(ResponseType.regular))
+        return Gnomon.cachedThenFetch(request)
+      }.toBlocking().toArray()
+    } catch {
+      fail("\(error)")
+      return
+    }
+
+    expect(responses[0].result.model?.key) == 123
+    expect(responses[0].responseType) == ResponseType.localCache
+    expect(responses[1].result.model?.key) == 123
+    expect(responses[1].responseType) == ResponseType.regular
   }
 
 }

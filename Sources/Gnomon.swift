@@ -27,10 +27,8 @@ public class Gnomon {
 
   public class func models<U: Result>(for request: Request<U>) -> Observable<Response<U>> {
     do {
-      return try observable(for: request, inLocalCache: false).flatMap { data, response
-          -> Observable<Response<U>> in
-        let type: ResponseType = response.resultFromHTTPCache && !request.disableHttpCache
-          ? .httpCache : .regular
+      return try observable(for: request, inLocalCache: false).flatMap { data, response -> Observable<Response<U>> in
+        let type: ResponseType = response.resultFromHTTPCache && !request.disableHttpCache ? .httpCache : .regular
         return try parse(data: data, responseType: type, for: request)
           .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
       }
@@ -53,8 +51,7 @@ public class Gnomon {
 
   public class func cachedModels<U: OptionalResult>(for request: Request<U>) -> Observable<Response<U>> {
     do {
-      return try observable(for: request, inLocalCache: true).flatMap { data, _
-          -> Observable<Response<U>> in
+      return try observable(for: request, inLocalCache: true).flatMap { data, _ -> Observable<Response<U>> in
         return try parse(data: data, responseType: .localCache, for: request)
           .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
       }.catchErrorJustReturn(Response(result: U.empty(), responseType: .localCache))
@@ -87,6 +84,7 @@ public class Gnomon {
 
       let cachePolicy: URLRequest.CachePolicy
       if localCache {
+        guard !request.disableLocalCache else { throw "local cache was disabled in request" }
         cachePolicy = .returnCacheDataDontLoad
       } else {
         cachePolicy = request.disableHttpCache ? .reloadIgnoringLocalCacheData : .useProtocolCachePolicy
