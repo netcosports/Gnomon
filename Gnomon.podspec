@@ -12,10 +12,24 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '8.0'
   s.tvos.deployment_target = '9.0'
   s.osx.deployment_target = '10.10'
-  s.source_files = 'Sources/*.swift'
 
-  s.dependency 'RxSwift', '~> 3'
-  s.dependency 'SwiftyJSON', '~> 3'
-  s.dependency 'AEXML', '~> 4'
-  s.dependency 'FormatterKit/URLRequestFormatter', '>= 1.8.2'
+  s.default_subspec = 'JSON'
+
+  s.subspec 'Core' do |sub|
+    sub.source_files = 'Sources/Core/*.swift'
+    sub.dependency 'RxSwift', '~> 3'
+    sub.dependency 'FormatterKit/URLRequestFormatter', '>= 1.8.2'
+  end
+
+  s.subspec 'JSON' do |sub|
+    sub.source_files = 'Sources/JSON/*.swift'
+    sub.dependency 'SwiftyJSON', '~> 3'
+    sub.dependency 'Gnomon/Core'
+  end
+
+  s.subspec 'XML' do |sub|
+    sub.source_files = 'Sources/XML/*.swift'
+    sub.dependency 'AEXML', '~> 4'
+    sub.dependency 'Gnomon/Core'
+  end
 end

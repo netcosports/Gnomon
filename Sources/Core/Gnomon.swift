@@ -1,7 +1,4 @@
 //
-//  Gnomon.swift
-//  Gnomon
-//
 //  Created by Vladimir Burdukov on 7/6/16.
 //  Copyright © 2016 NetcoSports. All rights reserved.
 //

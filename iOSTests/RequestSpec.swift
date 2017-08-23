@@ -265,7 +265,7 @@ class RequestSpec: XCTestCase {
       let response = try Gnomon.models(for: request).toBlocking().first()
       guard let result = response?.result else { throw "can't extract response" }
 
-      expect(result.model.length).to(beGreaterThan(0))
+      expect(result.model.characters.count).to(beGreaterThan(0))
     } catch let error {
       fail("\(error)")
       return

@@ -4,7 +4,9 @@ use_frameworks!
 
 abstract_target 'Tests' do
   pod 'SwiftLint'
-  pod 'Gnomon', :path => '.'
+  pod 'Gnomon/Core', :path => '.'
+  pod 'Gnomon/JSON', :path => '.'
+  pod 'Gnomon/XML', :path => '.'
   pod 'Nimble', '~> 7.0'
   pod 'RxBlocking'
 

@@ -44,7 +44,7 @@ class CookieSpec: XCTestCase {
         return
       }
 
-      expect(result.model.length).to(beGreaterThan(0))
+      expect(result.model.characters.count).to(beGreaterThan(0))
       expect(HTTPCookieStorage.shared.cookies(for: url)).to(haveCount(0))
     } catch {
       fail("\(error)")
@@ -118,7 +118,7 @@ class CookieSpec: XCTestCase {
         return
       }
 
-      expect(result.model.length).to(beGreaterThan(0))
+      expect(result.model.characters.count).to(beGreaterThan(0))
 
       guard let receivedCookies = HTTPCookieStorage.shared.cookies(for: url) else { return fail() }
       expect(receivedCookies).to(haveCount(1))

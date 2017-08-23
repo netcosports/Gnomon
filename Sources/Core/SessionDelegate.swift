@@ -1,3 +1,8 @@
+//
+//  Created by Vladimir Burdukov on 5/17/16.
+//  Copyright © 2016 NetcoSports. All rights reserved.
+//
+
 import Foundation
 
 internal func configuration(with policy: NSURLRequest.CachePolicy) -> URLSessionConfiguration {
