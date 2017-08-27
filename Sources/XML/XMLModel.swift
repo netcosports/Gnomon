@@ -21,7 +21,7 @@ public extension XMLModel {
     let xpathed = xml.xpath(path)
 
     guard xpathed.error == nil else {
-      throw Gnomon.Error.unableToParseModel(message: "invalid response or xpath")
+      throw Gnomon.Error.unableToParseModel("invalid response or xpath")
     }
 
     return try Self(xpathed)
@@ -34,12 +34,12 @@ public extension XMLModel {
     if let path = path {
       let xpathed = xml.xpath(path)
       guard xpathed.error == nil, let all = xpathed.all else {
-        throw Gnomon.Error.unableToParseModel(message: "invalid response or xpath")
+        throw Gnomon.Error.unableToParseModel("invalid response or xpath")
       }
       xmlArray = all
     } else {
       guard let all = xml.root.all else {
-        throw Gnomon.Error.unableToParseModel(message: "invalid response or xpath")
+        throw Gnomon.Error.unableToParseModel("invalid response or xpath")
       }
       xmlArray = all
     }
@@ -54,12 +54,12 @@ public extension XMLModel {
     if let path = path {
       let xpathed = xml.xpath(path)
       guard xpathed.error == nil, let all = xpathed.all else {
-        throw Gnomon.Error.unableToParseModel(message: "invalid response or xpath")
+        throw Gnomon.Error.unableToParseModel("invalid response or xpath")
       }
       xmlArray = all
     } else {
       guard let all = xml.root.all else {
-        throw Gnomon.Error.unableToParseModel(message: "invalid response or xpath")
+        throw Gnomon.Error.unableToParseModel("invalid response or xpath")
       }
       xmlArray = all
     }

@@ -18,9 +18,9 @@ public extension JSONModel {
       return try Self(json)
     }
 
-    let xpathed = json.xpath(path)
-    guard xpathed.error == nil else {
-      throw Gnomon.Error.unableToParseModel(message: "invalid response or xpath")
+    let xpathed = try json.xpath(path)
+    if let error = xpathed.error {
+      throw Gnomon.Error.unableToParseModel(error)
     }
     return try Self(xpathed)
   }
@@ -29,16 +29,27 @@ public extension JSONModel {
     let json = JSON(data: data)
     let jsonArray: [JSON]
 
+    if let error = json.error {
+      throw Gnomon.Error.unableToParseModel(error)
+    }
+
     if let path = path {
-      guard let xpathed = json.xpath(path).array else {
-        throw Gnomon.Error.unableToParseModel(message: "invalid response or xpath")
+      let xpathed = try json.xpath(path)
+      if let error = xpathed.error {
+        throw Gnomon.Error.unableToParseModel(error)
       }
-      jsonArray = xpathed
+
+      if let array = xpathed.array {
+        jsonArray = array
+      } else {
+        jsonArray = [xpathed]
+      }
     } else {
-      guard let array = json.array else {
-        throw Gnomon.Error.unableToParseModel(message: "invalid response or xpath")
+      if let array = json.array {
+        jsonArray = array
+      } else {
+        jsonArray = [json]
       }
-      jsonArray = array
     }
 
     return try jsonArray.map { try Self($0) }
@@ -48,16 +59,27 @@ public extension JSONModel {
     let json = JSON(data: data)
     let jsonArray: [JSON]
 
+    if let error = json.error {
+      throw Gnomon.Error.unableToParseModel(error)
+    }
+
     if let path = path {
-      guard let xpathed = json.xpath(path).array else {
-        throw Gnomon.Error.unableToParseModel(message: "invalid response or xpath")
+      let xpathed = try json.xpath(path)
+      if let error = xpathed.error {
+        throw Gnomon.Error.unableToParseModel(error)
       }
-      jsonArray = xpathed
+
+      if let array = xpathed.array {
+        jsonArray = array
+      } else {
+        jsonArray = [xpathed]
+      }
     } else {
-      guard let array = json.array else {
-        throw Gnomon.Error.unableToParseModel(message: "invalid response or xpath")
+      if let array = json.array {
+        jsonArray = array
+      } else {
+        jsonArray = [json]
       }
-      jsonArray = array
     }
 
     return jsonArray.map {
@@ -74,17 +96,20 @@ public extension JSONModel {
 
 extension JSON {
 
-  func xpath(_ path: String) -> JSON {
-    guard path.characters.count > 0 else { return JSON.null }
+  func xpath(_ path: String) throws -> JSON {
+    guard path.characters.count > 0 else { throw "empty xpath" }
     let components = path.components(separatedBy: "/")
     guard components.count > 0 else { return self }
-    return xpath(components)
+    return try xpath(components)
   }
 
-  private func xpath(_ components: [String]) -> JSON {
+  private func xpath(_ components: [String]) throws -> JSON {
     guard let key = components.first else { return self }
     let value = self[key]
-    return value.xpath(Array(components.dropFirst()))
+    guard value.exists() else {
+      throw "can't find key \(key) in json \(self)"
+    }
+    return try value.xpath(Array(components.dropFirst()))
   }
-  
+
 }

@@ -182,38 +182,6 @@ class RequestSpec: XCTestCase {
     }
   }
 
-  func testPlainXMLRequest() {
-    do {
-      let request = try RequestBuilder<SingleResult<TestXMLModel>>()
-        .setURLString("\(Params.API.baseURL)/xml").setMethod(.GET).build()
-
-      let response = try Gnomon.models(for: request).toBlocking().first()
-      guard let result = response?.result else { throw "can't extract response" }
-
-      expect(result.model.title).to(equal("Sample Slide Show"))
-    } catch let error {
-      fail("\(error)")
-      return
-    }
-  }
-
-  func testPlainMultipleXMLRequest() {
-    do {
-      let request = try RequestBuilder<MultipleResults<TestXMLSlideModel>>()
-        .setURLString("\(Params.API.baseURL)/xml").setXPath("slideshow/slide")
-        .setMethod(.GET).build()
-
-      let response = try Gnomon.models(for: request).toBlocking().first()
-      guard let result = response?.result else { throw "can't extract response" }
-
-      expect(result.models[0].title).to(equal("Wake up to WonderWidgets!"))
-      expect(result.models[1].title).to(equal("Overview"))
-    } catch let error {
-      fail("\(error)")
-      return
-    }
-  }
-
   func testStringRequest() {
     do {
       let request = try RequestBuilder<SingleResult<String>>()
@@ -253,148 +221,49 @@ class RequestSpec: XCTestCase {
     fail("request should fail")
   }
 
-  func testInvalidCertificate() {
+  func testCastSingleDictionaryToMultipleResults() {
     do {
-      let builder = RequestBuilder<SingleResult<String>>()
-        .setURLString("https://self-signed.badssl.com/").setMethod(.GET)
-      builder.setAuthenticationChallenge { challenge, completionHandler -> Void in
-        completionHandler(.useCredential, URLCredential(trust: challenge.protectionSpace.serverTrust!))
-      }
-      let request = try builder.build()
+      let request: Request<MultipleResults<TestModel6>> = try RequestBuilder()
+        .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
+        .setParams(.json(["key": "123"])).build()
 
       let response = try Gnomon.models(for: request).toBlocking().first()
-      guard let result = response?.result else { throw "can't extract response" }
 
-      expect(result.model.characters.count).to(beGreaterThan(0))
+      expect(response).notTo(beNil())
+
+      guard let result = response?.result else {
+        fail("can't extract response")
+        return
+      }
+
+      expect(result.models).to(haveCount(1))
+      expect(result.models.first?.key).to(equal(123))
     } catch let error {
       fail("\(error)")
       return
     }
   }
 
-  func testInvalidCertificateWithoutHandler() {
-    var err: NSError?
+  func testCastSingleDictionaryToMultipleOptionalResults() {
     do {
-      let builder = RequestBuilder<SingleResult<String>>()
-        .setURLString("https://self-signed.badssl.com/").setMethod(.GET)
-      let request = try builder.build()
+      let request: Request<MultipleOptionalResults<TestModel6>> = try RequestBuilder()
+        .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
+        .setParams(.json(["key": "123"])).build()
 
-      let result = try Gnomon.models(for: request).toBlocking().first()
-      expect(result).to(beNil())
-    } catch let e where e is String {
-      fail("\(e)")
-    } catch {
-      err = error as NSError
-      expect(err).toNot(beNil())
-    }
-  }
+      let response = try Gnomon.models(for: request).toBlocking().first()
 
-  func testGlobalInterceptor() {
-    Gnomon.addRequestInterceptor { request in
-      var request = request
-      if let data = request.httpBody {
-        request.addValue(data.sha1().toHexString(), forHTTPHeaderField: "X-Sha1-Signature")
+      expect(response).notTo(beNil())
+
+      guard let result = response?.result else {
+        fail("can't extract response")
+        return
       }
-      return request
-    }
 
-    do {
-      let request = try RequestBuilder<SingleResult<TestModel8>>().setURLString("\(Params.API.baseURL)/post")
-        .setParams(["test": "test"]).setMethod(.POST).build()
-      guard let response = try Gnomon.models(for: request).toBlocking().first() else { throw "empty response" }
-      expect(response.result.model.headers["X-Sha1-Signature"]) == "b3cefbcce711f8574b0e66c41fc1dcf06eb5b6db"
-    } catch {
+      expect(result.models).to(haveCount(1))
+      expect(result.models.first??.key).to(equal(123))
+    } catch let error {
       fail("\(error)")
-    }
-
-    do {
-      let request = try RequestBuilder<SingleResult<TestModel8>>().setURLString("\(Params.API.baseURL)/get")
-        .setMethod(.GET).build()
-      guard let response = try Gnomon.models(for: request).toBlocking().first() else { throw "empty response" }
-      expect(response.result.model.headers["X-Sha1-Signature"]).to(beNil())
-    } catch {
-      fail("\(error)")
-    }
-  }
-
-  func testCustomExclusiveInterceptor() {
-    Gnomon.addRequestInterceptor { request in
-      var request = request
-      if let data = request.httpBody {
-        request.addValue(data.sha1().toHexString(), forHTTPHeaderField: "X-Sha1-Signature")
-      }
-      return request
-    }
-
-    do {
-      let interceptor: Interceptor = { request in
-        var request = request
-        if let data = request.httpBody {
-          request.addValue(data.md5().toHexString(), forHTTPHeaderField: "X-Md5-Signature")
-        }
-        return request
-      }
-      let request = try RequestBuilder<SingleResult<TestModel8>>().setURLString("\(Params.API.baseURL)/post")
-        .setParams(["test": "test"]).setMethod(.POST).setInterceptor(interceptor, exclusive: true).build()
-      guard let response = try Gnomon.models(for: request).toBlocking().first() else { throw "empty response" }
-      expect(response.result.model.headers["X-Md5-Signature"]) == "d14091e1796351152f0ba2a5940606d7"
-      expect(response.result.model.headers["X-Sha1-Signature"]).to(beNil())
-    } catch {
-      fail("\(error)")
-    }
-  }
-
-  func testCustomNonexclusiveInterceptor() {
-    Gnomon.addRequestInterceptor { request in
-      var request = request
-      if let data = request.httpBody {
-        request.addValue(data.sha1().toHexString(), forHTTPHeaderField: "X-Sha1-Signature")
-      }
-      return request
-    }
-
-    do {
-      let interceptor: Interceptor = { request in
-        var request = request
-        if let data = request.httpBody {
-          request.addValue(data.md5().toHexString(), forHTTPHeaderField: "X-Md5-Signature")
-        }
-        return request
-      }
-      let request = try RequestBuilder<SingleResult<TestModel8>>().setURLString("\(Params.API.baseURL)/post")
-        .setParams(["test": "test"]).setMethod(.POST).setInterceptor(interceptor, exclusive: false).build()
-      guard let response = try Gnomon.models(for: request).toBlocking().first() else { throw "empty response" }
-      expect(response.result.model.headers["X-Md5-Signature"]) == "d14091e1796351152f0ba2a5940606d7"
-      expect(response.result.model.headers["X-Sha1-Signature"]) == "b3cefbcce711f8574b0e66c41fc1dcf06eb5b6db"
-    } catch {
-      fail("\(error)")
-    }
-  }
-
-  func testCustomNonexclusiveInterceptorOrder() {
-    Gnomon.addRequestInterceptor { request in
-      var request = request
-      if let data = request.httpBody {
-        request.addValue(data.sha1().toHexString(), forHTTPHeaderField: "X-Signature")
-      }
-      return request
-    }
-
-    do {
-      let interceptor: Interceptor = { request in
-        var request = request
-        if let data = request.httpBody {
-          request.addValue(data.md5().toHexString(), forHTTPHeaderField: "X-Signature")
-        }
-        return request
-      }
-      let request = try RequestBuilder<SingleResult<TestModel8>>().setURLString("\(Params.API.baseURL)/post")
-        .setParams(["test": "test"]).setMethod(.POST).setInterceptor(interceptor, exclusive: false).build()
-      guard let response = try Gnomon.models(for: request).toBlocking().first() else { throw "empty response" }
-      expect(response.result.model.headers["X-Signature"]) == "d14091e1796351152f0ba2a5940606d7," +
-        "b3cefbcce711f8574b0e66c41fc1dcf06eb5b6db"
-    } catch {
-      fail("\(error)")
+      return
     }
   }
 

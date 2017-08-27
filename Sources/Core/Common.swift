@@ -19,7 +19,7 @@ public extension Gnomon {
     case undefined(message: String?)
     case nonHTTPResponse(response: URLResponse)
     case invalidResponse
-    case unableToParseModel(message: String)
+    case unableToParseModel(Swift.Error)
     case invalidURL(urlString: String)
     case errorStatusCode(Int, Data)
   }
