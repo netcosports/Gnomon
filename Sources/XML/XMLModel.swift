@@ -33,14 +33,13 @@ public extension XMLModel {
 
     if let path = path {
       let xpathed = xml.xpath(path)
-      guard xpathed.error == nil, let all = xpathed.all else {
-        throw Gnomon.Error.unableToParseModel("invalid response or xpath")
-      }
+
+      if let error = xpathed.error { throw Gnomon.Error.unableToParseModel(error) }
+      guard let all = xpathed.all else { throw Gnomon.Error.unableToParseModel("invalid response or xpath") }
+
       xmlArray = all
     } else {
-      guard let all = xml.root.all else {
-        throw Gnomon.Error.unableToParseModel("invalid response or xpath")
-      }
+      guard let all = xml.root.all else { throw Gnomon.Error.unableToParseModel("invalid response or xpath") }
       xmlArray = all
     }
 
@@ -53,14 +52,13 @@ public extension XMLModel {
 
     if let path = path {
       let xpathed = xml.xpath(path)
-      guard xpathed.error == nil, let all = xpathed.all else {
-        throw Gnomon.Error.unableToParseModel("invalid response or xpath")
-      }
+
+      if let error = xpathed.error { throw Gnomon.Error.unableToParseModel(error) }
+      guard let all = xpathed.all else { throw Gnomon.Error.unableToParseModel("invalid response or xpath") }
+
       xmlArray = all
     } else {
-      guard let all = xml.root.all else {
-        throw Gnomon.Error.unableToParseModel("invalid response or xpath")
-      }
+      guard let all = xml.root.all else { throw Gnomon.Error.unableToParseModel("invalid response or xpath") }
       xmlArray = all
     }
 
@@ -89,5 +87,5 @@ extension AEXMLElement {
     let value = self[key]
     return value.xpath(Array(components.dropFirst()))
   }
-  
+
 }
