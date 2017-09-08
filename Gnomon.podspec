@@ -23,7 +23,7 @@ Pod::Spec.new do |s|
 
   s.subspec 'JSON' do |sub|
     sub.source_files = 'Sources/JSON/*.swift'
-    sub.dependency 'SwiftyJSON', '~> 3'
+    sub.dependency 'SwiftyJSON', '4.0.0-alpha.1'
     sub.dependency 'Gnomon/Core'
   end
 

@@ -8,7 +8,7 @@ PODS:
     - RxSwift (= 4.0.0-alpha.1)
   - Gnomon/JSON (2.1.2):
     - Gnomon/Core
-    - SwiftyJSON (~> 3)
+    - SwiftyJSON (= 4.0.0-alpha.1)
   - Gnomon/XML (2.1.2):
     - AEXML (~> 4)
     - Gnomon/Core
@@ -16,8 +16,8 @@ PODS:
   - RxBlocking (4.0.0-alpha.1):
     - RxSwift (~> 4.0.0-alpha.1)
   - RxSwift (4.0.0-alpha.1)
-  - SwiftLint (0.21.0)
-  - SwiftyJSON (3.1.4)
+  - SwiftLint (0.22.0)
+  - SwiftyJSON (4.0.0-alpha.1)
 
 DEPENDENCIES:
   - Gnomon/Core (from `.`)
@@ -35,18 +35,18 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   Nimble:
-    :commit: 24aa2d97405b352cb85bd963d1898f780f9bde3e
+    :commit: a63252b16eba6cdebec4e4936388c90552165a68
     :git: https://github.com/Quick/Nimble.git
 
 SPEC CHECKSUMS:
   AEXML: 647fbb051280f3fb38a1a7caa62b0344055a851c
   FormatterKit: 4b8f29acc9b872d5d12a63efb560661e8f2e1b98
-  Gnomon: 8f2c0794a03efc7616171dd2d9d06428d10d54e2
+  Gnomon: e1deb07168b9e19b2da5398a99b47de97c18d695
   Nimble: 1b6670c36e5750169b9e4cc2e9cfa82a7603c69e
   RxBlocking: 44ca04036a481049a159327f078420335cb68f85
   RxSwift: 62bea72da2c1b2653320c516267c2b8a347c02b6
-  SwiftLint: 6de8b2d15f43c482bdec2953b8cfd696faa876e8
-  SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
+  SwiftLint: 1134786caedd2caab0560d2f36b76414a5a56808
+  SwiftyJSON: dc88934f85fb50b263b1632b9cbad3402505783e
 
 PODFILE CHECKSUM: 4909646a725d60aed0ba6bcc9c544fe190bf3ac0
 
