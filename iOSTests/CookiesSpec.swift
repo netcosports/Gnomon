@@ -11,8 +11,6 @@ import SwiftyJSON
 
 @testable import Gnomon
 
-// swiftlint:disable type_body_length file_length
-
 class CookieSpec: XCTestCase {
 
   override func setUp() {
@@ -20,18 +18,27 @@ class CookieSpec: XCTestCase {
 
     Nimble.AsyncDefaults.Timeout = 7
     URLCache.shared.removeAllCachedResponses()
+
+    let urlString = "\(Params.API.baseURL)/cookies"
+    guard let url = URL(string: urlString) else { return fail() }
+    for cookie in HTTPCookieStorage.shared.cookies(for: url) ?? [] {
+      HTTPCookieStorage.shared.deleteCookie(cookie)
+    }
+  }
+
+  override func tearDown() {
+    super.tearDown()
+
+    let urlString = "\(Params.API.baseURL)/cookies"
+    guard let url = URL(string: urlString) else { return fail() }
+    for cookie in HTTPCookieStorage.shared.cookies(for: url) ?? [] {
+      HTTPCookieStorage.shared.deleteCookie(cookie)
+    }
   }
 
   func testShouldIgnoreIncomingCookiesByDefault() {
     let request: Request<SingleResult<String>>
     do {
-      let urlString = "\(Params.API.baseURL)/cookies"
-      guard let url = URL(string: urlString) else { return fail() }
-
-      for cookie in HTTPCookieStorage.shared.cookies(for: url) ?? [] {
-        HTTPCookieStorage.shared.deleteCookie(cookie)
-      }
-
       let builder = RequestBuilder<SingleResult<String>>()
         .setURLString("\(Params.API.baseURL)/cookies/set?dont_send_me_cookie=true").setMethod(.GET)
       request = try builder.build()
@@ -45,6 +52,9 @@ class CookieSpec: XCTestCase {
       }
 
       expect(result.model.characters.count).to(beGreaterThan(0))
+
+      let urlString = "\(Params.API.baseURL)/cookies"
+      guard let url = URL(string: urlString) else { return fail() }
       expect(HTTPCookieStorage.shared.cookies(for: url)).to(haveCount(0))
     } catch {
       fail("\(error)")
@@ -98,13 +108,6 @@ class CookieSpec: XCTestCase {
   func testShouldHandleIncomingCookiesIfRequested() {
     let request: Request<SingleResult<String>>
     do {
-      let urlString = "\(Params.API.baseURL)/cookies"
-      guard let url = URL(string: urlString) else { return fail() }
-
-      for cookie in HTTPCookieStorage.shared.cookies(for: url) ?? [] {
-        HTTPCookieStorage.shared.deleteCookie(cookie)
-      }
-
       let builder = RequestBuilder<SingleResult<String>>()
         .setURLString("\(Params.API.baseURL)/cookies/set?dont_send_me_cookie=true").setMethod(.GET)
         .setShouldHandleCookies(true)
@@ -119,6 +122,9 @@ class CookieSpec: XCTestCase {
       }
 
       expect(result.model.characters.count).to(beGreaterThan(0))
+
+      let urlString = "\(Params.API.baseURL)/cookies"
+      guard let url = URL(string: urlString) else { return fail() }
 
       guard let receivedCookies = HTTPCookieStorage.shared.cookies(for: url) else { return fail() }
       expect(receivedCookies).to(haveCount(1))

@@ -55,6 +55,9 @@
 		B5BDB9741F16A13000A991B3 /* RequestSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E0CD41F1696B9007E0478 /* RequestSpec.swift */; };
 		B5BDB9761F16A13000A991B3 /* test_file.zip in Resources */ = {isa = PBXBuildFile; fileRef = B52E0CDE1F1696B9007E0478 /* test_file.zip */; };
 		B5BDB9771F16A13000A991B3 /* XPathSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E0CDC1F1696B9007E0478 /* XPathSpec.swift */; };
+		B5F99A071F66997400B46E70 /* LoggingSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5F99A061F66997400B46E70 /* LoggingSpec.swift */; };
+		B5F99A081F66997800B46E70 /* LoggingSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5F99A061F66997400B46E70 /* LoggingSpec.swift */; };
+		B5F99A091F66997800B46E70 /* LoggingSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5F99A061F66997400B46E70 /* LoggingSpec.swift */; };
 		FC5752EA743A335D42A06DA9 /* Pods_Tests_macOSTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6846319295E4D85871077BB9 /* Pods_Tests_macOSTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -91,6 +94,7 @@
 		B5B08E6D1F53578500D78597 /* XMLSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XMLSpec.swift; sourceTree = "<group>"; };
 		B5D49AF71F16981800FD2889 /* macOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = macOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5D49AFB1F16981800FD2889 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B5F99A061F66997400B46E70 /* LoggingSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoggingSpec.swift; sourceTree = "<group>"; };
 		CECD4C2682324E936658247B /* Pods_Tests_iOSTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Tests_iOSTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -195,6 +199,7 @@
 				B52E0CD71F1696B9007E0478 /* CookiesSpec.swift */,
 				B59E9BAB1EC361EC002018AE /* Info.plist */,
 				B5B08E651F53561300D78597 /* InterceptorSpec.swift */,
+				B5F99A061F66997400B46E70 /* LoggingSpec.swift */,
 				B52E0CD91F1696B9007E0478 /* MultipartSpec.swift */,
 				B52E0CD51F1696B9007E0478 /* MultipleRequestsSpec.swift */,
 				B52E0D161F34612600ADF444 /* Params.swift */,
@@ -225,7 +230,7 @@
 			buildConfigurationList = B56E8B931F16615600D5F227 /* Build configuration list for PBXNativeTarget "tvOSTests" */;
 			buildPhases = (
 				7D0C610B8D676EBFCD757806 /* [CP] Check Pods Manifest.lock */,
-				B56E8BA31F16658A00D5F227 /* ShellScript */,
+				B56E8BA31F16658A00D5F227 /* SwiftLint */,
 				B56E8B881F16615600D5F227 /* Sources */,
 				B56E8B891F16615600D5F227 /* Frameworks */,
 				B56E8B8A1F16615600D5F227 /* Resources */,
@@ -246,7 +251,7 @@
 			buildConfigurationList = B59E9BAC1EC361EC002018AE /* Build configuration list for PBXNativeTarget "iOSTests" */;
 			buildPhases = (
 				1EDF1805CBA33BC937AEBF6A /* [CP] Check Pods Manifest.lock */,
-				B56E8BA21F16655700D5F227 /* ShellScript */,
+				B56E8BA21F16655700D5F227 /* SwiftLint */,
 				B59E9BA21EC361EC002018AE /* Sources */,
 				B59E9BA31EC361EC002018AE /* Frameworks */,
 				B59E9BA41EC361EC002018AE /* Resources */,
@@ -267,6 +272,7 @@
 			buildConfigurationList = B5D49AFE1F16981800FD2889 /* Build configuration list for PBXNativeTarget "macOSTests" */;
 			buildPhases = (
 				E2D320D469F7AFC9F512E786 /* [CP] Check Pods Manifest.lock */,
+				B5F99A0A1F66A0CE00B46E70 /* SwiftLint */,
 				B5D49AF31F16981800FD2889 /* Sources */,
 				B5D49AF41F16981800FD2889 /* Frameworks */,
 				B5D49AF51F16981800FD2889 /* Resources */,
@@ -510,31 +516,47 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Tests-macOSTests/Pods-Tests-macOSTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		B56E8BA21F16655700D5F227 /* ShellScript */ = {
+		B56E8BA21F16655700D5F227 /* SwiftLint */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = SwiftLint;
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "";
+			shellScript = ./Pods/SwiftLint/swiftlint;
 		};
-		B56E8BA31F16658A00D5F227 /* ShellScript */ = {
+		B56E8BA31F16658A00D5F227 /* SwiftLint */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = SwiftLint;
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "";
+			shellScript = ./Pods/SwiftLint/swiftlint;
+		};
+		B5F99A0A1F66A0CE00B46E70 /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = ./Pods/SwiftLint/swiftlint;
 		};
 		C58F03A580985F4215786555 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -585,6 +607,7 @@
 				B52E0CF41F16970C007E0478 /* MultipleRequestsSpec.swift in Sources */,
 				B52E0CF01F16970C007E0478 /* ChainRequestSpec.swift in Sources */,
 				B52E0CF31F16970C007E0478 /* MultipartSpec.swift in Sources */,
+				B5F99A081F66997800B46E70 /* LoggingSpec.swift in Sources */,
 				B5B08E6B1F53568100D78597 /* CertificateSpec.swift in Sources */,
 				B52E0CEE1F16970C007E0478 /* CacheAndFetchSpec.swift in Sources */,
 				B52E0CEF1F16970C007E0478 /* CacheSpec.swift in Sources */,
@@ -606,6 +629,7 @@
 				B52E0CE51F1696B9007E0478 /* CacheSpec.swift in Sources */,
 				B52E0CE61F1696B9007E0478 /* MultipartSpec.swift in Sources */,
 				B52E0CE71F1696B9007E0478 /* CacheAndFetchSpec.swift in Sources */,
+				B5F99A071F66997400B46E70 /* LoggingSpec.swift in Sources */,
 				B5B08E6A1F53568100D78597 /* CertificateSpec.swift in Sources */,
 				B52E0CE31F1696B9007E0478 /* TestModels.swift in Sources */,
 				B52E0CE11F1696B9007E0478 /* RequestSpec.swift in Sources */,
@@ -627,6 +651,7 @@
 				B5BDB9721F16A13000A991B3 /* MultipleRequestsSpec.swift in Sources */,
 				B5BDB96E1F16A13000A991B3 /* ChainRequestSpec.swift in Sources */,
 				B5BDB9711F16A13000A991B3 /* MultipartSpec.swift in Sources */,
+				B5F99A091F66997800B46E70 /* LoggingSpec.swift in Sources */,
 				B5B08E6C1F53568100D78597 /* CertificateSpec.swift in Sources */,
 				B5BDB96C1F16A13000A991B3 /* CacheAndFetchSpec.swift in Sources */,
 				B5BDB96D1F16A13000A991B3 /* CacheSpec.swift in Sources */,

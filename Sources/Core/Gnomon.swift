@@ -71,7 +71,6 @@ public class Gnomon {
 
   // MARK: - Private
 
-  // swiftlint:disable:next function_body_length
   private class func observable<U: Result>(for request: Request<U>, inLocalCache localCache: Bool)
   throws -> Observable<(Data, HTTPURLResponse)> {
     return Observable.deferred {
@@ -99,9 +98,7 @@ public class Gnomon {
         dataRequest = interceptors.reduce(dataRequest) { $1($0) }
       }
 
-      if logging {
-        log(TTTURLRequestFormatter.cURLCommand(from: dataRequest))
-      }
+      curlLog(request, dataRequest)
 
       let task = Observable<(Data, HTTPURLResponse)>.create { [weak delegate] subscriber -> Disposable in
         let task = session.dataTask(with: dataRequest)
@@ -154,10 +151,23 @@ public class Gnomon {
 
   public static var logging = false
 
-  class internal func log(_ string: String) {
-    if logging {
-      print(string)
+  private static func curlLog<U: Result>(_ request: Request<U>, _ dataRequest: URLRequest) {
+    if let debugLogging = request.debugLogging, !debugLogging { return }
+    debugLog(TTTURLRequestFormatter.cURLCommand(from: dataRequest), request.debugLogging ?? false)
+  }
+
+  internal static var debugLog: (String, Bool) -> Void = { string, force in
+    if logging || force {
+      log(string)
     }
+  }
+
+  internal static var errorLog: (String) -> Void = { string in
+    log(string)
+  }
+
+  internal static var log: (String) -> Void = { string in
+    print(string)
   }
 
 }

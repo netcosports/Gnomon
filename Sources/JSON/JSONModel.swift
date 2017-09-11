@@ -86,7 +86,7 @@ public extension JSONModel {
       do {
         return try Self($0)
       } catch let e {
-        Gnomon.log("\(e)")
+        Gnomon.errorLog("\(e)")
         return nil
       }
     }

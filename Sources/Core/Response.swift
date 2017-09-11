@@ -43,7 +43,7 @@ public struct SingleOptionalResult<T: BaseModel>: Single, OptionalResult {
       self.model = try T.model(with: data, atPath: path)
     } catch let e {
       self.model = nil
-      Gnomon.log("\(e)")
+      Gnomon.errorLog("\(e)")
     }
   }
 
@@ -77,7 +77,7 @@ public struct MultipleOptionalResults<T: BaseModel>: Multiple, OptionalResult {
     do {
       self.init(models: try T.optionalModels(with: data, atPath: path))
     } catch let e {
-      Gnomon.log("\(e)")
+      Gnomon.errorLog("\(e)")
       self.init(models: [])
     }
   }
@@ -111,7 +111,7 @@ public extension StringModel {
 
   static func model(with data: Data, atPath path: String?) throws -> Self {
     if path != nil {
-      Gnomon.log("StringModel doesn't support xpath")
+      Gnomon.errorLog("StringModel doesn't support xpath")
     }
 
     guard let string = String(data: data, encoding: Self.encoding) else {

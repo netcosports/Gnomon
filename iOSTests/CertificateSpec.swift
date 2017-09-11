@@ -56,5 +56,5 @@ class CertificateSpec: XCTestCase {
       expect(err).toNot(beNil())
     }
   }
-    
+
 }

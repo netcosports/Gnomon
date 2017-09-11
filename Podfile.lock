@@ -16,7 +16,7 @@ PODS:
   - RxBlocking (3.6.1):
     - RxSwift (~> 3.6)
   - RxSwift (3.6.1)
-  - SwiftLint (0.21.0)
+  - SwiftLint (0.22.0)
   - SwiftyJSON (3.1.4)
 
 DEPENDENCIES:
@@ -38,7 +38,7 @@ SPEC CHECKSUMS:
   Nimble: 657d000e11df8aebe27cdaf9d244de7f30ed87f7
   RxBlocking: 4f4bd5732e8b952e54ae8a57739bcfb645de12bc
   RxSwift: f9de85ea20cd2f7716ee5409fc13523dc638e4e4
-  SwiftLint: 6de8b2d15f43c482bdec2953b8cfd696faa876e8
+  SwiftLint: 1134786caedd2caab0560d2f36b76414a5a56808
   SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
 
 PODFILE CHECKSUM: 8e27b8e84a7e68edf1518ca7751e3850f462d9f8

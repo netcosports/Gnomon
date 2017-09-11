@@ -14,8 +14,6 @@ import SwiftyJSON
 
 @testable import Gnomon
 
-// swiftlint:disable type_body_length file_length
-
 class RequestSpec: XCTestCase {
 
   override func setUp() {

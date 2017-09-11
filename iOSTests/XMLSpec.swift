@@ -20,7 +20,7 @@ class XMLSpec: XCTestCase {
     URLCache.shared.removeAllCachedResponses()
     Gnomon.removeAllInterceptors()
   }
-    
+
   func testPlainXMLRequest() {
     do {
       let request = try RequestBuilder<SingleResult<TestXMLModel>>()
@@ -52,5 +52,5 @@ class XMLSpec: XCTestCase {
       return
     }
   }
-    
+
 }

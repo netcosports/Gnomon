@@ -70,6 +70,8 @@ public class Request<ResultType: Result> {
 
   public fileprivate(set) var authenticationChallenge: AuthenticationChallenge?
 
+  public fileprivate(set) var debugLogging: Bool?
+
   public var response: ((Response<ResultType>) -> Void)?
 
   fileprivate init() {}
@@ -169,6 +171,12 @@ public struct RequestBuilder<ResultType: Result> {
   @discardableResult
   public func setAuthenticationChallenge(_ value: @escaping AuthenticationChallenge) -> Builder {
     request.authenticationChallenge = value
+    return self
+  }
+
+  @discardableResult
+  public func setDebugLogging(_ value: Bool) -> Builder {
+    request.debugLogging = value
     return self
   }
 

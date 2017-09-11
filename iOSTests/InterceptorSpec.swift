@@ -129,5 +129,5 @@ class InterceptorSpec: XCTestCase {
       fail("\(error)")
     }
   }
-  
+
 }
