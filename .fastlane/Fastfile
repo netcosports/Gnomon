@@ -81,15 +81,15 @@ private_lane :new_version do |options|
     )
   end
 
+  cocoapods
   if options[:increase]
     message = "Increased #{options[:path]} version #{lane_context[SharedValues::PODSPEC_VERSION_NUMBER]}"
   else
     message = "Changed #{options[:path]} version #{lane_context[SharedValues::PODSPEC_VERSION_NUMBER]}"
   end
 
-  cocoapods
   git_commit(
-    path: options[:path],
+    path: [options[:path], 'Podfile.lock'],
     message: message
   )
 end
