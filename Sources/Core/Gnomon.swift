@@ -151,7 +151,7 @@ public class Gnomon {
 
   public static var logging = false
 
-  private static func curlLog<U: Result>(_ request: Request<U>, _ dataRequest: URLRequest) {
+  private static func curlLog<U>(_ request: Request<U>, _ dataRequest: URLRequest) {
     if let debugLogging = request.debugLogging, !debugLogging { return }
     debugLog(TTTURLRequestFormatter.cURLCommand(from: dataRequest), request.debugLogging ?? false)
   }
