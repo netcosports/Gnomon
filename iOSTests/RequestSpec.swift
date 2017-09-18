@@ -265,4 +265,16 @@ class RequestSpec: XCTestCase {
     }
   }
 
+  func testPublicAccessToRequestBuilderRequest() {
+    do {
+      let builder = RequestBuilder<SingleResult<TestModel5>>().setURLString("\(Params.API.baseURL)/get?key=123")
+        .setMethod(.GET)
+      _ = builder.request.headers
+      _ = try builder.build()
+    } catch {
+      fail("\(error)")
+      return
+    }
+  }
+
 }

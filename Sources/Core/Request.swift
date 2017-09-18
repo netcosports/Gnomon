@@ -84,7 +84,7 @@ public struct PlainRequestBuilder<ResultType: Result> {
 
 public struct RequestBuilder<ResultType: Result> {
 
-  private var request = Request<ResultType>()
+  public private(set) var request = Request<ResultType>()
   public typealias Builder = RequestBuilder<ResultType>
 
   public init() {}
