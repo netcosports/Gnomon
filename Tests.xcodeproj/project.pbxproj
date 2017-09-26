@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		3AB8BBCC7D6B3A63F74773DE /* Pods_Tests_iOSTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CECD4C2682324E936658247B /* Pods_Tests_iOSTests.framework */; };
 		4558D11918401AB38E8E1786 /* Pods_Tests_tvOSTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9632BBA3EEFC5F2F3D3ECF19 /* Pods_Tests_tvOSTests.framework */; };
+		B50224A51F7AB20800C1015F /* Params.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E0D161F34612600ADF444 /* Params.swift */; };
+		B50224A61F7AB20800C1015F /* Params.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E0D161F34612600ADF444 /* Params.swift */; };
 		B52E0CE11F1696B9007E0478 /* RequestSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E0CD41F1696B9007E0478 /* RequestSpec.swift */; };
 		B52E0CE21F1696B9007E0478 /* MultipleRequestsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E0CD51F1696B9007E0478 /* MultipleRequestsSpec.swift */; };
 		B52E0CE31F1696B9007E0478 /* TestModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E0CD61F1696B9007E0478 /* TestModels.swift */; };
@@ -32,8 +34,6 @@
 		B52E0CF81F16970C007E0478 /* test_file.zip in Resources */ = {isa = PBXBuildFile; fileRef = B52E0CDE1F1696B9007E0478 /* test_file.zip */; };
 		B52E0CF91F16970C007E0478 /* XPathSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E0CDC1F1696B9007E0478 /* XPathSpec.swift */; };
 		B52E0D181F34612600ADF444 /* Params.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E0D161F34612600ADF444 /* Params.swift */; };
-		B52E0D1A1F34616D00ADF444 /* Params.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E0D161F34612600ADF444 /* Params.swift */; };
-		B52E0D1B1F34616E00ADF444 /* Params.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E0D161F34612600ADF444 /* Params.swift */; };
 		B5950C591F4D6C1400FD4D55 /* Gnomon.podspec in Resources */ = {isa = PBXBuildFile; fileRef = B5950C581F4D6C1400FD4D55 /* Gnomon.podspec */; };
 		B5B08E661F53561300D78597 /* InterceptorSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B08E651F53561300D78597 /* InterceptorSpec.swift */; };
 		B5B08E671F53561300D78597 /* InterceptorSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B08E651F53561300D78597 /* InterceptorSpec.swift */; };
@@ -168,8 +168,12 @@
 		B59E9B9B1EC361C1002018AE = {
 			isa = PBXGroup;
 			children = (
-				B5950C581F4D6C1400FD4D55 /* Gnomon.podspec */,
 				B5950C4A1F4D6BF000FD4D55 /* .fastlane */,
+				B5950C581F4D6C1400FD4D55 /* Gnomon.podspec */,
+				B52E0D161F34612600ADF444 /* Params.swift */,
+				B52E0D171F34612600ADF444 /* Params.swift.erb */,
+				B52E0CDE1F1696B9007E0478 /* test_file.zip */,
+				B5E72C8C1F72C3D400F63067 /* Specs */,
 				B59E9BA81EC361EC002018AE /* iOSTests */,
 				B56E8B8D1F16615600D5F227 /* tvOSTests */,
 				B5D49AF81F16981800FD2889 /* macOSTests */,
@@ -192,24 +196,7 @@
 		B59E9BA81EC361EC002018AE /* iOSTests */ = {
 			isa = PBXGroup;
 			children = (
-				B52E0CDA1F1696B9007E0478 /* CacheAndFetchSpec.swift */,
-				B52E0CD81F1696B9007E0478 /* CacheSpec.swift */,
-				B5B08E691F53568100D78597 /* CertificateSpec.swift */,
-				B52E0CDD1F1696B9007E0478 /* ChainRequestSpec.swift */,
-				B52E0CD71F1696B9007E0478 /* CookiesSpec.swift */,
 				B59E9BAB1EC361EC002018AE /* Info.plist */,
-				B5B08E651F53561300D78597 /* InterceptorSpec.swift */,
-				B5F99A061F66997400B46E70 /* LoggingSpec.swift */,
-				B52E0CD91F1696B9007E0478 /* MultipartSpec.swift */,
-				B52E0CD51F1696B9007E0478 /* MultipleRequestsSpec.swift */,
-				B52E0D161F34612600ADF444 /* Params.swift */,
-				B52E0D171F34612600ADF444 /* Params.swift.erb */,
-				B52E0CDB1F1696B9007E0478 /* ParamsEncodingSpec.swift */,
-				B52E0CD41F1696B9007E0478 /* RequestSpec.swift */,
-				B52E0CDE1F1696B9007E0478 /* test_file.zip */,
-				B52E0CD61F1696B9007E0478 /* TestModels.swift */,
-				B5B08E6D1F53578500D78597 /* XMLSpec.swift */,
-				B52E0CDC1F1696B9007E0478 /* XPathSpec.swift */,
 			);
 			path = iOSTests;
 			sourceTree = "<group>";
@@ -220,6 +207,27 @@
 				B5D49AFB1F16981800FD2889 /* Info.plist */,
 			);
 			path = macOSTests;
+			sourceTree = "<group>";
+		};
+		B5E72C8C1F72C3D400F63067 /* Specs */ = {
+			isa = PBXGroup;
+			children = (
+				B52E0CDA1F1696B9007E0478 /* CacheAndFetchSpec.swift */,
+				B52E0CD81F1696B9007E0478 /* CacheSpec.swift */,
+				B5B08E691F53568100D78597 /* CertificateSpec.swift */,
+				B52E0CDD1F1696B9007E0478 /* ChainRequestSpec.swift */,
+				B52E0CD71F1696B9007E0478 /* CookiesSpec.swift */,
+				B5B08E651F53561300D78597 /* InterceptorSpec.swift */,
+				B5F99A061F66997400B46E70 /* LoggingSpec.swift */,
+				B52E0CD91F1696B9007E0478 /* MultipartSpec.swift */,
+				B52E0CD51F1696B9007E0478 /* MultipleRequestsSpec.swift */,
+				B52E0CDB1F1696B9007E0478 /* ParamsEncodingSpec.swift */,
+				B52E0CD41F1696B9007E0478 /* RequestSpec.swift */,
+				B52E0CD61F1696B9007E0478 /* TestModels.swift */,
+				B5B08E6D1F53578500D78597 /* XMLSpec.swift */,
+				B52E0CDC1F1696B9007E0478 /* XPathSpec.swift */,
+			);
+			path = Specs;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -600,8 +608,8 @@
 			files = (
 				B52E0CF21F16970C007E0478 /* CookiesSpec.swift in Sources */,
 				B52E0CF91F16970C007E0478 /* XPathSpec.swift in Sources */,
-				B52E0D1A1F34616D00ADF444 /* Params.swift in Sources */,
 				B52E0CF51F16970C007E0478 /* ParamsEncodingSpec.swift in Sources */,
+				B50224A51F7AB20800C1015F /* Params.swift in Sources */,
 				B5B08E6F1F53578500D78597 /* XMLSpec.swift in Sources */,
 				B52E0CF11F16970C007E0478 /* TestModels.swift in Sources */,
 				B52E0CF41F16970C007E0478 /* MultipleRequestsSpec.swift in Sources */,
@@ -644,8 +652,8 @@
 			files = (
 				B5BDB9701F16A13000A991B3 /* CookiesSpec.swift in Sources */,
 				B5BDB9771F16A13000A991B3 /* XPathSpec.swift in Sources */,
-				B52E0D1B1F34616E00ADF444 /* Params.swift in Sources */,
 				B5BDB9731F16A13000A991B3 /* ParamsEncodingSpec.swift in Sources */,
+				B50224A61F7AB20800C1015F /* Params.swift in Sources */,
 				B5B08E701F53578500D78597 /* XMLSpec.swift in Sources */,
 				B5BDB96F1F16A13000A991B3 /* TestModels.swift in Sources */,
 				B5BDB9721F16A13000A991B3 /* MultipleRequestsSpec.swift in Sources */,

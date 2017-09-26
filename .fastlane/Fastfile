@@ -23,8 +23,8 @@ end
 
 lane :local_httpbin do
   erb(
-    template: 'iOSTests/Params.swift.erb',
-    destination: 'iOSTests/Params.swift',
+    template: 'Params.swift.erb',
+    destination: 'Params.swift',
     placeholders: {
       api_base_url: 'http://localhost:8000'
     }
@@ -33,8 +33,8 @@ end
 
 lane :remote_httpbin do
   erb(
-    template: 'iOSTests/Params.swift.erb',
-    destination: 'iOSTests/Params.swift',
+    template: 'Params.swift.erb',
+    destination: 'Params.swift',
     placeholders: {
       api_base_url: 'http://httpbin.org'
     }
