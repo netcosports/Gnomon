@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
 
   s.subspec 'Core' do |sub|
     sub.source_files = 'Sources/Core/*.swift'
-    sub.dependency 'RxSwift', '4.0.0-beta.1'
+    sub.dependency 'RxSwift', '4.0.0-rc.0'
     sub.dependency 'FormatterKit/URLRequestFormatter', '>= 1.8.2'
   end
 
