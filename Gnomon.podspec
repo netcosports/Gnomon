@@ -17,13 +17,13 @@ Pod::Spec.new do |s|
 
   s.subspec 'Core' do |sub|
     sub.source_files = 'Sources/Core/*.swift'
-    sub.dependency 'RxSwift', '4.0.0-rc.0'
+    sub.dependency 'RxSwift', '~> 4.0'
     sub.dependency 'FormatterKit/URLRequestFormatter', '>= 1.8.2'
   end
 
   s.subspec 'JSON' do |sub|
     sub.source_files = 'Sources/JSON/*.swift'
-    sub.dependency 'SwiftyJSON', '4.0.0-alpha.1'
+    sub.dependency 'SwiftyJSON', '~> 3.0'
     sub.dependency 'Gnomon/Core'
   end
 

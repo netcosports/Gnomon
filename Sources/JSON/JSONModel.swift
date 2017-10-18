@@ -12,7 +12,7 @@ public protocol JSONModel: BaseModel {
 public extension JSONModel {
 
   static func model(with data: Data, atPath path: String?) throws -> Self {
-    let json = try JSON(data: data)
+    let json = JSON(data: data)
 
     guard let path = path else {
       return try Self(json)
@@ -26,7 +26,7 @@ public extension JSONModel {
   }
 
   static func models(with data: Data, atPath path: String?) throws -> [Self] {
-    let json = try JSON(data: data)
+    let json = JSON(data: data)
     let jsonArray: [JSON]
 
     if let error = json.error {
@@ -56,7 +56,7 @@ public extension JSONModel {
   }
 
   static func optionalModels(with data: Data, atPath path: String?) throws -> [Self?] {
-    let json = try JSON(data: data)
+    let json = JSON(data: data)
     let jsonArray: [JSON]
 
     if let error = json.error {

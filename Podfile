@@ -8,7 +8,7 @@ abstract_target 'Tests' do
   pod 'Gnomon/JSON', :path => '.'
   pod 'Gnomon/XML', :path => '.'
   pod 'Nimble', '~> 7.0'
-  pod 'RxBlocking', '4.0.0-rc.0'
+  pod 'RxBlocking'
 
   target 'iOSTests' do 
     platform :ios, '8.0'
