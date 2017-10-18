@@ -1,6 +1,7 @@
 language: objective-c
-osx_image: xcode8.3
+osx_image: xcode9
 rvm: 2.4
+python: 2.7
 
 cache:
   cocoapods: true
@@ -17,7 +18,7 @@ env:
   - SCHEME=macOSTests
 
 script:
-  - bundle exec fastlane select_httpbin
+  - bundle exec fastlane remote_httpbin
   - export DESTINATION="$(./scripts/destination.sh $SCHEME)"
   - xcrun simctl list
   - set -o pipefail && env NSUnbufferedIO=YES xcodebuild -workspace Tests.xcworkspace -scheme "$SCHEME" -destination "$DESTINATION" build test | xcpretty

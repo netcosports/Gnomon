@@ -21,7 +21,7 @@ public class Gnomon {
     interceptors.removeAll()
   }
 
-  public class func models<U: Result>(for request: Request<U>) -> Observable<Response<U>> {
+  public class func models<U>(for request: Request<U>) -> Observable<Response<U>> {
     do {
       return try observable(for: request, inLocalCache: false).flatMap { data, response -> Observable<Response<U>> in
         let type: ResponseType = response.resultFromHTTPCache && !request.disableHttpCache ? .httpCache : .regular
@@ -71,7 +71,7 @@ public class Gnomon {
 
   // MARK: - Private
 
-  private class func observable<U: Result>(for request: Request<U>, inLocalCache localCache: Bool)
+  private class func observable<U>(for request: Request<U>, inLocalCache localCache: Bool)
   throws -> Observable<(Data, HTTPURLResponse)> {
     return Observable.deferred {
       let delegate = SessionDelegate()
@@ -127,7 +127,7 @@ public class Gnomon {
     }
   }
 
-  private class func parse<U: Result>(data: Data, responseType: ResponseType, for request: Request<U>)
+  private class func parse<U>(data: Data, responseType: ResponseType, for request: Request<U>)
   throws -> Observable<Response<U>> {
     return Observable.create { subscriber -> Disposable in
       let result: U
@@ -151,7 +151,7 @@ public class Gnomon {
 
   public static var logging = false
 
-  private static func curlLog<U: Result>(_ request: Request<U>, _ dataRequest: URLRequest) {
+  private static func curlLog<U>(_ request: Request<U>, _ dataRequest: URLRequest) {
     if let debugLogging = request.debugLogging, !debugLogging { return }
     debugLog(TTTURLRequestFormatter.cURLCommand(from: dataRequest), request.debugLogging ?? false)
   }
