@@ -5,5 +5,5 @@
 ## Installation
 
 ```ruby
-pod 'Gnomon', '~> 2.0'
+pod 'Gnomon', '~> 3.0'
 ```
