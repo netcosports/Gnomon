@@ -102,6 +102,14 @@ public struct Response<ResultType: Result> {
 
 }
 
+public extension Response where ResultType: OptionalResult {
+
+  public static func empty() -> Response<ResultType> {
+    return Response(result: .empty(), responseType: .regular)
+  }
+
+}
+
 public protocol StringModel: BaseModel {
   init(with string: String)
   static var encoding: String.Encoding { get }

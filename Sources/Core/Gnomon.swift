@@ -41,7 +41,7 @@ public class Gnomon {
   public class func models<U: OptionalResult>(for requests: [Request<U>]) -> Observable<[Response<U>]> {
     guard requests.count > 0 else { return .just([]) }
     return Observable.zip(requests.map {
-      models(for: $0).catchErrorJustReturn(Response(result: U.empty(), responseType: .regular))
+      models(for: $0).catchErrorJustReturn(Response.empty())
     })
   }
 
@@ -50,7 +50,7 @@ public class Gnomon {
       return try observable(for: request, inLocalCache: true).flatMap { data, _ -> Observable<Response<U>> in
         return try parse(data: data, responseType: .localCache, for: request)
           .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
-      }.catchErrorJustReturn(Response(result: U.empty(), responseType: .localCache))
+      }.catchErrorJustReturn(Response.empty())
     } catch let e {
       return .error(e)
     }
