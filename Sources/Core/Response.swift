@@ -104,8 +104,8 @@ public struct Response<ResultType: Result> {
 
 public extension Response where ResultType: OptionalResult {
 
-  public static func empty() -> Response<ResultType> {
-    return Response(result: .empty(), responseType: .regular)
+  public static func empty(with responseType: ResponseType) -> Response<ResultType> {
+    return Response(result: .empty(), responseType: responseType)
   }
 
 }
