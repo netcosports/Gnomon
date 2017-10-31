@@ -41,6 +41,8 @@ class CacheAndFetchSpec: XCTestCase {
       return
     }
 
+    expect(responses).to(haveCount(2))
+
     expect(responses[0].result.model).to(beNil())
     expect(responses[0].responseType) == ResponseType.localCache
     expect(responses[1].result.model?.key) == 123

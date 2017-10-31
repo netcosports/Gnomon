@@ -9,8 +9,12 @@
 /* Begin PBXBuildFile section */
 		3AB8BBCC7D6B3A63F74773DE /* Pods_Tests_iOSTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CECD4C2682324E936658247B /* Pods_Tests_iOSTests.framework */; };
 		4558D11918401AB38E8E1786 /* Pods_Tests_tvOSTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9632BBA3EEFC5F2F3D3ECF19 /* Pods_Tests_tvOSTests.framework */; };
+		B50224A01F7AB10C00C1015F /* DecodableSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B502249F1F7AB10C00C1015F /* DecodableSpec.swift */; };
+		B50224A11F7AB10C00C1015F /* DecodableSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B502249F1F7AB10C00C1015F /* DecodableSpec.swift */; };
+		B50224A21F7AB10C00C1015F /* DecodableSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B502249F1F7AB10C00C1015F /* DecodableSpec.swift */; };
 		B50224A51F7AB20800C1015F /* Params.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E0D161F34612600ADF444 /* Params.swift */; };
-		B50224A61F7AB20800C1015F /* Params.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E0D161F34612600ADF444 /* Params.swift */; };
+		B50CAFD51FA3C43600601EE9 /* Params.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E0D161F34612600ADF444 /* Params.swift */; };
+		B50CAFD61FA3C43800601EE9 /* Params.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E0D161F34612600ADF444 /* Params.swift */; };
 		B52E0CE11F1696B9007E0478 /* RequestSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E0CD41F1696B9007E0478 /* RequestSpec.swift */; };
 		B52E0CE21F1696B9007E0478 /* MultipleRequestsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E0CD51F1696B9007E0478 /* MultipleRequestsSpec.swift */; };
 		B52E0CE31F1696B9007E0478 /* TestModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E0CD61F1696B9007E0478 /* TestModels.swift */; };
@@ -33,7 +37,6 @@
 		B52E0CF61F16970C007E0478 /* RequestSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E0CD41F1696B9007E0478 /* RequestSpec.swift */; };
 		B52E0CF81F16970C007E0478 /* test_file.zip in Resources */ = {isa = PBXBuildFile; fileRef = B52E0CDE1F1696B9007E0478 /* test_file.zip */; };
 		B52E0CF91F16970C007E0478 /* XPathSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E0CDC1F1696B9007E0478 /* XPathSpec.swift */; };
-		B52E0D181F34612600ADF444 /* Params.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52E0D161F34612600ADF444 /* Params.swift */; };
 		B5950C591F4D6C1400FD4D55 /* Gnomon.podspec in Resources */ = {isa = PBXBuildFile; fileRef = B5950C581F4D6C1400FD4D55 /* Gnomon.podspec */; };
 		B5B08E661F53561300D78597 /* InterceptorSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B08E651F53561300D78597 /* InterceptorSpec.swift */; };
 		B5B08E671F53561300D78597 /* InterceptorSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5B08E651F53561300D78597 /* InterceptorSpec.swift */; };
@@ -70,6 +73,7 @@
 		86CE36D82B2098D9513F9E0C /* Pods-Tests-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests-tvOSTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Tests-tvOSTests/Pods-Tests-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		8FB7BAD075C9AF5EB215D3BC /* Pods-Tests-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests-tvOSTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Tests-tvOSTests/Pods-Tests-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		9632BBA3EEFC5F2F3D3ECF19 /* Pods_Tests_tvOSTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Tests_tvOSTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B502249F1F7AB10C00C1015F /* DecodableSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecodableSpec.swift; sourceTree = "<group>"; };
 		B52E0CD41F1696B9007E0478 /* RequestSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestSpec.swift; sourceTree = "<group>"; };
 		B52E0CD51F1696B9007E0478 /* MultipleRequestsSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultipleRequestsSpec.swift; sourceTree = "<group>"; };
 		B52E0CD61F1696B9007E0478 /* TestModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestModels.swift; sourceTree = "<group>"; };
@@ -217,6 +221,7 @@
 				B5B08E691F53568100D78597 /* CertificateSpec.swift */,
 				B52E0CDD1F1696B9007E0478 /* ChainRequestSpec.swift */,
 				B52E0CD71F1696B9007E0478 /* CookiesSpec.swift */,
+				B502249F1F7AB10C00C1015F /* DecodableSpec.swift */,
 				B5B08E651F53561300D78597 /* InterceptorSpec.swift */,
 				B5F99A061F66997400B46E70 /* LoggingSpec.swift */,
 				B52E0CD91F1696B9007E0478 /* MultipartSpec.swift */,
@@ -618,6 +623,7 @@
 				B5F99A081F66997800B46E70 /* LoggingSpec.swift in Sources */,
 				B5B08E6B1F53568100D78597 /* CertificateSpec.swift in Sources */,
 				B52E0CEE1F16970C007E0478 /* CacheAndFetchSpec.swift in Sources */,
+				B50224A11F7AB10C00C1015F /* DecodableSpec.swift in Sources */,
 				B52E0CEF1F16970C007E0478 /* CacheSpec.swift in Sources */,
 				B5B08E671F53561300D78597 /* InterceptorSpec.swift in Sources */,
 				B52E0CF61F16970C007E0478 /* RequestSpec.swift in Sources */,
@@ -630,7 +636,6 @@
 			files = (
 				B52E0CEA1F1696B9007E0478 /* ChainRequestSpec.swift in Sources */,
 				B52E0CE41F1696B9007E0478 /* CookiesSpec.swift in Sources */,
-				B52E0D181F34612600ADF444 /* Params.swift in Sources */,
 				B52E0CE81F1696B9007E0478 /* ParamsEncodingSpec.swift in Sources */,
 				B5B08E6E1F53578500D78597 /* XMLSpec.swift in Sources */,
 				B52E0CE21F1696B9007E0478 /* MultipleRequestsSpec.swift in Sources */,
@@ -640,6 +645,8 @@
 				B5F99A071F66997400B46E70 /* LoggingSpec.swift in Sources */,
 				B5B08E6A1F53568100D78597 /* CertificateSpec.swift in Sources */,
 				B52E0CE31F1696B9007E0478 /* TestModels.swift in Sources */,
+				B50CAFD51FA3C43600601EE9 /* Params.swift in Sources */,
+				B50224A01F7AB10C00C1015F /* DecodableSpec.swift in Sources */,
 				B52E0CE11F1696B9007E0478 /* RequestSpec.swift in Sources */,
 				B5B08E661F53561300D78597 /* InterceptorSpec.swift in Sources */,
 				B52E0CE91F1696B9007E0478 /* XPathSpec.swift in Sources */,
@@ -653,7 +660,6 @@
 				B5BDB9701F16A13000A991B3 /* CookiesSpec.swift in Sources */,
 				B5BDB9771F16A13000A991B3 /* XPathSpec.swift in Sources */,
 				B5BDB9731F16A13000A991B3 /* ParamsEncodingSpec.swift in Sources */,
-				B50224A61F7AB20800C1015F /* Params.swift in Sources */,
 				B5B08E701F53578500D78597 /* XMLSpec.swift in Sources */,
 				B5BDB96F1F16A13000A991B3 /* TestModels.swift in Sources */,
 				B5BDB9721F16A13000A991B3 /* MultipleRequestsSpec.swift in Sources */,
@@ -662,6 +668,8 @@
 				B5F99A091F66997800B46E70 /* LoggingSpec.swift in Sources */,
 				B5B08E6C1F53568100D78597 /* CertificateSpec.swift in Sources */,
 				B5BDB96C1F16A13000A991B3 /* CacheAndFetchSpec.swift in Sources */,
+				B50CAFD61FA3C43800601EE9 /* Params.swift in Sources */,
+				B50224A21F7AB10C00C1015F /* DecodableSpec.swift in Sources */,
 				B5BDB96D1F16A13000A991B3 /* CacheSpec.swift in Sources */,
 				B5B08E681F53561300D78597 /* InterceptorSpec.swift in Sources */,
 				B5BDB9741F16A13000A991B3 /* RequestSpec.swift in Sources */,
