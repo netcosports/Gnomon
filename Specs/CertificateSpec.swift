@@ -33,7 +33,7 @@ class CertificateSpec: XCTestCase {
       let response = try Gnomon.models(for: request).toBlocking().first()
       guard let result = response?.result else { throw "can't extract response" }
 
-      expect(result.model.characters.count).to(beGreaterThan(0))
+      expect(result.model.count).to(beGreaterThan(0))
     } catch let error {
       fail("\(error)")
       return

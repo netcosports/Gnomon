@@ -51,7 +51,7 @@ class CookieSpec: XCTestCase {
         return
       }
 
-      expect(result.model.characters.count).to(beGreaterThan(0))
+      expect(result.model.count).to(beGreaterThan(0))
 
       let urlString = "\(Params.API.baseURL)/cookies"
       guard let url = URL(string: urlString) else { return fail() }
@@ -121,7 +121,7 @@ class CookieSpec: XCTestCase {
         return
       }
 
-      expect(result.model.characters.count).to(beGreaterThan(0))
+      expect(result.model.count).to(beGreaterThan(0))
 
       let urlString = "\(Params.API.baseURL)/cookies"
       guard let url = URL(string: urlString) else { return fail() }

@@ -186,7 +186,7 @@ public struct RequestBuilder<ResultType: Result> {
   }
 
   private func validate() throws {
-    guard request.URLString.characters.count > 0 else {
+    guard request.URLString.count > 0 else {
       throw "empty URL"
     }
   }

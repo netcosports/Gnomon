@@ -8,14 +8,14 @@ import Foundation
 extension Dictionary where Key == String, Value: Any {
 
   func dictionary(byPath path: Key) -> [Key: Value]? {
-    guard path.characters.count > 0 else { return nil }
+    guard path.count > 0 else { return nil }
     let components = path.components(separatedBy: "/")
     guard components.count > 0 else { return self }
     return dictionary(byPathComponents: ArraySlice(components))
   }
 
   func array(byPath path: Key) -> [[Key: Value]]? {
-    guard path.characters.count > 0 else { return nil }
+    guard path.count > 0 else { return nil }
     let components = path.components(separatedBy: "/")
     guard components.count > 0 else { return nil }
     guard let lastKey = components.last else { return nil }

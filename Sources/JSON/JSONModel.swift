@@ -97,7 +97,7 @@ public extension JSONModel {
 extension JSON {
 
   func xpath(_ path: String) throws -> JSON {
-    guard path.characters.count > 0 else { throw "empty xpath" }
+    guard path.count > 0 else { throw "empty xpath" }
     let components = path.components(separatedBy: "/")
     guard components.count > 0 else { return self }
     return try xpath(components)
