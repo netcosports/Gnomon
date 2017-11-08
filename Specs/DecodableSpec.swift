@@ -9,7 +9,7 @@ import XCTest
 import Nimble
 import Gnomon
 
-struct PlayerModel: Decodable, BaseModel {
+struct PlayerModel: DecodableModel {
 
   let firstName: String
   let lastName: String
@@ -21,7 +21,7 @@ struct PlayerModel: Decodable, BaseModel {
 
 }
 
-struct TeamModel: Decodable, BaseModel {
+struct TeamModel: DecodableModel {
 
   let name: String
   let players: [PlayerModel]

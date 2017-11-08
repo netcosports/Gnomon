@@ -3,7 +3,7 @@
 //  Copyright © 2017 NetcoSports. All rights reserved.
 //
 
-public extension CodingUserInfoKey {
+extension CodingUserInfoKey {
 
   static let xpath = CodingUserInfoKey(rawValue: "Gnomon.XPath")!
 
