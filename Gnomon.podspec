@@ -21,6 +21,11 @@ Pod::Spec.new do |s|
     sub.dependency 'FormatterKit/URLRequestFormatter', '>= 1.8.2'
   end
 
+  s.subspec 'Decodable' do |sub|
+    sub.source_files = 'Sources/Decodable/*.swift'
+    sub.dependency 'Gnomon/Core'
+  end
+
   s.subspec 'JSON' do |sub|
     sub.source_files = 'Sources/JSON/*.swift'
     sub.dependency 'SwiftyJSON', '~> 4.0'

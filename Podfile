@@ -7,6 +7,7 @@ abstract_target 'Tests' do
   pod 'Gnomon/Core', :path => '.'
   pod 'Gnomon/JSON', :path => '.'
   pod 'Gnomon/XML', :path => '.'
+  pod 'Gnomon/Decodable', :path => '.'
   pod 'Nimble', '~> 7.0'
   pod 'RxBlocking'
 
