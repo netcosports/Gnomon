@@ -33,10 +33,16 @@ public extension JSONModel {
       throw Gnomon.Error.unableToParseModel(error)
     }
 
+    if json.null != nil {
+      throw Gnomon.Error.unableToParseModel("expected dictionary or array, received null")
+    }
+
     if let path = path {
       let xpathed = try json.xpath(path)
       if let error = xpathed.error {
         throw Gnomon.Error.unableToParseModel(error)
+      } else if xpathed.null != nil {
+        throw Gnomon.Error.unableToParseModel("expected dictionary or array, received null")
       }
 
       if let array = xpathed.array {
@@ -63,10 +69,16 @@ public extension JSONModel {
       throw Gnomon.Error.unableToParseModel(error)
     }
 
+    if json.null != nil {
+      throw Gnomon.Error.unableToParseModel("expected dictionary or array, received null")
+    }
+
     if let path = path {
       let xpathed = try json.xpath(path)
       if let error = xpathed.error {
         throw Gnomon.Error.unableToParseModel(error)
+      } else if xpathed.null != nil {
+        throw Gnomon.Error.unableToParseModel("expected dictionary or array, received null")
       }
 
       if let array = xpathed.array {

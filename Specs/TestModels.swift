@@ -103,8 +103,8 @@ struct TestModel6: JSONModel {
   let key: Int
 
   init(_ json: JSON) throws {
-    guard let string = json["json"]["key"].string, let value = Int(string) else {
-      throw Gnomon.Error.unableToParseModel("<key> value is invalid = <\(json["json"]["key"])>")
+    guard let string = json["key"].string, let value = Int(string) else {
+      throw Gnomon.Error.unableToParseModel("<key> value is invalid = <\(json["key"])>")
     }
 
     key = value
@@ -143,6 +143,16 @@ struct TestModel8: JSONModel {
       result[key] = json.stringValue
       return result
     }
+  }
+
+}
+
+struct TestModel9: JSONModel {
+
+  let key: String
+
+  init(_ json: JSON) throws {
+    key = json["key"].stringValue
   }
 
 }

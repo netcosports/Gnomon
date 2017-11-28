@@ -140,7 +140,7 @@ class RequestSpec: XCTestCase {
     do {
       let request: Request<SingleResult<TestModel6>> = try RequestBuilder()
         .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
-        .setParams(.json(["key": "123"])).build()
+        .setParams(.json(["key": "123"])).setXPath("json").build()
 
       let response = try Gnomon.models(for: request).toBlocking().first()
 
@@ -221,9 +221,9 @@ class RequestSpec: XCTestCase {
 
   func testCastSingleDictionaryToMultipleResults() {
     do {
-      let request: Request<MultipleResults<TestModel6>> = try RequestBuilder()
+      let request: Request<MultipleResults<TestModel9>> = try RequestBuilder()
         .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
-        .setParams(.json(["key": "123"])).build()
+        .setParams(.json(["root_key": ["key": "123"]])).setXPath("json/root_key").build()
 
       let response = try Gnomon.models(for: request).toBlocking().first()
 
@@ -235,7 +235,31 @@ class RequestSpec: XCTestCase {
       }
 
       expect(result.models).to(haveCount(1))
-      expect(result.models[0].key) == 123
+      expect(result.models[0].key) == "123"
+    } catch {
+      fail("\(error)")
+      return
+    }
+  }
+
+  func testCastSingleDictionaryToMultipleResultsButFailIfNull() {
+    do {
+      let request: Request<MultipleResults<TestModel9>> = try RequestBuilder()
+        .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
+        .setParams(.json(["root_key": NSNull()])).setXPath("json/root_key").build()
+
+      do {
+        _ = try Gnomon.models(for: request).toBlocking().first()
+        fail("request should fail")
+      } catch {
+        switch error {
+        case let Gnomon.Error.unableToParseModel(error):
+          guard let string = error as? String else { throw "" }
+          expect(string) == "expected dictionary or array, received null"
+        default:
+          throw error
+        }
+      }
     } catch {
       fail("\(error)")
       return
@@ -244,9 +268,9 @@ class RequestSpec: XCTestCase {
 
   func testCastSingleDictionaryToMultipleOptionalResults() {
     do {
-      let request: Request<MultipleOptionalResults<TestModel6>> = try RequestBuilder()
+      let request: Request<MultipleOptionalResults<TestModel9>> = try RequestBuilder()
         .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
-        .setParams(.json(["key": "123"])).build()
+        .setParams(.json(["root_key": ["key": "123"]])).setXPath("json/root_key").build()
 
       let response = try Gnomon.models(for: request).toBlocking().first()
 
@@ -258,7 +282,29 @@ class RequestSpec: XCTestCase {
       }
 
       expect(result.models).to(haveCount(1))
-      expect(result.models[0]?.key) == 123
+      expect(result.models[0]?.key) == "123"
+    } catch {
+      fail("\(error)")
+      return
+    }
+  }
+
+  func testCastSingleDictionaryToMultipleOptionalResultsIfNull() {
+    do {
+      let request: Request<MultipleOptionalResults<TestModel9>> = try RequestBuilder()
+        .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
+        .setParams(.json(["root_key": NSNull()])).setXPath("json/root_key").build()
+
+      let response = try Gnomon.models(for: request).toBlocking().first()
+
+      expect(response).notTo(beNil())
+
+      guard let result = response?.result else {
+        fail("can't extract response")
+        return
+      }
+
+      expect(result.models).to(haveCount(0))
     } catch {
       fail("\(error)")
       return
