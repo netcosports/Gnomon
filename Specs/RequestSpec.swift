@@ -277,4 +277,32 @@ class RequestSpec: XCTestCase {
     }
   }
 
+  func testCustomDataRequest() {
+    do {
+      guard let url = Bundle(for: type(of: self)).url(forResource: "image", withExtension: "png") else {
+        return fail("can't find test file")
+      }
+
+      let data = try Data(contentsOf: url)
+
+      let request: Request<SingleResult<DataModel>> = try RequestBuilder()
+        .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
+        .setParams(.data(data, contentType: "image/png")).build()
+
+      let response = try Gnomon.models(for: request).toBlocking().first()
+
+      expect(response).notTo(beNil())
+
+      guard let result = response?.result else {
+        fail("can't extract response")
+        return
+      }
+
+      expect(result.model.data) == data
+    } catch {
+      fail("\(error)")
+      return
+    }
+  }
+
 }

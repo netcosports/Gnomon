@@ -147,6 +147,20 @@ struct TestModel8: JSONModel {
 
 }
 
+struct DataModel: JSONModel {
+
+  let data: Data
+
+  init(_ json: JSON) throws {
+    guard var string = json["data"].string else { throw "invalid data string" }
+    guard let range = string.range(of: "data:application/octet-stream;base64,") else { throw "invalid data string" }
+    string.removeSubrange(range)
+    guard let data = Data(base64Encoded: string) else { throw "invalid data" }
+    self.data = data
+  }
+
+}
+
 struct TestXMLModel: XMLModel {
 
   let title: String

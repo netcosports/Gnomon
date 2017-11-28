@@ -44,6 +44,7 @@ extension HTTPURLResponse {
 
 }
 
+// swiftlint:disable:next cyclomatic_complexity
 internal func prepareDataRequest<U>(from request: Request<U>,
                                     cachePolicy: URLRequest.CachePolicy) throws -> URLRequest {
   guard let url = URL(string: request.URLString) else { throw Gnomon.Error.invalidURL(urlString: request.URLString) }
@@ -62,6 +63,8 @@ internal func prepareDataRequest<U>(from request: Request<U>,
     dataRequest.url = try prepareURL(from: request, params: params)
   case (false, .json), (false, .multipart):
     throw "can't encode \(request.method.rawValue) request params as JSON or multipart"
+  case (false, .data):
+    throw "can't add binary body to \(request.method.rawValue) request"
   case (true, let .urlEncoded(params)):
     let queryItems = prepare(value: params, with: nil)
     var components = URLComponents()
@@ -75,6 +78,10 @@ internal func prepareDataRequest<U>(from request: Request<U>,
     dataRequest.url = try prepareURL(from: request, params: nil)
   case (true, let .multipart(form, files)):
     let (data, contentType) = try prepareMultipartData(with: form, files)
+    dataRequest.httpBody = data
+    dataRequest.setValue(contentType, forHTTPHeaderField: "Content-Type")
+    dataRequest.url = try prepareURL(from: request, params: nil)
+  case (true, let .data(data, contentType)):
     dataRequest.httpBody = data
     dataRequest.setValue(contentType, forHTTPHeaderField: "Content-Type")
     dataRequest.url = try prepareURL(from: request, params: nil)

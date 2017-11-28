@@ -26,6 +26,7 @@ public enum RequestParams {
   case urlEncoded([String: Any])
   case json([String: Any])
   case multipart([String: String], [String: MultipartFile])
+  case data(Data, contentType: String)
 
 }
 
