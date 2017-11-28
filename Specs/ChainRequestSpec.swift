@@ -29,7 +29,7 @@ class ChainRequestSpec: XCTestCase {
       request = try RequestBuilder()
         .setURLString("\(Params.API.baseURL)/get?key=123")
         .setMethod(.GET).setXPath("args").build()
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }

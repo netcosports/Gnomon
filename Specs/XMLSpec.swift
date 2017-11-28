@@ -30,7 +30,7 @@ class XMLSpec: XCTestCase {
       guard let result = response?.result else { throw "can't extract response" }
 
       expect(result.model.title).to(equal("Sample Slide Show"))
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -47,7 +47,7 @@ class XMLSpec: XCTestCase {
 
       expect(result.models[0].title).to(equal("Wake up to WonderWidgets!"))
       expect(result.models[1].title).to(equal("Overview"))
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }

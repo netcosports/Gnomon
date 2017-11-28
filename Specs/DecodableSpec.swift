@@ -124,7 +124,7 @@ class DecodableSpec: XCTestCase {
 
       expect(team.players[1].firstName) == "Petya"
       expect(team.players[1].lastName) == "Ronaldo"
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -147,7 +147,7 @@ class DecodableSpec: XCTestCase {
       let player = result.model
       expect(player.firstName) == "Vasya"
       expect(player.lastName) == "Pupkin"
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -173,7 +173,7 @@ class DecodableSpec: XCTestCase {
 
       expect(players[1].firstName) == "Petya"
       expect(players[1].lastName) == "Ronaldo"
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -204,7 +204,7 @@ class DecodableSpec: XCTestCase {
       expect(players[1]?.lastName) == "Ronaldo"
 
       expect(players[2]).to(beNil())
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -237,7 +237,7 @@ class DecodableSpec: XCTestCase {
       components.timeZone = TimeZone(identifier: "Europe/Paris")
 
       expect(match.date) == Calendar.current.date(from: components)
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }

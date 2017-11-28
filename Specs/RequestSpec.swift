@@ -69,7 +69,7 @@ class RequestSpec: XCTestCase {
 
       expect(result.model).notTo(beNil())
       expect(result.model?.key).to(equal(123))
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -90,7 +90,7 @@ class RequestSpec: XCTestCase {
       expect(result.models[0]?.key).to(equal(123))
       expect(result.models[1]?.key).to(equal(234))
       expect(result.models[2]?.key).to(equal(345))
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -108,7 +108,7 @@ class RequestSpec: XCTestCase {
       expect(result.model.key1).to(equal(123))
       expect(result.model.key2).to(equal(234))
       expect(result.model.keys).to(equal([345, 456]))
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -130,7 +130,7 @@ class RequestSpec: XCTestCase {
 
       expect(result.model.key1).to(equal(123))
       expect(result.model.key2).to(equal(234))
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -152,7 +152,7 @@ class RequestSpec: XCTestCase {
       }
 
       expect(result.model.key).to(equal(123))
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -174,7 +174,7 @@ class RequestSpec: XCTestCase {
 
       expect(result.model.key1).to(equal(123))
       expect(result.model.key2).to(equal(234))
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -235,8 +235,8 @@ class RequestSpec: XCTestCase {
       }
 
       expect(result.models).to(haveCount(1))
-      expect(result.models.first?.key).to(equal(123))
-    } catch let error {
+      expect(result.models[0].key) == 123
+    } catch {
       fail("\(error)")
       return
     }
@@ -258,8 +258,8 @@ class RequestSpec: XCTestCase {
       }
 
       expect(result.models).to(haveCount(1))
-      expect(result.models.first??.key).to(equal(123))
-    } catch let error {
+      expect(result.models[0]?.key) == 123
+    } catch {
       fail("\(error)")
       return
     }

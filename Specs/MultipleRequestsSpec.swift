@@ -33,7 +33,7 @@ class MultipleRequestsSpec: XCTestCase {
           .setURLString("\(Params.API.baseURL)/get?key=\($0)")
           .setMethod(.GET).setXPath("args").build()
       }
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -71,7 +71,7 @@ class MultipleRequestsSpec: XCTestCase {
       requests.append(try RequestBuilder()
         .setURLString("\(Params.API.baseURL)/get?failKey=123")
         .setMethod(.GET).setXPath("args").build())
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -113,7 +113,7 @@ class MultipleRequestsSpec: XCTestCase {
           .setURLString("\(Params.API.baseURL)/delay/0.1?key=345")
           .setMethod(.GET).setXPath("args").build()
       ]
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -154,7 +154,7 @@ class MultipleRequestsSpec: XCTestCase {
           .setURLString("\(Params.API.baseURL)/delay/0.1?key=345")
           .setMethod(.GET).setXPath("args").build()
       ]
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -187,7 +187,7 @@ class MultipleRequestsSpec: XCTestCase {
           .setURLString("\(Params.API.baseURL)/delay/0.1?key=345")
           .setMethod(.GET).setXPath("args").build()
       ]
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -224,7 +224,7 @@ class MultipleRequestsSpec: XCTestCase {
       request2 = try RequestBuilder()
         .setURLString("\(Params.API.baseURL)/get?otherKey=2")
         .setMethod(.GET).setXPath("args").build()
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -261,7 +261,7 @@ class MultipleRequestsSpec: XCTestCase {
       request2 = try RequestBuilder()
         .setURLString("\(Params.API.baseURL)/get?failKey=2")
         .setMethod(.GET).setXPath("args").build()
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }

@@ -34,7 +34,7 @@ class CertificateSpec: XCTestCase {
       guard let result = response?.result else { throw "can't extract response" }
 
       expect(result.model.count).to(beGreaterThan(0))
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }

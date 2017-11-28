@@ -29,7 +29,7 @@ class CacheSpec: XCTestCase {
       request = try RequestBuilder<SingleOptionalResult<TestModel1>>()
         .setURLString("\(Params.API.baseURL)/get?key=123").setMethod(.GET)
         .setXPath("args").build()
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -59,7 +59,7 @@ class CacheSpec: XCTestCase {
       request = try RequestBuilder<SingleOptionalResult<TestModel1>>()
         .setURLString("\(Params.API.baseURL)/get?key=123").setMethod(.GET)
         .setXPath("args").build()
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -92,7 +92,7 @@ class CacheSpec: XCTestCase {
       request = try RequestBuilder<SingleOptionalResult<TestModel1>>()
         .setURLString("\(Params.API.baseURL)/get?key=123").setMethod(.GET).setDisableCache(true)
         .setXPath("args").build()
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -125,7 +125,7 @@ class CacheSpec: XCTestCase {
       request = try RequestBuilder<SingleOptionalResult<TestModel1>>()
         .setURLString("\(Params.API.baseURL)/get?key=123").setMethod(.GET).setDisableLocalCache(true)
         .setXPath("args").build()
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -158,7 +158,7 @@ class CacheSpec: XCTestCase {
       request = try RequestBuilder<SingleOptionalResult<TestModel1>>()
         .setURLString("\(Params.API.baseURL)/get?key=123").setMethod(.GET).setDisableHttpCache(true)
         .setXPath("args").build()
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -194,7 +194,7 @@ class CacheSpec: XCTestCase {
           .setURLString("\(Params.API.baseURL)/get?key=\($0)")
           .setMethod(.GET).setXPath("args").build()
       }
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -232,7 +232,7 @@ class CacheSpec: XCTestCase {
           .setURLString("\(Params.API.baseURL)/get?key=\($0)")
           .setMethod(.GET).setXPath("args").build()
       }
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -272,7 +272,7 @@ class CacheSpec: XCTestCase {
           .setURLString("\(Params.API.baseURL)/get?key=\($0)").setDisableCache(true)
           .setMethod(.GET).setXPath("args").build()
       }
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -312,7 +312,7 @@ class CacheSpec: XCTestCase {
           .setURLString("\(Params.API.baseURL)/get?key=\($0)").setDisableLocalCache(true)
           .setMethod(.GET).setXPath("args").build()
       }
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
@@ -352,7 +352,7 @@ class CacheSpec: XCTestCase {
           .setURLString("\(Params.API.baseURL)/get?key=\($0)").setDisableHttpCache(true)
           .setMethod(.GET).setXPath("args").build()
       }
-    } catch let error {
+    } catch {
       fail("\(error)")
       return
     }
