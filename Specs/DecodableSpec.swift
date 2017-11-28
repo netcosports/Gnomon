@@ -28,6 +28,21 @@ struct TeamModel: DecodableModel {
 
 }
 
+struct MatchModel: DecodableModel {
+
+  static let decoder: JSONDecoder = {
+    let decoder = JSONDecoder()
+    decoder.dateDecodingStrategy = .secondsSince1970
+    return decoder
+  }()
+
+  let homeTeam: TeamModel
+  let awayTeam: TeamModel
+
+  let date: Date
+
+}
+
 class DecodableSpec: XCTestCase {
 
   let data: [String: Any] = [
@@ -72,6 +87,17 @@ class DecodableSpec: XCTestCase {
             "last_name": "Ronaldo"
           ]
         ]
+      ],
+      "match": [
+        "homeTeam": [
+          "name": "France",
+          "players": []
+        ],
+        "awayTeam": [
+          "name": "Belarus",
+          "players": [ ]
+        ],
+        "date": 1507654800
       ]
     ]
   ]
@@ -178,6 +204,39 @@ class DecodableSpec: XCTestCase {
       expect(players[1]?.lastName) == "Ronaldo"
 
       expect(players[2]).to(beNil())
+    } catch let error {
+      fail("\(error)")
+      return
+    }
+  }
+
+  func testMatchWithCustomizedDecoder() {
+    do {
+      let request = try RequestBuilder<SingleResult<MatchModel>>().setURLString("\(Params.API.baseURL)/post")
+        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/match").build()
+
+      let response = try Gnomon.models(for: request).toBlocking().first()
+
+      expect(response).notTo(beNil())
+
+      guard let result = response?.result else {
+        fail("can't extract response")
+        return
+      }
+
+      let match = result.model
+      expect(match.homeTeam.name) == "France"
+      expect(match.awayTeam.name) == "Belarus"
+
+      var components = DateComponents()
+      components.year = 2017
+      components.month = 10
+      components.day = 10
+      components.hour = 19
+      components.minute = 0
+      components.timeZone = TimeZone(identifier: "Europe/Paris")
+
+      expect(match.date) == Calendar.current.date(from: components)
     } catch let error {
       fail("\(error)")
       return

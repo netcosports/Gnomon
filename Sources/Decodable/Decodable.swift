@@ -109,26 +109,35 @@ private struct _MultipleOptional<T: Decodable & BaseModel>: Decodable {
 }
 
 public protocol DecodableModel: BaseModel, Decodable {
+
+  static var decoder: JSONDecoder { get }
+
+}
+
+public extension DecodableModel {
+
+  static var decoder: JSONDecoder { return JSONDecoder() }
+
 }
 
 public extension DecodableModel {
 
   static func model(with data: Data, atPath path: String?) throws -> Self {
-    let decoder = JSONDecoder()
+    let decoder = Self.decoder
     decoder.userInfo[.xpath] = path
     let container = try decoder.decode(_Single<Self>.self, from: data)
     return container.model
   }
 
   static func models(with data: Data, atPath path: String?) throws -> [Self] {
-    let decoder = JSONDecoder()
+    let decoder = Self.decoder
     decoder.userInfo[.xpath] = path
     let container = try decoder.decode(_Multiple<Self>.self, from: data)
     return container.models
   }
 
   static func optionalModels(with data: Data, atPath path: String?) throws -> [Self?] {
-    let decoder = JSONDecoder()
+    let decoder = Self.decoder
     decoder.userInfo[.xpath] = path
     let container = try decoder.decode(_MultipleOptional<Self>.self, from: data)
     return container.models

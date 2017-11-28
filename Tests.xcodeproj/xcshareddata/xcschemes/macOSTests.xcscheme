@@ -26,6 +26,7 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      language = ""
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
          <TestableReference
@@ -46,6 +47,7 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      language = ""
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
@@ -55,7 +57,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B56E8B981F1661A200D5F227"
+            BlueprintIdentifier = "B5D49AF61F16981800FD2889"
             BuildableName = "macOSTests.xctest"
             BlueprintName = "macOSTests"
             ReferencedContainer = "container:Tests.xcodeproj">
@@ -73,7 +75,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B56E8B981F1661A200D5F227"
+            BlueprintIdentifier = "B5D49AF61F16981800FD2889"
             BuildableName = "macOSTests.xctest"
             BlueprintName = "macOSTests"
             ReferencedContainer = "container:Tests.xcodeproj">
