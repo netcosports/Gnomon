@@ -88,6 +88,21 @@ class DecodableSpec: XCTestCase {
           ]
         ]
       ],
+      "teams": [
+        [
+          "name": "France",
+          "players": [
+            [
+              "first_name": "Vasya",
+              "last_name": "Pupkin"
+            ],
+            [
+              "first_name": "Petya",
+              "last_name": "Ronaldo"
+            ]
+          ]
+        ]
+      ],
       "match": [
         "homeTeam": [
           "name": "France",
@@ -205,6 +220,50 @@ class DecodableSpec: XCTestCase {
 //      return
 //    }
 //  }
+
+  func testXPathWithArrayIndex() {
+    do {
+      let request = try RequestBuilder<SingleResult<PlayerModel>>().setURLString("\(Params.API.baseURL)/post")
+        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/teams[0]/players[0]").build()
+
+      let response = try Gnomon.models(for: request).toBlocking().first()
+
+      expect(response).notTo(beNil())
+
+      guard let result = response?.result else {
+        fail("can't extract response")
+        return
+      }
+
+      let player = result.model
+      expect(player.firstName) == "Vasya"
+      expect(player.lastName) == "Pupkin"
+    } catch {
+      fail("\(error)")
+      return
+    }
+
+    do {
+      let request = try RequestBuilder<SingleResult<PlayerModel>>().setURLString("\(Params.API.baseURL)/post")
+        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/teams[0]/players[1]").build()
+
+      let response = try Gnomon.models(for: request).toBlocking().first()
+
+      expect(response).notTo(beNil())
+
+      guard let result = response?.result else {
+        fail("can't extract response")
+        return
+      }
+
+      let player = result.model
+      expect(player.firstName) == "Petya"
+      expect(player.lastName) == "Ronaldo"
+    } catch {
+      fail("\(error)")
+      return
+    }
+  }
 
   func testMatchWithCustomizedDecoder() {
     do {

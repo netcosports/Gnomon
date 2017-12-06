@@ -9,56 +9,6 @@ extension CodingUserInfoKey {
 
 }
 
-private struct _XPathKey: CodingKey {
-
-  let components: [String]
-
-  init(key: String) {
-    self.init(with: key.components(separatedBy: "/"))
-  }
-
-  init(with components: [String]) {
-    self.components = components
-  }
-
-  var next: _XPathKey {
-    var components = self.components
-    _ = components.removeFirst()
-    return _XPathKey(with: components)
-  }
-
-  var stringValue: String {
-    return components[0]
-  }
-
-  init?(stringValue: String) {
-    self.init(key: stringValue)
-  }
-
-  var intValue: Int?
-  init?(intValue: Int) {
-    return nil
-  }
-
-}
-
-private extension Decoder {
-
-  func decoder(by xpath: String?) throws -> Decoder {
-    guard let xpath = xpath else { return self }
-
-    var container = try self.container(keyedBy: _XPathKey.self)
-    var key = _XPathKey(key: xpath)
-    while key.components.count > 1 {
-      container = try container.nestedContainer(keyedBy: _XPathKey.self, forKey: key)
-      key = key.next
-    }
-
-    return try container.superDecoder(forKey: key)
-  }
-
-}
-
 private struct _Single<T: Decodable & BaseModel>: Decodable {
 
   let model: T
