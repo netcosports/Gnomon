@@ -54,8 +54,7 @@ class MultipartSpec: XCTestCase {
       expect(response).toNot(beNil())
 
       guard let result = response?.result else {
-        fail("can't extract response")
-        return
+        throw "can't extract response"
       }
 
       expect(result.model.files).to(beEmpty())
@@ -82,8 +81,7 @@ class MultipartSpec: XCTestCase {
       expect(response).toNot(beNil())
 
       guard let result = response?.result else {
-        fail("can't extract response")
-        return
+        throw "can't extract response"
       }
 
       let files = [
@@ -113,8 +111,7 @@ class MultipartSpec: XCTestCase {
       expect(response).toNot(beNil())
 
       guard let result = response?.result else {
-        fail("can't extract response")
-        return
+        throw "can't extract response"
       }
 
       let files = [

@@ -24,363 +24,289 @@ class CacheSpec: XCTestCase {
   }
 
   func testSingleNoCachedValue() {
-    let request: Request<SingleOptionalResult<TestModel1>>
     do {
-      request = try RequestBuilder<SingleOptionalResult<TestModel1>>()
+      let request = try RequestBuilder<SingleOptionalResult<TestModel1>>()
         .setURLString("\(Params.API.baseURL)/get?key=123").setMethod(.GET)
         .setXPath("args").build()
+
+      let sequence = Gnomon.cachedModels(for: request).toBlocking().materialize()
+
+      switch sequence {
+      case let .completed(elements):
+        expect(elements).to(haveCount(1))
+
+        expect(elements[0].result.model).to(beNil())
+        expect(elements[0].responseType) == .localCache
+      case let .failed(_, error):
+        throw error
+      }
     } catch {
       fail("\(error)")
       return
     }
-
-    let response: Response<SingleOptionalResult<TestModel1>>?
-    do {
-      response = try Gnomon.cachedModels(for: request).toBlocking().first()
-    } catch {
-      fail("\(error)")
-      return
-    }
-
-    expect(response).notTo(beNil())
-
-    guard let result = response?.result else {
-      fail("can't extract response")
-      return
-    }
-
-    expect(result.model).to(beNil())
-    expect(response?.responseType) == ResponseType.localCache
   }
 
   func testSingleCachedValueStored() {
-    let request: Request<SingleOptionalResult<TestModel1>>
     do {
-      request = try RequestBuilder<SingleOptionalResult<TestModel1>>()
+      let request = try RequestBuilder<SingleOptionalResult<TestModel1>>()
         .setURLString("\(Params.API.baseURL)/get?key=123").setMethod(.GET)
         .setXPath("args").build()
+
+      let sequence = Gnomon.models(for: request)
+        .flatMapLatest { _ -> Observable<Response<SingleOptionalResult<TestModel1>>> in
+          return Gnomon.cachedModels(for: request)
+        }.toBlocking().materialize()
+
+      switch sequence {
+      case let .completed(elements):
+        expect(elements).to(haveCount(1))
+
+        expect(elements[0].result.model?.key) == 123
+        expect(elements[0].responseType) == .localCache
+      case let .failed(_, error):
+        throw error
+      }
     } catch {
       fail("\(error)")
       return
     }
-
-    let response: Response<SingleOptionalResult<TestModel1>>?
-    do {
-      response = try Gnomon.models(for: request).flatMapLatest { _ ->
-        Observable<Response<SingleOptionalResult<TestModel1>>> in
-        return Gnomon.cachedModels(for: request)
-      }.toBlocking().first()
-    } catch {
-      fail("\(error)")
-      return
-    }
-
-    expect(response).notTo(beNil())
-
-    guard let result = response?.result else {
-      fail("can't extract response")
-      return
-    }
-
-    expect(result.model?.key) == 123
-    expect(response?.responseType) == ResponseType.localCache
   }
 
   func testSingleCachedValueStoredIgnoreCacheEnabled() {
-    let request: Request<SingleOptionalResult<TestModel1>>
     do {
-      request = try RequestBuilder<SingleOptionalResult<TestModel1>>()
+      let request = try RequestBuilder<SingleOptionalResult<TestModel1>>()
         .setURLString("\(Params.API.baseURL)/get?key=123").setMethod(.GET).setDisableCache(true)
         .setXPath("args").build()
+
+      let sequence = Gnomon.models(for: request)
+        .flatMapLatest { _ -> Observable<Response<SingleOptionalResult<TestModel1>>> in
+          return Gnomon.cachedModels(for: request)
+        }.toBlocking().materialize()
+
+      switch sequence {
+      case let .completed(elements):
+        expect(elements).to(haveCount(1))
+
+        expect(elements[0].result.model).to(beNil())
+        expect(elements[0].responseType) == .localCache
+      case let .failed(_, error):
+        throw error
+      }
     } catch {
       fail("\(error)")
       return
     }
-
-    let response: Response<SingleOptionalResult<TestModel1>>?
-    do {
-      response = try Gnomon.models(for: request).flatMapLatest { _ ->
-        Observable<Response<SingleOptionalResult<TestModel1>>> in
-        return Gnomon.cachedModels(for: request)
-      }.toBlocking().first()
-    } catch {
-      fail("\(error)")
-      return
-    }
-
-    expect(response).notTo(beNil())
-
-    guard let result = response?.result else {
-      fail("can't extract response")
-      return
-    }
-
-    expect(result.model?.key).to(beNil())
-    expect(response?.responseType) == ResponseType.localCache
   }
 
   func testSingleCachedValueStoredIgnoreLocalCacheEnabled() {
-    let request: Request<SingleOptionalResult<TestModel1>>
     do {
-      request = try RequestBuilder<SingleOptionalResult<TestModel1>>()
+      let request = try RequestBuilder<SingleOptionalResult<TestModel1>>()
         .setURLString("\(Params.API.baseURL)/get?key=123").setMethod(.GET).setDisableLocalCache(true)
         .setXPath("args").build()
+
+      let sequence = Gnomon.models(for: request)
+        .flatMapLatest { _ -> Observable<Response<SingleOptionalResult<TestModel1>>> in
+          return Gnomon.cachedModels(for: request)
+        }.toBlocking().materialize()
+
+      switch sequence {
+      case let .completed(elements):
+        expect(elements).to(haveCount(1))
+
+        expect(elements[0].result.model).to(beNil())
+        expect(elements[0].responseType) == .localCache
+      case let .failed(_, error):
+        throw error
+      }
     } catch {
       fail("\(error)")
       return
     }
-
-    let response: Response<SingleOptionalResult<TestModel1>>?
-    do {
-      response = try Gnomon.models(for: request).flatMapLatest { _ ->
-        Observable<Response<SingleOptionalResult<TestModel1>>> in
-        return Gnomon.cachedModels(for: request)
-      }.toBlocking().first()
-    } catch {
-      fail("\(error)")
-      return
-    }
-
-    expect(response).notTo(beNil())
-
-    guard let result = response?.result else {
-      fail("can't extract response")
-      return
-    }
-
-    expect(result.model?.key).to(beNil())
-    expect(response?.responseType) == ResponseType.localCache
   }
 
   func testSingleCachedValueStoredIgnoreHttpCacheEnabled() {
-    let request: Request<SingleOptionalResult<TestModel1>>
     do {
-      request = try RequestBuilder<SingleOptionalResult<TestModel1>>()
+      let request = try RequestBuilder<SingleOptionalResult<TestModel1>>()
         .setURLString("\(Params.API.baseURL)/get?key=123").setMethod(.GET).setDisableHttpCache(true)
         .setXPath("args").build()
+
+      let sequence = Gnomon.models(for: request)
+        .flatMapLatest { _ -> Observable<Response<SingleOptionalResult<TestModel1>>> in
+          return Gnomon.cachedModels(for: request)
+        }.toBlocking().materialize()
+
+      switch sequence {
+      case let .completed(elements):
+        expect(elements).to(haveCount(1))
+
+        expect(elements[0].result.model?.key) == 123
+        expect(elements[0].responseType) == .localCache
+      case let .failed(_, error):
+        throw error
+      }
     } catch {
       fail("\(error)")
       return
     }
-
-    let response: Response<SingleOptionalResult<TestModel1>>?
-    do {
-      response = try Gnomon.models(for: request).flatMapLatest { _ ->
-        Observable<Response<SingleOptionalResult<TestModel1>>> in
-        return Gnomon.cachedModels(for: request)
-      }.toBlocking().first()
-    } catch {
-      fail("\(error)")
-      return
-    }
-
-    expect(response).notTo(beNil())
-
-    guard let result = response?.result else {
-      fail("can't extract response")
-      return
-    }
-
-    expect(result.model?.key) == 123
-    expect(response?.responseType) == ResponseType.localCache
   }
 
   func testMultipleNoCachedValue() {
-    let requests: [Request<SingleOptionalResult<TestModel1>>]
-
     do {
-      requests = try (0 ... 2).map { 123 + 111 * $0 }.map {
-        return try RequestBuilder()
+      let requests = try (0 ... 2).map { 123 + 111 * $0 }.map {
+        return try RequestBuilder<SingleOptionalResult<TestModel1>>()
           .setURLString("\(Params.API.baseURL)/get?key=\($0)")
           .setMethod(.GET).setXPath("args").build()
+      }
+
+      let sequence = Gnomon.cachedModels(for: requests).toBlocking().materialize()
+
+      switch sequence {
+      case let .completed(elements):
+        expect(elements).to(haveCount(1))
+
+        let responses = elements[0]
+        expect(responses).to(haveCount(3))
+        for response in responses {
+          expect(response.result.model).to(beNil())
+          expect(response.responseType) == .localCache
+        }
+      case let .failed(_, error):
+        throw error
       }
     } catch {
       fail("\(error)")
       return
     }
-
-    let responsesOptional: [Response<SingleOptionalResult<TestModel1>>]?
-    do {
-      responsesOptional = try Gnomon.cachedModels(for: requests).toBlocking().first()
-    } catch {
-      fail("\(error)")
-      return
-    }
-
-    expect(responsesOptional).notTo(beNil())
-
-    guard let responses = responsesOptional else {
-      fail("can't extract response")
-      return
-    }
-
-    expect(responses).to(haveCount(3))
-    expect(responses[0].result.model).to(beNil())
-    expect(responses[0].responseType) == ResponseType.localCache
-    expect(responses[1].result.model).to(beNil())
-    expect(responses[1].responseType) == ResponseType.localCache
-    expect(responses[2].result.model).to(beNil())
-    expect(responses[2].responseType) == ResponseType.localCache
   }
 
   func testMultipleCachedValueStored() {
-    let requests: [Request<SingleOptionalResult<TestModel1>>]
-
     do {
-      requests = try (0 ... 2).map { 123 + 111 * $0 }.map {
-        return try RequestBuilder()
+      let requests = try (0 ... 2).map { 123 + 111 * $0 }.map {
+        return try RequestBuilder<SingleOptionalResult<TestModel1>>()
           .setURLString("\(Params.API.baseURL)/get?key=\($0)")
           .setMethod(.GET).setXPath("args").build()
       }
-    } catch {
-      fail("\(error)")
-      return
-    }
-
-    let responsesOptional: [Response<SingleOptionalResult<TestModel1>>]?
-    do {
-      responsesOptional = try Gnomon.models(for: Array(requests.dropLast())).flatMapLatest { _ in
+      let sequence = Gnomon.models(for: Array(requests.dropLast())).flatMapLatest { _ in
         return Gnomon.cachedModels(for: requests)
-      }.toBlocking().first()
+      }.toBlocking().materialize()
+
+      switch sequence {
+      case let .completed(elements):
+        expect(elements).to(haveCount(1))
+
+        let responses = elements[0]
+
+        expect(responses).to(haveCount(3))
+        expect(responses[0].result.model?.key) == 123
+        expect(responses[0].responseType) == .localCache
+        expect(responses[1].result.model?.key) == 234
+        expect(responses[1].responseType) == .localCache
+        expect(responses[2].result.model).to(beNil())
+        expect(responses[2].responseType) == .localCache
+      case let .failed(_, error):
+        throw error
+      }
     } catch {
       fail("\(error)")
       return
     }
-
-    expect(responsesOptional).notTo(beNil())
-
-    guard let responses = responsesOptional else {
-      fail("can't extract response")
-      return
-    }
-
-    expect(responses).to(haveCount(3))
-    expect(responses[0].result.model?.key) == 123
-    expect(responses[0].responseType) == ResponseType.localCache
-    expect(responses[1].result.model?.key) == 234
-    expect(responses[1].responseType) == ResponseType.localCache
-    expect(responses[2].result.model).to(beNil())
-    expect(responses[2].responseType) == ResponseType.localCache
   }
 
   func testMultipleCachedValueStoredIgnoreCacheEnabled() {
-    let requests: [Request<SingleOptionalResult<TestModel1>>]
-
     do {
-      requests = try (0 ... 2).map { 123 + 111 * $0 }.map {
-        return try RequestBuilder()
+      let requests = try (0 ... 2).map { 123 + 111 * $0 }.map {
+        return try RequestBuilder<SingleOptionalResult<TestModel1>>()
           .setURLString("\(Params.API.baseURL)/get?key=\($0)").setDisableCache(true)
           .setMethod(.GET).setXPath("args").build()
       }
-    } catch {
-      fail("\(error)")
-      return
-    }
 
-    let responsesOptional: [Response<SingleOptionalResult<TestModel1>>]?
-    do {
-      responsesOptional = try Gnomon.models(for: Array(requests.dropLast())).flatMapLatest { _ in
+      let sequence = Gnomon.models(for: Array(requests.dropLast())).flatMapLatest { _ in
         return Gnomon.cachedModels(for: requests)
-      }.toBlocking().first()
+      }.toBlocking().materialize()
+
+      switch sequence {
+      case let .completed(elements):
+        expect(elements).to(haveCount(1))
+
+        let responses = elements[0]
+        expect(responses).to(haveCount(3))
+        for response in responses {
+          expect(response.result.model).to(beNil())
+          expect(response.responseType) == .localCache
+        }
+      case let .failed(_, error):
+        throw error
+      }
     } catch {
       fail("\(error)")
       return
     }
-
-    expect(responsesOptional).notTo(beNil())
-
-    guard let responses = responsesOptional else {
-      fail("can't extract response")
-      return
-    }
-
-    expect(responses).to(haveCount(3))
-    expect(responses[0].result.model?.key).to(beNil())
-    expect(responses[0].responseType) == ResponseType.localCache
-    expect(responses[1].result.model?.key).to(beNil())
-    expect(responses[1].responseType) == ResponseType.localCache
-    expect(responses[2].result.model).to(beNil())
-    expect(responses[2].responseType) == ResponseType.localCache
   }
 
   func testMultipleCachedValueStoredIgnoreLocalCacheEnabled() {
-    let requests: [Request<SingleOptionalResult<TestModel1>>]
 
     do {
-      requests = try (0 ... 2).map { 123 + 111 * $0 }.map {
-        return try RequestBuilder()
+      let requests = try (0 ... 2).map { 123 + 111 * $0 }.map {
+        return try RequestBuilder<SingleOptionalResult<TestModel1>>()
           .setURLString("\(Params.API.baseURL)/get?key=\($0)").setDisableLocalCache(true)
           .setMethod(.GET).setXPath("args").build()
       }
-    } catch {
-      fail("\(error)")
-      return
-    }
 
-    let responsesOptional: [Response<SingleOptionalResult<TestModel1>>]?
-    do {
-      responsesOptional = try Gnomon.models(for: Array(requests.dropLast())).flatMapLatest { _ in
+      let sequence = Gnomon.models(for: Array(requests.dropLast())).flatMapLatest { _ in
         return Gnomon.cachedModels(for: requests)
-      }.toBlocking().first()
-    } catch {
-      fail("\(error)")
-      return
-    }
+      }.toBlocking().materialize()
 
-    expect(responsesOptional).notTo(beNil())
+      switch sequence {
+      case let .completed(elements):
+        expect(elements).to(haveCount(1))
 
-    guard let responses = responsesOptional else {
-      fail("can't extract response")
-      return
-    }
-
-    expect(responses).to(haveCount(3))
-    expect(responses[0].result.model?.key).to(beNil())
-    expect(responses[0].responseType) == ResponseType.localCache
-    expect(responses[1].result.model?.key).to(beNil())
-    expect(responses[1].responseType) == ResponseType.localCache
-    expect(responses[2].result.model).to(beNil())
-    expect(responses[2].responseType) == ResponseType.localCache
-  }
-
-  func testMultipleCachedValueStoredIgnoreHttpCacheEnabled() {
-    let requests: [Request<SingleOptionalResult<TestModel1>>]
-
-    do {
-      requests = try (0 ... 2).map { 123 + 111 * $0 }.map {
-        return try RequestBuilder()
-          .setURLString("\(Params.API.baseURL)/get?key=\($0)").setDisableHttpCache(true)
-          .setMethod(.GET).setXPath("args").build()
+        let responses = elements[0]
+        expect(responses).to(haveCount(3))
+        for response in responses {
+          expect(response.result.model).to(beNil())
+          expect(response.responseType) == .localCache
+        }
+      case let .failed(_, error):
+        throw error
       }
     } catch {
       fail("\(error)")
       return
     }
+  }
 
-    let responsesOptional: [Response<SingleOptionalResult<TestModel1>>]?
+  func testMultipleCachedValueStoredIgnoreHttpCacheEnabled() {
     do {
-      responsesOptional = try Gnomon.models(for: Array(requests.dropLast())).flatMapLatest { _ in
+      let requests = try (0 ... 2).map { 123 + 111 * $0 }.map {
+        return try RequestBuilder<SingleOptionalResult<TestModel1>>()
+          .setURLString("\(Params.API.baseURL)/get?key=\($0)").setDisableHttpCache(true)
+          .setMethod(.GET).setXPath("args").build()
+      }
+
+      let sequence = Gnomon.models(for: Array(requests.dropLast())).flatMapLatest { _ in
         return Gnomon.cachedModels(for: requests)
-      }.toBlocking().first()
+      }.toBlocking().materialize()
+
+      switch sequence {
+      case let .completed(elements):
+        expect(elements).to(haveCount(1))
+
+        let responses = elements[0]
+
+        expect(responses).to(haveCount(3))
+        expect(responses[0].result.model?.key) == 123
+        expect(responses[0].responseType) == ResponseType.localCache
+        expect(responses[1].result.model?.key) == 234
+        expect(responses[1].responseType) == ResponseType.localCache
+        expect(responses[2].result.model).to(beNil())
+        expect(responses[2].responseType) == .localCache
+      case let .failed(_, error):
+        throw error
+      }
     } catch {
       fail("\(error)")
       return
     }
-
-    expect(responsesOptional).notTo(beNil())
-
-    guard let responses = responsesOptional else {
-      fail("can't extract response")
-      return
-    }
-
-    expect(responses).to(haveCount(3))
-    expect(responses[0].result.model?.key) == 123
-    expect(responses[0].responseType) == ResponseType.localCache
-    expect(responses[1].result.model?.key) == 234
-    expect(responses[1].responseType) == ResponseType.localCache
-    expect(responses[2].result.model).to(beNil())
-    expect(responses[2].responseType) == ResponseType.localCache
   }
 
 }

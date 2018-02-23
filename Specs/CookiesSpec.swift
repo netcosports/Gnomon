@@ -37,18 +37,15 @@ class CookieSpec: XCTestCase {
   }
 
   func testShouldIgnoreIncomingCookiesByDefault() {
-    let request: Request<SingleResult<String>>
     do {
-      let builder = RequestBuilder<SingleResult<String>>()
-        .setURLString("\(Params.API.baseURL)/cookies/set?dont_send_me_cookie=true").setMethod(.GET)
-      request = try builder.build()
+      let request = try RequestBuilder<SingleResult<String>>()
+        .setURLString("\(Params.API.baseURL)/cookies/set?dont_send_me_cookie=true").setMethod(.GET).build()
 
       let response = try Gnomon.models(for: request).toBlocking().first()
       expect(response).toNot(beNil())
 
       guard let result = response?.result else {
-        fail("can't extract response")
-        return
+        throw "can't extract response"
       }
 
       expect(result.model.count).to(beGreaterThan(0))
@@ -86,16 +83,14 @@ class CookieSpec: XCTestCase {
 
       }
 
-      let builder = RequestBuilder<SingleResult<CookiesModel>>()
-        .setURLString(urlString).setMethod(.GET)
-      let request = try builder.build()
+      let request = try RequestBuilder<SingleResult<CookiesModel>>()
+        .setURLString(urlString).setMethod(.GET).build()
 
       let response = try Gnomon.models(for: request).toBlocking().first()
       expect(response).toNot(beNil())
 
       guard let result = response?.result else {
-        fail("can't extract response")
-        return
+        throw "can't extract response"
       }
 
       expect(result.model.cookies).to(beEmpty())
@@ -106,19 +101,16 @@ class CookieSpec: XCTestCase {
   }
 
   func testShouldHandleIncomingCookiesIfRequested() {
-    let request: Request<SingleResult<String>>
     do {
-      let builder = RequestBuilder<SingleResult<String>>()
+      let request = try RequestBuilder<SingleResult<String>>()
         .setURLString("\(Params.API.baseURL)/cookies/set?dont_send_me_cookie=true").setMethod(.GET)
-        .setShouldHandleCookies(true)
-      request = try builder.build()
+        .setShouldHandleCookies(true).build()
 
       let response = try Gnomon.models(for: request).toBlocking().first()
       expect(response).toNot(beNil())
 
       guard let result = response?.result else {
-        fail("can't extract response")
-        return
+        throw "can't extract response"
       }
 
       expect(result.model.count).to(beGreaterThan(0))
@@ -161,16 +153,14 @@ class CookieSpec: XCTestCase {
 
       }
 
-      let builder = RequestBuilder<SingleResult<CookiesModel>>()
-        .setURLString(urlString).setMethod(.GET).setShouldHandleCookies(true)
-      let request = try builder.build()
+      let request = try RequestBuilder<SingleResult<CookiesModel>>()
+        .setURLString(urlString).setMethod(.GET).setShouldHandleCookies(true).build()
 
       let response = try Gnomon.models(for: request).toBlocking().first()
       expect(response).toNot(beNil())
 
       guard let result = response?.result else {
-        fail("can't extract response")
-        return
+        throw "can't extract response"
       }
 
       expect(result.model.cookies).to(equal(["dont_send_me_cookie": "true"]))

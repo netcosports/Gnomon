@@ -23,41 +23,32 @@ class ChainRequestSpec: XCTestCase {
   }
 
   func testChainRequest() {
-    let request: Request<SingleResult<TestModel1>>
-
     do {
-      request = try RequestBuilder()
+      let request = try RequestBuilder<SingleResult<TestModel1>>()
         .setURLString("\(Params.API.baseURL)/get?key=123")
         .setMethod(.GET).setXPath("args").build()
+
+      let response = try Gnomon.models(for: request)
+        .flatMap { response -> Observable<Response<SingleResult<TestModel2>>> in
+          let otherKey = response.result.model.key + 1
+          let nextRequest = try RequestBuilder<SingleResult<TestModel2>>()
+            .setURLString("\(Params.API.baseURL)/get?otherKey=\(otherKey)")
+            .setMethod(.GET).setXPath("args").build()
+
+          return Gnomon.models(for: nextRequest)
+        }.toBlocking().first()
+
+      expect(response).toNot(beNil())
+
+      guard let result = response?.result else {
+        throw "can't extract response"
+      }
+
+      expect(result.model.otherKey).to(equal(124))
     } catch {
       fail("\(error)")
       return
     }
-
-    let response: Response<SingleResult<TestModel2>>?
-    do {
-      response = try Gnomon.models(for: request).flatMap { response ->
-        Observable<Response<SingleResult<TestModel2>>> in
-        let otherKey = response.result.model.key + 1
-        let nextRequest = try RequestBuilder<SingleResult<TestModel2>>()
-          .setURLString("\(Params.API.baseURL)/get?otherKey=\(otherKey)")
-          .setMethod(.GET).setXPath("args").build()
-
-        return Gnomon.models(for: nextRequest)
-      }.toBlocking().first()
-    } catch {
-      fail("\(error)")
-      return
-    }
-
-    expect(response).toNot(beNil())
-
-    guard let result = response?.result else {
-      fail("can't extract response")
-      return
-    }
-
-    expect(result.model.otherKey).to(equal(124))
   }
 
 }

@@ -28,8 +28,8 @@ public class Gnomon {
         return try parse(data: data, responseType: type, for: request)
           .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
       }
-    } catch let e {
-      return .error(e)
+    } catch {
+      return .error(error)
     }
   }
 
@@ -51,8 +51,8 @@ public class Gnomon {
         return try parse(data: data, responseType: .localCache, for: request)
           .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
         }.catchErrorJustReturn(Response.empty(with: .localCache))
-    } catch let e {
-      return .error(e)
+    } catch {
+      return .error(error)
     }
   }
 
@@ -133,8 +133,8 @@ public class Gnomon {
       let result: U
       do {
         result = try processedResult(from: data, for: request)
-      } catch let e {
-        subscriber.onError(e)
+      } catch {
+        subscriber.onError(error)
         return Disposables.create()
       }
 

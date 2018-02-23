@@ -112,8 +112,7 @@ class DecodableSpec: XCTestCase {
       expect(response).notTo(beNil())
 
       guard let result = response?.result else {
-        fail("can't extract response")
-        return
+        throw "can't extract response"
       }
 
       let team = result.model
@@ -140,8 +139,7 @@ class DecodableSpec: XCTestCase {
       expect(response).notTo(beNil())
 
       guard let result = response?.result else {
-        fail("can't extract response")
-        return
+        throw "can't extract response"
       }
 
       let player = result.model
@@ -163,8 +161,7 @@ class DecodableSpec: XCTestCase {
       expect(response).notTo(beNil())
 
       guard let result = response?.result else {
-        fail("can't extract response")
-        return
+        throw "can't extract response"
       }
 
       let players = result.models
@@ -179,36 +176,35 @@ class DecodableSpec: XCTestCase {
     }
   }
 
-  func testOptionalPlayers() {
-    do {
-      let request = try RequestBuilder<MultipleOptionalResults<PlayerModel>>()
-        .setURLString("\(Params.API.baseURL)/post").setMethod(.POST).setParams(.json(data))
-        .setXPath("json/data/players?").build()
-
-      let response = try Gnomon.models(for: request).toBlocking().first()
-
-      expect(response).notTo(beNil())
-
-      guard let result = response?.result else {
-        fail("can't extract response")
-        return
-      }
-
-      let players = result.models
-      expect(players.count) == 3
-
-      expect(players[0]?.firstName) == "Vasya"
-      expect(players[0]?.lastName) == "Pupkin"
-
-      expect(players[1]?.firstName) == "Petya"
-      expect(players[1]?.lastName) == "Ronaldo"
-
-      expect(players[2]).to(beNil())
-    } catch {
-      fail("\(error)")
-      return
-    }
-  }
+//  func testOptionalPlayers() {
+//    do {
+//      let request = try RequestBuilder<MultipleResults<PlayerModel>>()
+//        .setURLString("\(Params.API.baseURL)/post").setMethod(.POST).setParams(.json(data))
+//        .setXPath("json/data/players?").build()
+//
+//      let response = try Gnomon.models(for: request).toBlocking().first()
+//
+//      expect(response).notTo(beNil())
+//
+//      guard let result = response?.result else {
+//        throw "can't extract response"
+//      }
+//
+//      let players = result.models
+//      expect(players.count) == 3
+//
+//      expect(players[0].firstName) == "Vasya"
+//      expect(players[0].lastName) == "Pupkin"
+//
+//      expect(players[1].firstName) == "Petya"
+//      expect(players[1].lastName) == "Ronaldo"
+//
+//      expect(players[2]).to(beNil())
+//    } catch {
+//      fail("\(error)")
+//      return
+//    }
+//  }
 
   func testMatchWithCustomizedDecoder() {
     do {
@@ -220,8 +216,7 @@ class DecodableSpec: XCTestCase {
       expect(response).notTo(beNil())
 
       guard let result = response?.result else {
-        fail("can't extract response")
-        return
+        throw "can't extract response"
       }
 
       let match = result.model

@@ -24,143 +24,129 @@ class MultipleRequestsSpec: XCTestCase {
     URLCache.shared.removeAllCachedResponses()
   }
 
-  func testMultipleEqual() {
-    let requests: [Request<SingleResult<TestModel1>>]
-
+  func testMultipleSameType() {
     do {
-      requests = try (0 ... 2).map { 123 + 111 * $0 }.map {
-        return try RequestBuilder()
+      let requests = try (0 ... 2).map { 123 + 111 * $0 }.map {
+        return try RequestBuilder<SingleResult<TestModel1>>()
           .setURLString("\(Params.API.baseURL)/get?key=\($0)")
           .setMethod(.GET).setXPath("args").build()
       }
+
+      guard let responses = try Gnomon.models(for: requests).toBlocking().first() else {
+        throw "can't extract responses"
+      }
+
+      expect(responses).to(haveCount(3))
+
+      expect(responses[0]).notTo(beNil())
+      expect(responses[0].result.model.key) == 123
+
+      expect(responses[1]).notTo(beNil())
+      expect(responses[1].result.model.key) == 234
+
+      expect(responses[2]).notTo(beNil())
+      expect(responses[2].result.model.key) == 345
     } catch {
       fail("\(error)")
       return
     }
-
-    let responses: [Response<SingleResult<TestModel1>>]?
-    do {
-      responses = try Gnomon.models(for: requests).toBlocking().first()
-    } catch {
-      fail("\(error)")
-      return
-    }
-
-    expect(responses).toNot(beNil())
-
-    guard let results = responses?.map({ $0.result }) else {
-      fail("can't extract responses")
-      return
-    }
-
-    expect(results).to(haveCount(3))
-    expect(results[0].model.key).to(equal(123))
-    expect(results[1].model.key).to(equal(234))
-    expect(results[2].model.key).to(equal(345))
   }
 
-  func testMultipleOptionalEqual() {
-    var requests: [Request<SingleOptionalResult<TestModel1>>]
-
+  func testMultipleOptionalSameType() {
     do {
-      requests = try (0 ... 2).map { 123 + 111 * $0 }.map {
-        return try RequestBuilder()
+      var requests = try (0 ... 2).map { 123 + 111 * $0 }.map {
+        return try RequestBuilder<SingleOptionalResult<TestModel1>>()
           .setURLString("\(Params.API.baseURL)/get?key=\($0)")
           .setMethod(.GET).setXPath("args").build()
       }
       requests.append(try RequestBuilder()
         .setURLString("\(Params.API.baseURL)/get?failKey=123")
         .setMethod(.GET).setXPath("args").build())
+
+      guard let responses = try Gnomon.models(for: requests).toBlocking().first() else {
+        throw "can't extract responses"
+      }
+
+      expect(responses).to(haveCount(4))
+      expect(responses[0]).notTo(beNil())
+      expect(responses[0].result.model?.key).to(equal(123))
+
+      expect(responses[1]).notTo(beNil())
+      expect(responses[1].result.model?.key).to(equal(234))
+
+      expect(responses[2]).notTo(beNil())
+      expect(responses[2].result.model?.key).to(equal(345))
+
+      expect(responses[3]).notTo(beNil())
+      expect(responses[3].result.model).to(beNil())
     } catch {
       fail("\(error)")
       return
     }
 
-    let responses: [Response<SingleOptionalResult<TestModel1>>]?
-    do {
-      responses = try Gnomon.models(for: requests).toBlocking().first()
-    } catch {
-      fail("\(error)")
-      return
-    }
-
-    expect(responses).toNot(beNil())
-
-    guard let results = responses?.map({ $0.result }) else {
-      fail("can't extract responses")
-      return
-    }
-
-    expect(results).to(haveCount(4))
-    expect(results[0].model?.key).to(equal(123))
-    expect(results[1].model?.key).to(equal(234))
-    expect(results[2].model?.key).to(equal(345))
-    expect(results[3].model).to(beNil())
   }
 
   func testMultipleOrder() {
-    let requests: [Request<SingleOptionalResult<TestModel1>>]
-
     do {
-      requests = [
-        try RequestBuilder()
+      let requests = [
+        try RequestBuilder<SingleResult<TestModel1>>()
           .setURLString("\(Params.API.baseURL)/delay/0.3?key=123")
           .setMethod(.GET).setXPath("args").build(),
-        try RequestBuilder()
+        try RequestBuilder<SingleResult<TestModel1>>()
           .setURLString("\(Params.API.baseURL)/delay/0.2?key=234")
           .setMethod(.GET).setXPath("args").build(),
-        try RequestBuilder()
+        try RequestBuilder<SingleResult<TestModel1>>()
           .setURLString("\(Params.API.baseURL)/delay/0.1?key=345")
           .setMethod(.GET).setXPath("args").build()
       ]
+
+      guard let responses = try Gnomon.models(for: requests).toBlocking().first() else {
+        throw "can't extract responses"
+      }
+
+      expect(responses).to(haveCount(3))
+
+      expect(responses[0]).notTo(beNil())
+      expect(responses[0].result.model.key) == 123
+
+      expect(responses[1]).notTo(beNil())
+      expect(responses[1].result.model.key) == 234
+
+      expect(responses[2]).notTo(beNil())
+      expect(responses[2].result.model.key) == 345
     } catch {
       fail("\(error)")
       return
     }
-
-    let responses: [Response<SingleOptionalResult<TestModel1>>]?
-    do {
-      responses = try Gnomon.models(for: requests).toBlocking().first()
-    } catch {
-      fail("\(error)")
-      return
-    }
-
-    expect(responses).toNot(beNil())
-
-    guard let results = responses?.map({ $0.result }) else {
-      fail("can't extract responses")
-      return
-    }
-
-    expect(results).to(haveCount(3))
-    expect(results[0].model?.key).to(equal(123))
-    expect(results[1].model?.key).to(equal(234))
-    expect(results[2].model?.key).to(equal(345))
   }
 
   func testMultipleOrderOneFail() {
-    let requests: [Request<SingleResult<TestModel1>>]
-
     do {
-      requests = [
-        try RequestBuilder()
+      let requests = [
+        try RequestBuilder<SingleResult<TestModel1>>()
           .setURLString("\(Params.API.baseURL)/delay/0.3?key=123")
           .setMethod(.GET).setXPath("args").build(),
-        try RequestBuilder()
+        try RequestBuilder<SingleResult<TestModel1>>()
           .setURLString("\(Params.API.baseURL)/status/404?key=234")
           .setMethod(.GET).setXPath("args").build(),
-        try RequestBuilder()
+        try RequestBuilder<SingleResult<TestModel1>>()
           .setURLString("\(Params.API.baseURL)/delay/0.1?key=345")
           .setMethod(.GET).setXPath("args").build()
       ]
-    } catch {
-      fail("\(error)")
-      return
-    }
-    do {
-      _ = try Gnomon.models(for: requests).toBlocking().first()
-      fail("should fail here")
+
+      guard let responses = try Gnomon.models(for: requests).toBlocking().first() else {
+        throw "can't extract responses"
+      }
+
+      expect(responses).to(haveCount(3))
+
+      expect(responses[0]).notTo(beNil())
+      expect(responses[0].result.model.key) == 123
+
+      expect(responses[1]).to(beNil())
+
+      expect(responses[2]).notTo(beNil())
+      expect(responses[2].result.model.key) == 345
     } catch {
       switch error {
       case Gnomon.Error.errorStatusCode(let code, let data):
@@ -172,126 +158,63 @@ class MultipleRequestsSpec: XCTestCase {
     }
   }
 
-  func testMultipleOrderOfOptionalsOneFail() {
-    let requests: [Request<SingleOptionalResult<TestModel1>>]
-
-    do {
-      requests = [
-        try RequestBuilder()
-          .setURLString("\(Params.API.baseURL)/delay/0.3?key=123")
-          .setMethod(.GET).setXPath("args").build(),
-        try RequestBuilder()
-          .setURLString("\(Params.API.baseURL)/status/404?key=234")
-          .setMethod(.GET).setXPath("args").build(),
-        try RequestBuilder()
-          .setURLString("\(Params.API.baseURL)/delay/0.1?key=345")
-          .setMethod(.GET).setXPath("args").build()
-      ]
-    } catch {
-      fail("\(error)")
-      return
-    }
-
-    let responses: [Response<SingleOptionalResult<TestModel1>>]?
-    do {
-      responses = try Gnomon.models(for: requests).toBlocking().first()
-    } catch {
-      fail("\(error)")
-      return
-    }
-
-    expect(responses).toNot(beNil())
-
-    guard let results = responses?.map({ $0.result }) else {
-      fail("can't extract responses")
-      return
-    }
-
-    expect(results).to(haveCount(3))
-    expect(results[0].model?.key).to(equal(123))
-    expect(results[1].model).to(beNil())
-    expect(results[2].model?.key).to(equal(345))
-  }
-
   func testMultipleDifferent() {
-    let request1: Request<SingleResult<TestModel1>>
-    let request2: Request<SingleResult<TestModel2>>
-
     do {
-      request1 = try RequestBuilder()
+      let request1 = try RequestBuilder<SingleResult<TestModel1>>()
         .setURLString("\(Params.API.baseURL)/get?key=1")
         .setMethod(.GET).setXPath("args").build()
-      request2 = try RequestBuilder()
+      let request2 = try RequestBuilder<SingleResult<TestModel2>>()
         .setURLString("\(Params.API.baseURL)/get?otherKey=2")
         .setMethod(.GET).setXPath("args").build()
-    } catch {
-      fail("\(error)")
-      return
-    }
 
-    let responses: (Response<SingleResult<TestModel1>>, Response<SingleResult<TestModel2>>)?
-    do {
-      responses = try Observable.zip(
+      let responses = try Observable.zip(
         Gnomon.models(for: request1),
-        Gnomon.models(for: request2)) { ($0, $1) }.toBlocking().first()
+        Gnomon.models(for: request2)
+      ).toBlocking().first()
+
+      expect(responses).toNot(beNil())
+
+      guard let result1 = responses?.0.result, let result2 = responses?.1.result else {
+        throw "can't extract responses"
+      }
+
+      expect(result1.model.key).to(equal(1))
+      expect(result2.model.otherKey).to(equal(2))
     } catch {
       fail("\(error)")
       return
     }
-
-    expect(responses).toNot(beNil())
-
-    guard let result1 = responses?.0.result, let result2 = responses?.1.result else {
-      fail("can't extract responses")
-      return
-    }
-
-    expect(result1.model.key).to(equal(1))
-    expect(result2.model.otherKey).to(equal(2))
   }
 
-  func testMultipleOptionalDifferent() {
-    let request1: Request<SingleOptionalResult<TestModel1>>
-    let request2: Request<SingleOptionalResult<TestModel2>>
-
+  func testMultipleDifferentOneFail() {
     do {
-      request1 = try RequestBuilder()
+      let request1 = try RequestBuilder<SingleResult<TestModel1>>()
         .setURLString("\(Params.API.baseURL)/get?key=1")
         .setMethod(.GET).setXPath("args").build()
-      request2 = try RequestBuilder()
+      let request2 = try RequestBuilder<SingleResult<TestModel2>>()
         .setURLString("\(Params.API.baseURL)/get?failKey=2")
         .setMethod(.GET).setXPath("args").build()
+
+      guard let responses = try Observable.zip(
+        Gnomon.models(for: request1),
+        Gnomon.models(for: request2).map { Optional.some($0) }.catchErrorJustReturn(nil)
+      ).toBlocking().first() else {
+        throw "can't extract responses"
+      }
+
+      expect(responses.0.result.model.key).to(equal(1))
+      expect(responses.1).to(beNil())
     } catch {
       fail("\(error)")
       return
     }
-
-    let responses: (Response<SingleOptionalResult<TestModel1>>, Response<SingleOptionalResult<TestModel2>>)?
-    do {
-      responses = try Observable.zip(
-        Gnomon.models(for: request1), Gnomon.models(for: request2)
-      ) { ($0, $1) }.toBlocking().first()
-    } catch {
-      fail("\(error)")
-      return
-    }
-
-    expect(responses).toNot(beNil())
-
-    guard let result1 = responses?.0.result, let result2 = responses?.1.result else {
-      fail("can't extract responses")
-      return
-    }
-
-    expect(result1.model?.key).to(equal(1))
-    expect(result2.model).to(beNil())
   }
 
   func testMultipleEmptyArray() {
-    let requests = [Request<SingleResult<TestModel1>>]()
-    let optionalRequests = [Request<SingleOptionalResult<TestModel1>>]()
-
     do {
+      let requests = [Request<SingleOptionalResult<TestModel1>>]()
+      let optionalRequests = [Request<SingleOptionalResult<TestModel1>>]()
+
       expect(try Gnomon.cachedModels(for: optionalRequests).toBlocking().first()).to(haveCount(0))
       expect(try Gnomon.models(for: optionalRequests).toBlocking().first()).to(haveCount(0))
       expect(try Gnomon.models(for: requests).toBlocking().first()).to(haveCount(0))

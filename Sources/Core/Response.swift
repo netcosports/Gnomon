@@ -41,9 +41,9 @@ public struct SingleOptionalResult<T: BaseModel>: Single, OptionalResult {
   public init(data: Data, atPath path: String?) {
     do {
       self.model = try T.model(with: data, atPath: path)
-    } catch let e {
+    } catch {
       self.model = nil
-      Gnomon.errorLog("\(e)")
+      Gnomon.errorLog("\(error)")
     }
   }
 
@@ -76,8 +76,8 @@ public struct MultipleOptionalResults<T: BaseModel>: Multiple, OptionalResult {
   public init(data: Data, atPath path: String?) {
     do {
       self.init(models: try T.optionalModels(with: data, atPath: path))
-    } catch let e {
-      Gnomon.errorLog("\(e)")
+    } catch {
+      Gnomon.errorLog("\(error)")
       self.init(models: [])
     }
   }

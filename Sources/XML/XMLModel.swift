@@ -65,8 +65,8 @@ public extension XMLModel {
     return xmlArray.map {
       do {
         return try Self($0)
-      } catch let e {
-        Gnomon.errorLog("\(e)")
+      } catch {
+        Gnomon.errorLog("\(error)")
         return nil
       }
     }
