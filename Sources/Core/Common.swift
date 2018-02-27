@@ -178,7 +178,8 @@ internal func prepareMultipartData(with form: [String: String],
 }
 
 internal func processedResult<U>(from data: Data, for request: Request<U>) throws -> U {
-  return try U(data: data, atPath: request.xpath)
+  let container = try U.dataContainer(with: data, at: request.xpath)
+  return try U(container)
 }
 
 internal func validated(response: Any) throws -> (result: [String: Any], isArray: Bool) {

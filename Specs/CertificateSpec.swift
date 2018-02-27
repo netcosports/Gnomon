@@ -23,17 +23,18 @@ class CertificateSpec: XCTestCase {
 
   func testInvalidCertificate() {
     do {
-      let builder = RequestBuilder<SingleResult<String>>()
+      let builder = RequestBuilder<String>()
         .setURLString("https://self-signed.badssl.com/").setMethod(.GET)
       builder.setAuthenticationChallenge { challenge, completionHandler -> Void in
         completionHandler(.useCredential, URLCredential(trust: challenge.protectionSpace.serverTrust!))
       }
       let request = try builder.build()
 
-      let response = try Gnomon.models(for: request).toBlocking().first()
-      guard let result = response?.result else { throw "can't extract response" }
+      guard let response = try Gnomon.models(for: request).toBlocking().first() else {
+        return fail("can't extract response")
+      }
 
-      expect(result.model.count).to(beGreaterThan(0))
+      expect(response.result.count).to(beGreaterThan(0))
     } catch {
       fail("\(error)")
       return
@@ -43,7 +44,7 @@ class CertificateSpec: XCTestCase {
   func testInvalidCertificateWithoutHandler() {
     var err: NSError?
     do {
-      let builder = RequestBuilder<SingleResult<String>>()
+      let builder = RequestBuilder<String>()
         .setURLString("https://self-signed.badssl.com/").setMethod(.GET)
       let request = try builder.build()
 

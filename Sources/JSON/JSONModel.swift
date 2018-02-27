@@ -5,107 +5,6 @@
 
 import SwiftyJSON
 
-public protocol JSONModel: BaseModel {
-  init(_ json: JSON) throws
-}
-
-public extension JSONModel {
-
-  static func model(with data: Data, atPath path: String?) throws -> Self {
-    let json = try JSON(data: data)
-
-    guard let path = path else {
-      return try Self(json)
-    }
-
-    let xpathed = try json.xpath(path)
-    if let error = xpathed.error {
-      throw Gnomon.Error.unableToParseModel(error)
-    }
-    return try Self(xpathed)
-  }
-
-  static func models(with data: Data, atPath path: String?) throws -> [Self] {
-    let json = try JSON(data: data)
-    let jsonArray: [JSON]
-
-    if let error = json.error {
-      throw Gnomon.Error.unableToParseModel(error)
-    }
-
-    if json.null != nil {
-      throw Gnomon.Error.unableToParseModel("expected dictionary or array, received null")
-    }
-
-    if let path = path {
-      let xpathed = try json.xpath(path)
-      if let error = xpathed.error {
-        throw Gnomon.Error.unableToParseModel(error)
-      } else if xpathed.null != nil {
-        throw Gnomon.Error.unableToParseModel("expected dictionary or array, received null")
-      }
-
-      if let array = xpathed.array {
-        jsonArray = array
-      } else {
-        jsonArray = [xpathed]
-      }
-    } else {
-      if let array = json.array {
-        jsonArray = array
-      } else {
-        jsonArray = [json]
-      }
-    }
-
-    return try jsonArray.map { try Self($0) }
-  }
-
-  static func optionalModels(with data: Data, atPath path: String?) throws -> [Self?] {
-    let json = try JSON(data: data)
-    let jsonArray: [JSON]
-
-    if let error = json.error {
-      throw Gnomon.Error.unableToParseModel(error)
-    }
-
-    if json.null != nil {
-      throw Gnomon.Error.unableToParseModel("expected dictionary or array, received null")
-    }
-
-    if let path = path {
-      let xpathed = try json.xpath(path)
-      if let error = xpathed.error {
-        throw Gnomon.Error.unableToParseModel(error)
-      } else if xpathed.null != nil {
-        throw Gnomon.Error.unableToParseModel("expected dictionary or array, received null")
-      }
-
-      if let array = xpathed.array {
-        jsonArray = array
-      } else {
-        jsonArray = [xpathed]
-      }
-    } else {
-      if let array = json.array {
-        jsonArray = array
-      } else {
-        jsonArray = [json]
-      }
-    }
-
-    return jsonArray.map {
-      do {
-        return try Self($0)
-      } catch {
-        Gnomon.errorLog("\(error)")
-        return nil
-      }
-    }
-  }
-
-}
-
 extension JSON {
 
   func xpath(_ path: String) throws -> JSON {
@@ -122,6 +21,42 @@ extension JSON {
       throw "can't find key \(key) in json \(self)"
     }
     return try value.xpath(Array(components.dropFirst()))
+  }
+
+}
+
+public protocol JSONModel: BaseModel where DataContainer == JSON {
+}
+
+extension JSON: DataContainerProtocol {
+
+  public typealias Iterator = GenericDataContainerIterator<JSON>
+
+  public static func container(with data: Data, at path: String?) throws -> JSON {
+    let json = try JSON(data: data)
+
+    if let path = path {
+      let xpathed = try json.xpath(path)
+      if let error = xpathed.error {
+        throw Gnomon.Error.unableToParseModel(error)
+      }
+
+      return xpathed
+    } else {
+      return json
+    }
+  }
+
+  public func multiple() -> GenericDataContainerIterator<JSON>? {
+    if let array = array {
+      return .init(array)
+    } else {
+      return nil
+    }
+  }
+
+  public static func empty() -> JSON {
+    return JSON()
   }
 
 }

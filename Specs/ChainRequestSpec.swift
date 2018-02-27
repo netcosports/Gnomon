@@ -24,14 +24,14 @@ class ChainRequestSpec: XCTestCase {
 
   func testChainRequest() {
     do {
-      let request = try RequestBuilder<SingleResult<TestModel1>>()
+      let request = try RequestBuilder<TestModel1>()
         .setURLString("\(Params.API.baseURL)/get?key=123")
         .setMethod(.GET).setXPath("args").build()
 
       let response = try Gnomon.models(for: request)
-        .flatMap { response -> Observable<Response<SingleResult<TestModel2>>> in
-          let otherKey = response.result.model.key + 1
-          let nextRequest = try RequestBuilder<SingleResult<TestModel2>>()
+        .flatMap { response -> Observable<Response<TestModel2>> in
+          let otherKey = response.result.key + 1
+          let nextRequest = try RequestBuilder<TestModel2>()
             .setURLString("\(Params.API.baseURL)/get?otherKey=\(otherKey)")
             .setMethod(.GET).setXPath("args").build()
 
@@ -39,12 +39,7 @@ class ChainRequestSpec: XCTestCase {
         }.toBlocking().first()
 
       expect(response).toNot(beNil())
-
-      guard let result = response?.result else {
-        throw "can't extract response"
-      }
-
-      expect(result.model.otherKey).to(equal(124))
+      expect(response?.result.otherKey).to(equal(124))
     } catch {
       fail("\(error)")
       return

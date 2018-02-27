@@ -47,18 +47,16 @@ class MultipartSpec: XCTestCase {
 
   func testSimpleParams() {
     do {
-      let request = try RequestBuilder<SingleResult<MultipartModel>>()
+      let request = try RequestBuilder<MultipartModel>()
         .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
         .setParams(.multipart(["text": "Hello World", "number": "42"], [:])).build()
-      let response = try Gnomon.models(for: request).toBlocking().first()
-      expect(response).toNot(beNil())
 
-      guard let result = response?.result else {
-        throw "can't extract response"
+      guard let response = try Gnomon.models(for: request).toBlocking().first() else {
+        return fail("can't extract response")
       }
 
-      expect(result.model.files).to(beEmpty())
-      expect(result.model.form).to(equal(["text": "Hello World", "number": "42"]))
+      expect(response.result.files).to(beEmpty())
+      expect(response.result.form).to(equal(["text": "Hello World", "number": "42"]))
     } catch {
       fail("\(error)")
       return
@@ -74,21 +72,19 @@ class MultipartSpec: XCTestCase {
       let data = try Data(contentsOf: url)
       let file = MultipartFile(data: data, contentType: "application/zip", filename: "test_file.zip")
 
-      let request = try RequestBuilder<SingleResult<MultipartModel>>()
+      let request = try RequestBuilder<MultipartModel>()
         .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
         .setParams(.multipart([:], ["file": file])).build()
-      let response = try Gnomon.models(for: request).toBlocking().first()
-      expect(response).toNot(beNil())
 
-      guard let result = response?.result else {
-        throw "can't extract response"
+      guard let response = try Gnomon.models(for: request).toBlocking().first() else {
+        return fail("can't extract response")
       }
 
       let files = [
         "file": "data:application/zip;base64,\(data.base64EncodedString())"
       ]
-      expect(result.model.files).to(equal(files))
-      expect(result.model.form).to(beEmpty())
+      expect(response.result.files).to(equal(files))
+      expect(response.result.form).to(beEmpty())
     } catch {
       fail("\(error)")
       return
@@ -104,21 +100,19 @@ class MultipartSpec: XCTestCase {
       let data = try Data(contentsOf: url)
       let file = MultipartFile(data: data, contentType: "application/zip", filename: "test_file.zip")
 
-      let request = try RequestBuilder<SingleResult<MultipartModel>>()
+      let request = try RequestBuilder<MultipartModel>()
         .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
         .setParams(.multipart(["text": "Hello World", "number": "42"], ["file": file])).build()
-      let response = try Gnomon.models(for: request).toBlocking().first()
-      expect(response).toNot(beNil())
 
-      guard let result = response?.result else {
-        throw "can't extract response"
+      guard let response = try Gnomon.models(for: request).toBlocking().first() else {
+        return fail("can't extract response")
       }
 
       let files = [
         "file": "data:application/zip;base64,\(data.base64EncodedString())"
       ]
-      expect(result.model.files).to(equal(files))
-      expect(result.model.form).to(equal(["text": "Hello World", "number": "42"]))
+      expect(response.result.files).to(equal(files))
+      expect(response.result.form).to(equal(["text": "Hello World", "number": "42"]))
     } catch {
       fail("\(error)")
       return

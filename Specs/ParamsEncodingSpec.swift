@@ -19,7 +19,7 @@ class ParamsEncodingSpec: XCTestCase {
 
   func testEmptyParams() {
     do {
-      let request: Request<SingleResult<String>> = try RequestBuilder()
+      let request: Request<String> = try RequestBuilder()
         .setURLString("\(Params.API.baseURL)/post").build()
       expect(try prepareURL(from: request, params: nil).absoluteString).to(equal("\(Params.API.baseURL)/post"))
     } catch {
@@ -29,7 +29,7 @@ class ParamsEncodingSpec: XCTestCase {
 
   func testSimpleDictionary() {
     do {
-      let request: Request<SingleResult<String>> = try RequestBuilder().setURLString("\(Params.API.baseURL)/get")
+      let request: Request<String> = try RequestBuilder().setURLString("\(Params.API.baseURL)/get")
         .build()
       let params = ["key1": "value1", "key2": "value2"]
       let expected = "\(Params.API.baseURL)/get?key1=value1&key2=value2"
@@ -41,7 +41,7 @@ class ParamsEncodingSpec: XCTestCase {
 
   func testArray() {
     do {
-      let request: Request<SingleResult<String>> = try RequestBuilder().setURLString("\(Params.API.baseURL)/get")
+      let request: Request<String> = try RequestBuilder().setURLString("\(Params.API.baseURL)/get")
         .build()
       let expected = "\(Params.API.baseURL)/get?key1=value1&key2=value2&key3%5B%5D=1&key3%5B%5D=2&key3%5B%5D=3"
       let params: [String: Any] = ["key1": "value1", "key2": "value2", "key3": ["1", "2", "3"]]
@@ -53,7 +53,7 @@ class ParamsEncodingSpec: XCTestCase {
 
   func testInnerDictionary() {
     do {
-      let request: Request<SingleResult<String>> = try RequestBuilder().setURLString("\(Params.API.baseURL)/get")
+      let request: Request<String> = try RequestBuilder().setURLString("\(Params.API.baseURL)/get")
         .build()
       let params: [String: Any] = ["key1": "value1", "key2": "value2",
                                    "key3": ["inKey1": "inValue1", "inKey2": "inValue2"]]
@@ -67,7 +67,7 @@ class ParamsEncodingSpec: XCTestCase {
 
   func testInnerDictionaryInArray() {
     do {
-      let request: Request<SingleResult<String>> = try RequestBuilder().setURLString("\(Params.API.baseURL)/get")
+      let request: Request<String> = try RequestBuilder().setURLString("\(Params.API.baseURL)/get")
         .build()
       let params: [String: Any] = ["key1": "value1", "key2": "value2",
                                    "key3": [["inKey1": "inValue1", "inKey2": "inValue2"]]]
@@ -81,7 +81,7 @@ class ParamsEncodingSpec: XCTestCase {
 
   func testNumbers() {
     do {
-      let request: Request<SingleResult<String>> = try RequestBuilder().setURLString("\(Params.API.baseURL)/get")
+      let request: Request<String> = try RequestBuilder().setURLString("\(Params.API.baseURL)/get")
         .build()
       let params: [String: Any] = ["key1": 1, "key2": 2.30]
       let expected = "\(Params.API.baseURL)/get?key1=1&key2=2.3"

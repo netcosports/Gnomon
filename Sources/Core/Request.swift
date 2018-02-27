@@ -44,21 +44,14 @@ public struct MultipartFile {
 
 }
 
-@available(*, unavailable, renamed: "Request")
-public class PlainRequest<ResultType: Result> {
+public class Request<Model: BaseModel> {
 
-}
-
-public class Request<ResultType: Result> {
-
-  public typealias ModelType = ResultType.ModelType
   public fileprivate(set) var URLString: String = ""
   public fileprivate(set) var xpath: String?
   public fileprivate(set) var method = Method.GET
   public fileprivate(set) var params = RequestParams.none
   public fileprivate(set) var headers: [String: String]?
 
-  @available(*, deprecated: 1.2.1, message: "use RequestParams enum")
   public fileprivate(set) var requestBodyAsJSON: Bool = false
 
   public fileprivate(set) var disableLocalCache: Bool = false
@@ -75,20 +68,16 @@ public class Request<ResultType: Result> {
 
   public fileprivate(set) var debugLogging: Bool?
 
-  public var response: ((Response<ResultType>) -> Void)?
+  public var response: ((Response<Model>) -> Void)?
 
   fileprivate init() {}
 
 }
 
-@available(*, unavailable, renamed: "RequestBuilder")
-public struct PlainRequestBuilder<ResultType: Result> {
-}
+public struct RequestBuilder<Model: BaseModel> {
 
-public struct RequestBuilder<ResultType: Result> {
-
-  public private(set) var request = Request<ResultType>()
-  public typealias Builder = RequestBuilder<ResultType>
+  public private(set) var request = Request<Model>()
+  public typealias Builder = RequestBuilder<Model>
 
   public init() {}
 
@@ -189,7 +178,7 @@ public struct RequestBuilder<ResultType: Result> {
     return self
   }
 
-  public func build() throws -> Request<ResultType> {
+  public func build() throws -> Request<Model> {
     try validate()
     return request
   }

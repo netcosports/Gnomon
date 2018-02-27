@@ -23,13 +23,13 @@ class XMLSpec: XCTestCase {
 
   func testPlainXMLRequest() {
     do {
-      let request = try RequestBuilder<SingleResult<TestXMLModel>>()
+      let request = try RequestBuilder<TestXMLModel>()
         .setURLString("\(Params.API.baseURL)/xml").setMethod(.GET).build()
 
       let response = try Gnomon.models(for: request).toBlocking().first()
       guard let result = response?.result else { throw "can't extract response" }
 
-      expect(result.model.title).to(equal("Sample Slide Show"))
+      expect(result.title).to(equal("Sample Slide Show"))
     } catch {
       fail("\(error)")
       return
@@ -38,15 +38,15 @@ class XMLSpec: XCTestCase {
 
   func testPlainMultipleXMLRequest() {
     do {
-      let request = try RequestBuilder<MultipleResults<TestXMLSlideModel>>()
+      let request = try RequestBuilder<[TestXMLSlideModel]>()
         .setURLString("\(Params.API.baseURL)/xml").setXPath("slideshow/slide")
         .setMethod(.GET).build()
 
       let response = try Gnomon.models(for: request).toBlocking().first()
       guard let result = response?.result else { throw "can't extract response" }
 
-      expect(result.models[0].title).to(equal("Wake up to WonderWidgets!"))
-      expect(result.models[1].title).to(equal("Overview"))
+      expect(result[0].title).to(equal("Wake up to WonderWidgets!"))
+      expect(result[1].title).to(equal("Overview"))
     } catch {
       fail("\(error)")
       return

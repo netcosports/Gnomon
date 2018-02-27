@@ -31,19 +31,23 @@ class InterceptorSpec: XCTestCase {
     }
 
     do {
-      let request = try RequestBuilder<SingleResult<TestModel8>>().setURLString("\(Params.API.baseURL)/post")
+      let request = try RequestBuilder<TestModel8>().setURLString("\(Params.API.baseURL)/post")
         .setParams(["test": "test"]).setMethod(.POST).build()
-      guard let response = try Gnomon.models(for: request).toBlocking().first() else { throw "empty response" }
-      expect(response.result.model.headers["X-Sha1-Signature"]) == "b3cefbcce711f8574b0e66c41fc1dcf06eb5b6db"
+      guard let response = try Gnomon.models(for: request).toBlocking().first() else {
+        return fail("can't extract response")
+      }
+      expect(response.result.headers["X-Sha1-Signature"]) == "b3cefbcce711f8574b0e66c41fc1dcf06eb5b6db"
     } catch {
       fail("\(error)")
     }
 
     do {
-      let request = try RequestBuilder<SingleResult<TestModel8>>().setURLString("\(Params.API.baseURL)/get")
+      let request = try RequestBuilder<TestModel8>().setURLString("\(Params.API.baseURL)/get")
         .setMethod(.GET).build()
-      guard let response = try Gnomon.models(for: request).toBlocking().first() else { throw "empty response" }
-      expect(response.result.model.headers["X-Sha1-Signature"]).to(beNil())
+      guard let response = try Gnomon.models(for: request).toBlocking().first() else {
+        return fail("can't extract response")
+      }
+      expect(response.result.headers["X-Sha1-Signature"]).to(beNil())
     } catch {
       fail("\(error)")
     }
@@ -66,11 +70,13 @@ class InterceptorSpec: XCTestCase {
         }
         return request
       }
-      let request = try RequestBuilder<SingleResult<TestModel8>>().setURLString("\(Params.API.baseURL)/post")
+      let request = try RequestBuilder<TestModel8>().setURLString("\(Params.API.baseURL)/post")
         .setParams(["test": "test"]).setMethod(.POST).setInterceptor(interceptor, exclusive: true).build()
-      guard let response = try Gnomon.models(for: request).toBlocking().first() else { throw "empty response" }
-      expect(response.result.model.headers["X-Md5-Signature"]) == "d14091e1796351152f0ba2a5940606d7"
-      expect(response.result.model.headers["X-Sha1-Signature"]).to(beNil())
+      guard let response = try Gnomon.models(for: request).toBlocking().first() else {
+        return fail("can't extract response")
+      }
+      expect(response.result.headers["X-Md5-Signature"]) == "d14091e1796351152f0ba2a5940606d7"
+      expect(response.result.headers["X-Sha1-Signature"]).to(beNil())
     } catch {
       fail("\(error)")
     }
@@ -93,11 +99,13 @@ class InterceptorSpec: XCTestCase {
         }
         return request
       }
-      let request = try RequestBuilder<SingleResult<TestModel8>>().setURLString("\(Params.API.baseURL)/post")
+      let request = try RequestBuilder<TestModel8>().setURLString("\(Params.API.baseURL)/post")
         .setParams(["test": "test"]).setMethod(.POST).setInterceptor(interceptor, exclusive: false).build()
-      guard let response = try Gnomon.models(for: request).toBlocking().first() else { throw "empty response" }
-      expect(response.result.model.headers["X-Md5-Signature"]) == "d14091e1796351152f0ba2a5940606d7"
-      expect(response.result.model.headers["X-Sha1-Signature"]) == "b3cefbcce711f8574b0e66c41fc1dcf06eb5b6db"
+      guard let response = try Gnomon.models(for: request).toBlocking().first() else {
+        return fail("can't extract response")
+      }
+      expect(response.result.headers["X-Md5-Signature"]) == "d14091e1796351152f0ba2a5940606d7"
+      expect(response.result.headers["X-Sha1-Signature"]) == "b3cefbcce711f8574b0e66c41fc1dcf06eb5b6db"
     } catch {
       fail("\(error)")
     }
@@ -120,10 +128,12 @@ class InterceptorSpec: XCTestCase {
         }
         return request
       }
-      let request = try RequestBuilder<SingleResult<TestModel8>>().setURLString("\(Params.API.baseURL)/post")
+      let request = try RequestBuilder<TestModel8>().setURLString("\(Params.API.baseURL)/post")
         .setParams(["test": "test"]).setMethod(.POST).setInterceptor(interceptor, exclusive: false).build()
-      guard let response = try Gnomon.models(for: request).toBlocking().first() else { throw "empty response" }
-      expect(response.result.model.headers["X-Signature"]) == "d14091e1796351152f0ba2a5940606d7," +
+      guard let response = try Gnomon.models(for: request).toBlocking().first() else {
+        return fail("can't extract response")
+      }
+      expect(response.result.headers["X-Signature"]) == "d14091e1796351152f0ba2a5940606d7," +
       "b3cefbcce711f8574b0e66c41fc1dcf06eb5b6db"
     } catch {
       fail("\(error)")

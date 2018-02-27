@@ -9,56 +9,7 @@ extension CodingUserInfoKey {
 
 }
 
-private struct _Single<T: Decodable & BaseModel>: Decodable {
-
-  let model: T
-
-  init(from decoder: Decoder) throws {
-    let decoder = try decoder.decoder(by: decoder.userInfo[.xpath] as? String)
-    model = try T(from: decoder)
-  }
-
-}
-
-private struct _Multiple<T: Decodable & BaseModel>: Decodable {
-
-  let models: [T]
-
-  init(from decoder: Decoder) throws {
-    let decoder = try decoder.decoder(by: decoder.userInfo[.xpath] as? String)
-    var unkeyed = try decoder.unkeyedContainer()
-
-    var models: [T] = []
-
-    while !unkeyed.isAtEnd {
-      models.append(try T(from: unkeyed.superDecoder()))
-    }
-
-    self.models = models
-  }
-
-}
-
-private struct _MultipleOptional<T: Decodable & BaseModel>: Decodable {
-
-  let models: [T?]
-
-  init(from decoder: Decoder) throws {
-    let decoder = try decoder.decoder(by: decoder.userInfo[.xpath] as? String)
-    var unkeyed = try decoder.unkeyedContainer()
-
-    var models: [T?] = []
-
-    while !unkeyed.isAtEnd {
-      models.append(try? T(from: unkeyed.superDecoder()))
-    }
-
-    self.models = models
-  }
-
-}
-
-public protocol DecodableModel: BaseModel, Decodable {
+public protocol DecodableModel: BaseModel, Decodable where DataContainer == DecoderContainer {
 
   static var decoder: JSONDecoder { get }
 
@@ -68,29 +19,82 @@ public extension DecodableModel {
 
   static var decoder: JSONDecoder { return JSONDecoder() }
 
+  public static func dataContainer(with data: Data, at path: String?) throws -> DecoderContainer {
+    let decoder = Self.decoder
+    decoder.userInfo[.xpath] = path
+    return try decoder.decode(DecoderContainer.self, from: data)
+  }
+
+  public init(_ container: DecoderContainer) throws {
+    try self.init(from: container.decoder)
+  }
+
 }
 
-public extension DecodableModel {
+private struct EmptyDecoder: Decoder {
 
-  static func model(with data: Data, atPath path: String?) throws -> Self {
-    let decoder = Self.decoder
-    decoder.userInfo[.xpath] = path
-    let container = try decoder.decode(_Single<Self>.self, from: data)
-    return container.model
+  let codingPath: [CodingKey] = []
+  let userInfo: [CodingUserInfoKey: Any] = [:]
+
+  func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key: CodingKey {
+    throw "decoder is empty"
   }
 
-  static func models(with data: Data, atPath path: String?) throws -> [Self] {
-    let decoder = Self.decoder
-    decoder.userInfo[.xpath] = path
-    let container = try decoder.decode(_Multiple<Self>.self, from: data)
-    return container.models
+  func unkeyedContainer() throws -> UnkeyedDecodingContainer {
+    throw "decoder is empty"
   }
 
-  static func optionalModels(with data: Data, atPath path: String?) throws -> [Self?] {
-    let decoder = Self.decoder
-    decoder.userInfo[.xpath] = path
-    let container = try decoder.decode(_MultipleOptional<Self>.self, from: data)
-    return container.models
+  func singleValueContainer() throws -> SingleValueDecodingContainer {
+    throw "decoder is empty"
+  }
+
+}
+
+public struct UnkeyedDecodingContainerIterator: DataContainerIterator {
+
+  var unkeyed: UnkeyedDecodingContainer
+  init(_ unkeyed: UnkeyedDecodingContainer) {
+    self.unkeyed = unkeyed
+  }
+
+  public var count: Int? { return unkeyed.count }
+
+  public typealias Element = DecoderContainer
+
+  public mutating func next() -> DecoderContainer? {
+    if let decoder = try? unkeyed.superDecoder() {
+      return DecoderContainer(decoder)
+    } else {
+      return nil
+    }
+  }
+
+}
+
+public struct DecoderContainer: DataContainerProtocol, Decodable {
+
+  let decoder: Decoder
+  init(_ decoder: Decoder) {
+    self.decoder = decoder
+  }
+
+  public init(from decoder: Decoder) throws {
+    self.decoder = try decoder.decoder(by: decoder.userInfo[.xpath] as? String)
+  }
+
+  public typealias Iterator = UnkeyedDecodingContainerIterator
+
+  public static func container(with data: Data, at path: String?) throws -> DecoderContainer {
+    throw "container should be parsed in DecodableModel"
+  }
+
+  public func multiple() -> UnkeyedDecodingContainerIterator? {
+    guard let unkeyed = try? decoder.unkeyedContainer() else { return nil }
+    return UnkeyedDecodingContainerIterator(unkeyed)
+  }
+
+  public static func empty() -> DecoderContainer {
+    return DecoderContainer(EmptyDecoder())
   }
 
 }

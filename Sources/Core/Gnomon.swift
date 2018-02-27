@@ -9,8 +9,6 @@ import FormatterKit
 
 public class Gnomon {
 
-  // MARK: - Public
-
   fileprivate static var interceptors: [Interceptor] = []
 
   public class func addRequestInterceptor(_ interceptor: @escaping Interceptor) {
@@ -33,43 +31,48 @@ public class Gnomon {
     }
   }
 
-  public class func models<U: NonOptionalResult>(for requests: [Request<U>]) -> Observable<[Response<U>]> {
-    guard requests.count > 0 else { return .just([]) }
-    return Observable.zip(requests.map { models(for: $0) })
-  }
-
-  public class func models<U: OptionalResult>(for requests: [Request<U>]) -> Observable<[Response<U>]> {
+  public class func models<U>(for requests: [Request<U>]) -> Observable<[Response<U>?]> {
     guard requests.count > 0 else { return .just([]) }
     return Observable.zip(requests.map {
-      models(for: $0).catchErrorJustReturn(Response.empty(with: .regular))
+      models(for: $0).materialize().map { event -> Response<U>? in
+        switch event {
+        case let .next(element): return element
+        case .error, .completed: return nil
+        }
+      }.take(1)
     })
   }
 
-  public class func cachedModels<U: OptionalResult>(for request: Request<U>) -> Observable<Response<U>> {
+  public class func cachedModels<U>(for request: Request<U>) -> Observable<Response<U>> {
     do {
       return try observable(for: request, inLocalCache: true).flatMap { data, response -> Observable<Response<U>> in
         return try parse(data: data, response: response, responseType: .localCache, for: request)
           .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
-        }.catchErrorJustReturn(Response.empty(with: .localCache))
+        }.catchError { _ in return Observable<Response<U>>.empty() }
     } catch {
       return .error(error)
     }
   }
 
-  public class func cachedModels<U: OptionalResult>(for requests: [Request<U>]) -> Observable<[Response<U>]> {
+  public class func cachedModels<U>(for requests: [Request<U>]) -> Observable<[Response<U>?]> {
     guard requests.count > 0 else { return .just([]) }
-    return Observable.zip(requests.map { cachedModels(for: $0) })
+    return Observable.zip(requests.map {
+      cachedModels(for: $0).materialize().map { event -> Response<U>? in
+        switch event {
+        case let .next(element): return element
+        case .error, .completed: return nil
+        }
+      }.take(1)
+    })
   }
 
-  public class func cachedThenFetch<U: OptionalResult>(_ request: Request<U>) -> Observable<Response<U>> {
+  public class func cachedThenFetch<U>(_ request: Request<U>) -> Observable<Response<U>> {
     return cachedModels(for: request).concat(models(for: request))
   }
 
-  public class func cachedThenFetch<U: OptionalResult>(_ requests: [Request<U>]) -> Observable<[Response<U>]> {
+  public class func cachedThenFetch<U>(_ requests: [Request<U>]) -> Observable<[Response<U>?]> {
     return cachedModels(for: requests).concat(models(for: requests))
   }
-
-  // MARK: - Private
 
   private class func observable<U>(for request: Request<U>, inLocalCache localCache: Bool)
   throws -> Observable<(Data, HTTPURLResponse)> {
@@ -146,7 +149,7 @@ public class Gnomon {
         headers = [:]
       }
 
-      let response = Response(result: result, responseType: responseType, headers: headers,
+      let response = Response(result: result, type: responseType, headers: headers,
                               statusCode: httpResponse.statusCode)
       request.response?(response)
       subscriber.onNext(response)

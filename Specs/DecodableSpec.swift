@@ -111,24 +111,33 @@ class DecodableSpec: XCTestCase {
           "name": "Belarus", "players": []
         ],
         "date": 1507654800
+      ],
+      "matches": [
+        [
+          "homeTeam": [
+            "name": "France",
+            "players": []
+          ],
+          "awayTeam": [
+            "name": "Belarus",
+            "players": []
+          ],
+          "date": 1507654800
+        ]
       ]
     ]
   ]
 
   func testTeam() {
     do {
-      let request = try RequestBuilder<SingleResult<TeamModel>>().setURLString("\(Params.API.baseURL)/post")
+      let request = try RequestBuilder<TeamModel>().setURLString("\(Params.API.baseURL)/post")
         .setMethod(.POST).setParams(.json(data)).setXPath("json/data/team").build()
 
-      let response = try Gnomon.models(for: request).toBlocking().first()
-
-      expect(response).notTo(beNil())
-
-      guard let result = response?.result else {
-        throw "can't extract response"
+      guard let response = try Gnomon.models(for: request).toBlocking().first() else {
+        return fail("can't extract response")
       }
 
-      let team = result.model
+      let team = response.result
 
       expect(team.name) == "France"
       expect(team.players[0].firstName) == "Vasya"
@@ -144,18 +153,14 @@ class DecodableSpec: XCTestCase {
 
   func testPlayer() {
     do {
-      let request = try RequestBuilder<SingleResult<PlayerModel>>().setURLString("\(Params.API.baseURL)/post")
+      let request = try RequestBuilder<PlayerModel>().setURLString("\(Params.API.baseURL)/post")
         .setMethod(.POST).setParams(.json(data)).setXPath("json/data/player").build()
 
-      let response = try Gnomon.models(for: request).toBlocking().first()
-
-      expect(response).notTo(beNil())
-
-      guard let result = response?.result else {
-        throw "can't extract response"
+      guard let response = try Gnomon.models(for: request).toBlocking().first() else {
+        return fail("can't extract response")
       }
 
-      let player = result.model
+      let player = response.result
       expect(player.firstName) == "Vasya"
       expect(player.lastName) == "Pupkin"
     } catch {
@@ -166,18 +171,14 @@ class DecodableSpec: XCTestCase {
 
   func testPlayers() {
     do {
-      let request = try RequestBuilder<MultipleResults<PlayerModel>>().setURLString("\(Params.API.baseURL)/post")
+      let request = try RequestBuilder<[PlayerModel]>().setURLString("\(Params.API.baseURL)/post")
         .setMethod(.POST).setParams(.json(data)).setXPath("json/data/players").build()
+      guard let response = try Gnomon.models(for: request).toBlocking().first() else {
 
-      let response = try Gnomon.models(for: request).toBlocking().first()
-
-      expect(response).notTo(beNil())
-
-      guard let result = response?.result else {
-        throw "can't extract response"
+        return fail("can't extract response")
       }
 
-      let players = result.models
+      let players = response.result
       expect(players[0].firstName) == "Vasya"
       expect(players[0].lastName) == "Pupkin"
 
@@ -189,88 +190,26 @@ class DecodableSpec: XCTestCase {
     }
   }
 
-  func testXPathWithArrayIndex() {
+  func testOptionalPlayers() {
     do {
-      let request = try RequestBuilder<SingleResult<PlayerModel>>().setURLString("\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/teams[0]/players[0]").build()
+      let request = try RequestBuilder<[PlayerModel?]>()
+        .setURLString("\(Params.API.baseURL)/post").setMethod(.POST).setParams(.json(data))
+        .setXPath("json/data/players?").build()
 
-      let response = try Gnomon.models(for: request).toBlocking().first()
-
-      expect(response).notTo(beNil())
-
-      guard let result = response?.result else {
-        fail("can't extract response")
-        return
+      guard let response = try Gnomon.models(for: request).toBlocking().first() else {
+        return fail("can't extract response")
       }
 
-      let player = result.model
-      expect(player.firstName) == "Vasya"
-      expect(player.lastName) == "Pupkin"
-    } catch {
-      fail("\(error)")
-      return
-    }
+      let players = response.result
+      expect(players.count) == 3
 
-    do {
-      let request = try RequestBuilder<SingleResult<PlayerModel>>().setURLString("\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/teams[0]/players[1]").build()
+      expect(players[0]?.firstName) == "Vasya"
+      expect(players[0]?.lastName) == "Pupkin"
 
-      let response = try Gnomon.models(for: request).toBlocking().first()
+      expect(players[1]?.firstName) == "Petya"
+      expect(players[1]?.lastName) == "Ronaldo"
 
-      expect(response).notTo(beNil())
-
-      guard let result = response?.result else {
-        fail("can't extract response")
-        return
-      }
-
-      let player = result.model
-      expect(player.firstName) == "Petya"
-      expect(player.lastName) == "Ronaldo"
-    } catch {
-      fail("\(error)")
-      return
-    }
-  }
-
-  func testXPathWithMultipleArrayIndices() {
-    do {
-      let request = try RequestBuilder<SingleResult<PlayerModel>>().setURLString("\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/teams[0]/lineups[0][0]").build()
-
-      let response = try Gnomon.models(for: request).toBlocking().first()
-
-      expect(response).notTo(beNil())
-
-      guard let result = response?.result else {
-        fail("can't extract response")
-        return
-      }
-
-      let player = result.model
-      expect(player.firstName) == "Vasya"
-      expect(player.lastName) == "Pupkin"
-    } catch {
-      fail("\(error)")
-      return
-    }
-
-    do {
-      let request = try RequestBuilder<SingleResult<PlayerModel>>().setURLString("\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/teams[0]/lineups[0][1]").build()
-
-      let response = try Gnomon.models(for: request).toBlocking().first()
-
-      expect(response).notTo(beNil())
-
-      guard let result = response?.result else {
-        fail("can't extract response")
-        return
-      }
-
-      let player = result.model
-      expect(player.firstName) == "Petya"
-      expect(player.lastName) == "Ronaldo"
+      expect(players[2]).to(beNil())
     } catch {
       fail("\(error)")
       return
@@ -279,18 +218,42 @@ class DecodableSpec: XCTestCase {
 
   func testMatchWithCustomizedDecoder() {
     do {
-      let request = try RequestBuilder<SingleResult<MatchModel>>().setURLString("\(Params.API.baseURL)/post")
+      let request = try RequestBuilder<MatchModel>().setURLString("\(Params.API.baseURL)/post")
         .setMethod(.POST).setParams(.json(data)).setXPath("json/data/match").build()
 
-      let response = try Gnomon.models(for: request).toBlocking().first()
-
-      expect(response).notTo(beNil())
-
-      guard let result = response?.result else {
-        throw "can't extract response"
+      guard let response = try Gnomon.models(for: request).toBlocking().first() else {
+        return fail("can't extract response")
       }
 
-      let match = result.model
+      let match = response.result
+      expect(match.homeTeam.name) == "France"
+      expect(match.awayTeam.name) == "Belarus"
+      var components = DateComponents()
+
+      components.year = 2017
+      components.month = 10
+      components.day = 10
+      components.hour = 19
+      components.minute = 0
+      components.timeZone = TimeZone(identifier: "Europe/Paris")
+      expect(match.date) == Calendar.current.date(from: components)
+
+    } catch {
+      fail("\(error)")
+      return
+    }
+  }
+
+  func testMatchesWithCustomizedDecoder() {
+    do {
+      let request = try RequestBuilder<[MatchModel]>().setURLString("\(Params.API.baseURL)/post")
+        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/matches").build()
+
+      guard let response = try Gnomon.models(for: request).toBlocking().first() else {
+        return fail("can't extract response")
+      }
+
+      let match = response.result[0]
       expect(match.homeTeam.name) == "France"
       expect(match.awayTeam.name) == "Belarus"
 
@@ -303,6 +266,90 @@ class DecodableSpec: XCTestCase {
       components.timeZone = TimeZone(identifier: "Europe/Paris")
 
       expect(match.date) == Calendar.current.date(from: components)
+    } catch {
+      fail("\(error)")
+      return
+    }
+  }
+
+  func testXPathWithArrayIndex() {
+    do {
+      let request = try RequestBuilder<PlayerModel>().setURLString("\(Params.API.baseURL)/post")
+        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/teams[0]/players[0]").build()
+
+      let response = try Gnomon.models(for: request).toBlocking().first()
+
+      expect(response).notTo(beNil())
+
+      guard let player = response?.result else {
+        fail("can't extract response")
+        return
+      }
+
+      expect(player.firstName) == "Vasya"
+      expect(player.lastName) == "Pupkin"
+    } catch {
+      fail("\(error)")
+      return
+    }
+
+    do {
+      let request = try RequestBuilder<PlayerModel>().setURLString("\(Params.API.baseURL)/post")
+        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/teams[0]/players[1]").build()
+
+      let response = try Gnomon.models(for: request).toBlocking().first()
+
+      expect(response).notTo(beNil())
+
+      guard let player = response?.result else {
+        fail("can't extract response")
+        return
+      }
+
+      expect(player.firstName) == "Petya"
+      expect(player.lastName) == "Ronaldo"
+    } catch {
+      fail("\(error)")
+      return
+    }
+  }
+
+  func testXPathWithMultipleArrayIndices() {
+    do {
+      let request = try RequestBuilder<PlayerModel>().setURLString("\(Params.API.baseURL)/post")
+        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/teams[0]/lineups[0][0]").build()
+
+      let response = try Gnomon.models(for: request).toBlocking().first()
+
+      expect(response).notTo(beNil())
+
+      guard let player = response?.result else {
+        fail("can't extract response")
+        return
+      }
+
+      expect(player.firstName) == "Vasya"
+      expect(player.lastName) == "Pupkin"
+    } catch {
+      fail("\(error)")
+      return
+    }
+
+    do {
+      let request = try RequestBuilder<PlayerModel>().setURLString("\(Params.API.baseURL)/post")
+        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/teams[0]/lineups[0][1]").build()
+
+      let response = try Gnomon.models(for: request).toBlocking().first()
+
+      expect(response).notTo(beNil())
+
+      guard let player = response?.result else {
+        fail("can't extract response")
+        return
+      }
+
+      expect(player.firstName) == "Petya"
+      expect(player.lastName) == "Ronaldo"
     } catch {
       fail("\(error)")
       return

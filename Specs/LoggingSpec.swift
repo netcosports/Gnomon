@@ -33,17 +33,15 @@ class LoggingSpec: XCTestCase {
       Gnomon.logging = global
     }
     do {
-      let builder = RequestBuilder<SingleResult<TestModel5>>().setURLString("\(Params.API.baseURL)/get?key=123")
+      let builder = RequestBuilder<TestModel5>().setURLString("\(Params.API.baseURL)/get?key=123")
         .setMethod(.GET)
       if let reqLogging = reqLogging {
         builder.setDebugLogging(reqLogging)
       }
       let request = try builder.build()
 
-      let response = try Gnomon.models(for: request).toBlocking().first()
-      guard let result = response?.result else { throw "can't extract response" }
-
-      expect(result.model.key).to(equal(123))
+      guard let response = try Gnomon.models(for: request).toBlocking().first() else { throw "can't extract response" }
+      expect(response.result.key).to(equal(123))
     } catch {
       fail("\(error)")
     }
