@@ -36,7 +36,7 @@ class CacheSpec: XCTestCase {
         expect(elements).to(haveCount(1))
 
         expect(elements[0].result.model).to(beNil())
-        expect(elements[0].responseType) == .localCache
+        expect(elements[0].responseType) == ResponseType.localCache
       case let .failed(_, error):
         throw error
       }
@@ -62,7 +62,7 @@ class CacheSpec: XCTestCase {
         expect(elements).to(haveCount(1))
 
         expect(elements[0].result.model?.key) == 123
-        expect(elements[0].responseType) == .localCache
+        expect(elements[0].responseType) == ResponseType.localCache
       case let .failed(_, error):
         throw error
       }
@@ -88,7 +88,7 @@ class CacheSpec: XCTestCase {
         expect(elements).to(haveCount(1))
 
         expect(elements[0].result.model).to(beNil())
-        expect(elements[0].responseType) == .localCache
+        expect(elements[0].responseType) == ResponseType.localCache
       case let .failed(_, error):
         throw error
       }
@@ -114,7 +114,7 @@ class CacheSpec: XCTestCase {
         expect(elements).to(haveCount(1))
 
         expect(elements[0].result.model).to(beNil())
-        expect(elements[0].responseType) == .localCache
+        expect(elements[0].responseType) == ResponseType.localCache
       case let .failed(_, error):
         throw error
       }
@@ -140,7 +140,7 @@ class CacheSpec: XCTestCase {
         expect(elements).to(haveCount(1))
 
         expect(elements[0].result.model?.key) == 123
-        expect(elements[0].responseType) == .localCache
+        expect(elements[0].responseType) == ResponseType.localCache
       case let .failed(_, error):
         throw error
       }
@@ -168,7 +168,7 @@ class CacheSpec: XCTestCase {
         expect(responses).to(haveCount(3))
         for response in responses {
           expect(response.result.model).to(beNil())
-          expect(response.responseType) == .localCache
+          expect(response.responseType) == ResponseType.localCache
         }
       case let .failed(_, error):
         throw error
@@ -198,11 +198,11 @@ class CacheSpec: XCTestCase {
 
         expect(responses).to(haveCount(3))
         expect(responses[0].result.model?.key) == 123
-        expect(responses[0].responseType) == .localCache
+        expect(responses[0].responseType) == ResponseType.localCache
         expect(responses[1].result.model?.key) == 234
-        expect(responses[1].responseType) == .localCache
+        expect(responses[1].responseType) == ResponseType.localCache
         expect(responses[2].result.model).to(beNil())
-        expect(responses[2].responseType) == .localCache
+        expect(responses[2].responseType) == ResponseType.localCache
       case let .failed(_, error):
         throw error
       }
@@ -232,7 +232,7 @@ class CacheSpec: XCTestCase {
         expect(responses).to(haveCount(3))
         for response in responses {
           expect(response.result.model).to(beNil())
-          expect(response.responseType) == .localCache
+          expect(response.responseType) == ResponseType.localCache
         }
       case let .failed(_, error):
         throw error
@@ -264,7 +264,7 @@ class CacheSpec: XCTestCase {
         expect(responses).to(haveCount(3))
         for response in responses {
           expect(response.result.model).to(beNil())
-          expect(response.responseType) == .localCache
+          expect(response.responseType) == ResponseType.localCache
         }
       case let .failed(_, error):
         throw error
@@ -299,7 +299,7 @@ class CacheSpec: XCTestCase {
         expect(responses[1].result.model?.key) == 234
         expect(responses[1].responseType) == ResponseType.localCache
         expect(responses[2].result.model).to(beNil())
-        expect(responses[2].responseType) == .localCache
+        expect(responses[2].responseType) == ResponseType.localCache
       case let .failed(_, error):
         throw error
       }

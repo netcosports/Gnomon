@@ -25,7 +25,7 @@ public class Gnomon {
     do {
       return try observable(for: request, inLocalCache: false).flatMap { data, response -> Observable<Response<U>> in
         let type: ResponseType = response.resultFromHTTPCache && !request.disableHttpCache ? .httpCache : .regular
-        return try parse(data: data, responseType: type, for: request)
+        return try parse(data: data, response: response, responseType: type, for: request)
           .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
       }
     } catch {
@@ -47,8 +47,8 @@ public class Gnomon {
 
   public class func cachedModels<U: OptionalResult>(for request: Request<U>) -> Observable<Response<U>> {
     do {
-      return try observable(for: request, inLocalCache: true).flatMap { data, _ -> Observable<Response<U>> in
-        return try parse(data: data, responseType: .localCache, for: request)
+      return try observable(for: request, inLocalCache: true).flatMap { data, response -> Observable<Response<U>> in
+        return try parse(data: data, response: response, responseType: .localCache, for: request)
           .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
         }.catchErrorJustReturn(Response.empty(with: .localCache))
     } catch {
@@ -127,7 +127,8 @@ public class Gnomon {
     }
   }
 
-  private class func parse<U>(data: Data, responseType: ResponseType, for request: Request<U>)
+  private class func parse<U>(data: Data, response httpResponse: HTTPURLResponse, responseType: ResponseType,
+                              for request: Request<U>)
   throws -> Observable<Response<U>> {
     return Observable.create { subscriber -> Disposable in
       let result: U
@@ -138,7 +139,15 @@ public class Gnomon {
         return Disposables.create()
       }
 
-      let response = Response(result: result, responseType: responseType)
+      let headers: [String: String]
+      if let _headers = httpResponse.allHeaderFields as? [String: String] {
+        headers = _headers
+      } else {
+        headers = [:]
+      }
+
+      let response = Response(result: result, responseType: responseType, headers: headers,
+                              statusCode: httpResponse.statusCode)
       request.response?(response)
       subscriber.onNext(response)
       subscriber.onCompleted()

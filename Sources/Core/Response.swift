@@ -99,13 +99,15 @@ public struct Response<ResultType: Result> {
 
   public let result: ResultType
   public let responseType: ResponseType
+  public let headers: [String: String]
+  public let statusCode: Int
 
 }
 
 public extension Response where ResultType: OptionalResult {
 
   public static func empty(with responseType: ResponseType) -> Response<ResultType> {
-    return Response(result: .empty(), responseType: responseType)
+    return Response(result: .empty(), responseType: responseType, headers: [:], statusCode: 200)
   }
 
 }
