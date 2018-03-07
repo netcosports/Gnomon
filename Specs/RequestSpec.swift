@@ -31,7 +31,7 @@ class RequestSpec: XCTestCase {
 
       let response = try Gnomon.models(for: request).toBlocking().first()
       expect(response?.statusCode) == 200
-      expect(response?.headers.count) == 9
+      expect(response?.headers.count) != 0
 
       guard let result = response?.result else { throw "can't extract response" }
 
