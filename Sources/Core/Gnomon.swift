@@ -175,7 +175,7 @@ public class Gnomon {
     log(string)
   }
 
-  internal static var log: (String) -> Void = { string in
+  public static var log: (String) -> Void = { string in
     print(string)
   }
 
