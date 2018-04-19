@@ -140,8 +140,8 @@ public class Gnomon {
       }
 
       let headers: [String: String]
-      if let _headers = httpResponse.allHeaderFields as? [String: String] {
-        headers = _headers
+      if let responseHeaders = httpResponse.allHeaderFields as? [String: String] {
+        headers = responseHeaders
       } else {
         headers = [:]
       }
