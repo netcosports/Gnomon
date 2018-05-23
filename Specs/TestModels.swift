@@ -59,7 +59,7 @@ struct TestModel3: JSONModel {
 
     key1 = value1
     key2 = value2
-    keys = ints.flatMap({ $0.string }).flatMap { Int($0) }
+    keys = ints.compactMap({ $0.string }).compactMap { Int($0) }
   }
 
 }

@@ -71,6 +71,8 @@ public class Request<ResultType: Result> {
 
   public fileprivate(set) var authenticationChallenge: AuthenticationChallenge?
 
+  public fileprivate(set) var timeout: TimeInterval = 60
+
   public fileprivate(set) var debugLogging: Bool?
 
   public var response: ((Response<ResultType>) -> Void)?
@@ -172,6 +174,12 @@ public struct RequestBuilder<ResultType: Result> {
   @discardableResult
   public func setAuthenticationChallenge(_ value: @escaping AuthenticationChallenge) -> Builder {
     request.authenticationChallenge = value
+    return self
+  }
+
+  @discardableResult
+  public func setTimeout(_ value: TimeInterval) -> Builder {
+    request.timeout = value
     return self
   }
 

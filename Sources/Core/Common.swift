@@ -48,7 +48,7 @@ extension HTTPURLResponse {
 internal func prepareDataRequest<U>(from request: Request<U>,
                                     cachePolicy: URLRequest.CachePolicy) throws -> URLRequest {
   guard let url = URL(string: request.URLString) else { throw Gnomon.Error.invalidURL(urlString: request.URLString) }
-  var dataRequest = URLRequest(url: url, cachePolicy: cachePolicy)
+  var dataRequest = URLRequest(url: url, cachePolicy: cachePolicy, timeoutInterval: request.timeout)
   dataRequest.httpMethod = request.method.rawValue
   if let headers = request.headers {
     for (key, value) in headers {

@@ -354,4 +354,33 @@ class RequestSpec: XCTestCase {
     }
   }
 
+  func testTimeoutSuccess() {
+    do {
+      let request = try RequestBuilder<SingleResult<TestModel5>>().setURLString("\(Params.API.baseURL)/get?key=123")
+        .setMethod(.GET).setTimeout(5).build()
+
+      let response = try Gnomon.models(for: request).toBlocking().first()
+      guard let result = response?.result else { throw "can't extract response" }
+
+      expect(result.model.key).to(equal(123))
+    } catch {
+      fail("\(error)")
+    }
+  }
+
+  func testTimeoutFail() {
+    do {
+      let request = try RequestBuilder<SingleResult<TestModel5>>().setURLString("\(Params.API.baseURL)/delay/2?key=123")
+        .setMethod(.GET).setTimeout(1).build()
+
+      _ = try Gnomon.models(for: request).toBlocking().first()
+    } catch {
+      expect(error).to(beAKindOf(NSError.self))
+
+      let nsError = error as NSError
+      expect(nsError.domain) == NSURLErrorDomain
+      expect(nsError.code) == NSURLErrorTimedOut
+    }
+  }
+
 }
