@@ -31,7 +31,7 @@ DEPENDENCIES:
   - SwiftLint
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  https://github.com/cocoapods/specs.git:
     - AEXML
     - FormatterKit
     - Nimble
@@ -56,4 +56,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: eb38c40f313aed5847d88cabf179c1e8acd394ee
 
-COCOAPODS: 1.5.0
+COCOAPODS: 1.5.2
