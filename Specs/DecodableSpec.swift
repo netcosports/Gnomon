@@ -48,43 +48,35 @@ class DecodableSpec: XCTestCase {
   let data: [String: Any] = [
     "data": [
       "player": [
-        "first_name": "Vasya",
-        "last_name": "Pupkin"
+        "first_name": "Vasya", "last_name": "Pupkin"
       ],
       "players": [
         [
-          "first_name": "Vasya",
-          "last_name": "Pupkin"
+          "first_name": "Vasya", "last_name": "Pupkin"
         ],
         [
-          "first_name": "Petya",
-          "last_name": "Ronaldo"
+          "first_name": "Petya", "last_name": "Ronaldo"
         ]
       ],
       "players?": [
         [
-          "first_name": "Vasya",
-          "last_name": "Pupkin"
+          "first_name": "Vasya", "last_name": "Pupkin"
         ],
         [
-          "first_name": "Petya",
-          "last_name": "Ronaldo"
+          "first_name": "Petya", "last_name": "Ronaldo"
         ],
         [
-          "first_name": "Kek",
-          "lastname": "NoKek"
+          "first_name": "Kek", "lastname": "NoKek"
         ]
       ],
       "team": [
         "name": "France",
         "players": [
           [
-            "first_name": "Vasya",
-            "last_name": "Pupkin"
+            "first_name": "Vasya", "last_name": "Pupkin"
           ],
           [
-            "first_name": "Petya",
-            "last_name": "Ronaldo"
+            "first_name": "Petya", "last_name": "Ronaldo"
           ]
         ]
       ],
@@ -93,24 +85,30 @@ class DecodableSpec: XCTestCase {
           "name": "France",
           "players": [
             [
-              "first_name": "Vasya",
-              "last_name": "Pupkin"
+              "first_name": "Vasya", "last_name": "Pupkin"
             ],
             [
-              "first_name": "Petya",
-              "last_name": "Ronaldo"
+              "first_name": "Petya", "last_name": "Ronaldo"
+            ]
+          ],
+          "lineups": [
+            [
+              [
+                "first_name": "Vasya", "last_name": "Pupkin"
+              ],
+              [
+                "first_name": "Petya", "last_name": "Ronaldo"
+              ]
             ]
           ]
         ]
       ],
       "match": [
         "homeTeam": [
-          "name": "France",
-          "players": []
+          "name": "France", "players": []
         ],
         "awayTeam": [
-          "name": "Belarus",
-          "players": [ ]
+          "name": "Belarus", "players": []
         ],
         "date": 1507654800
       ]
@@ -191,36 +189,6 @@ class DecodableSpec: XCTestCase {
     }
   }
 
-//  func testOptionalPlayers() {
-//    do {
-//      let request = try RequestBuilder<MultipleResults<PlayerModel>>()
-//        .setURLString("\(Params.API.baseURL)/post").setMethod(.POST).setParams(.json(data))
-//        .setXPath("json/data/players?").build()
-//
-//      let response = try Gnomon.models(for: request).toBlocking().first()
-//
-//      expect(response).notTo(beNil())
-//
-//      guard let result = response?.result else {
-//        throw "can't extract response"
-//      }
-//
-//      let players = result.models
-//      expect(players.count) == 3
-//
-//      expect(players[0].firstName) == "Vasya"
-//      expect(players[0].lastName) == "Pupkin"
-//
-//      expect(players[1].firstName) == "Petya"
-//      expect(players[1].lastName) == "Ronaldo"
-//
-//      expect(players[2]).to(beNil())
-//    } catch {
-//      fail("\(error)")
-//      return
-//    }
-//  }
-
   func testXPathWithArrayIndex() {
     do {
       let request = try RequestBuilder<SingleResult<PlayerModel>>().setURLString("\(Params.API.baseURL)/post")
@@ -246,6 +214,50 @@ class DecodableSpec: XCTestCase {
     do {
       let request = try RequestBuilder<SingleResult<PlayerModel>>().setURLString("\(Params.API.baseURL)/post")
         .setMethod(.POST).setParams(.json(data)).setXPath("json/data/teams[0]/players[1]").build()
+
+      let response = try Gnomon.models(for: request).toBlocking().first()
+
+      expect(response).notTo(beNil())
+
+      guard let result = response?.result else {
+        fail("can't extract response")
+        return
+      }
+
+      let player = result.model
+      expect(player.firstName) == "Petya"
+      expect(player.lastName) == "Ronaldo"
+    } catch {
+      fail("\(error)")
+      return
+    }
+  }
+
+  func testXPathWithMultipleArrayIndices() {
+    do {
+      let request = try RequestBuilder<SingleResult<PlayerModel>>().setURLString("\(Params.API.baseURL)/post")
+        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/teams[0]/lineups[0][0]").build()
+
+      let response = try Gnomon.models(for: request).toBlocking().first()
+
+      expect(response).notTo(beNil())
+
+      guard let result = response?.result else {
+        fail("can't extract response")
+        return
+      }
+
+      let player = result.model
+      expect(player.firstName) == "Vasya"
+      expect(player.lastName) == "Pupkin"
+    } catch {
+      fail("\(error)")
+      return
+    }
+
+    do {
+      let request = try RequestBuilder<SingleResult<PlayerModel>>().setURLString("\(Params.API.baseURL)/post")
+        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/teams[0]/lineups[0][1]").build()
 
       let response = try Gnomon.models(for: request).toBlocking().first()
 

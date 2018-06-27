@@ -8,21 +8,35 @@ import Foundation
 public struct Path: CodingKey {
   public enum Component {
     case key(String)
-    case arrayIndex(String, Int)
+    case index(Int)
 
-    init(_ string: String) {
+    // swiftlint:disable:next force_try
+    private static let regex = try! NSRegularExpression(pattern: "\\[(\\d)\\]")
+
+    static func parse(string: String) -> [Component] {
       do {
         guard string.hasSuffix("]") else { throw "" }
+        guard let range = string.range(of: "(\\[(\\d)\\])+$", options: .regularExpression) else { throw "" }
 
-        guard let openRange = string.range(of: "[") else { throw "" }
-        guard let closeRange = string.range(of: "]", options: [.backwards]) else { throw "" }
+        let matches = regex.matches(in: string, range: NSRange(range, in: string))
 
-        let substring = string[openRange.upperBound..<closeRange.lowerBound]
-        guard let int = Int(substring) else { throw "" }
+        var components = [Component]()
+        components.reserveCapacity(matches.count + 1)
 
-        self = .arrayIndex(String(string[..<openRange.lowerBound]), int)
+        if range.lowerBound != string.startIndex {
+          components.append(.key(String(string[..<range.lowerBound])))
+        }
+
+        for match in matches {
+          guard match.numberOfRanges == 2 else { continue }
+
+          guard let range = Range(match.range(at: 1), in: string), let index = Int(string[range]) else { continue }
+          components.append(.index(index))
+        }
+
+        return components
       } catch {
-        self = .key(string)
+        return [.key(string)]
       }
     }
   }
@@ -32,20 +46,20 @@ public struct Path: CodingKey {
   }
 
   public init(stringComponents: [String]) {
-    self.components = stringComponents.map { Component($0) }
+    self.components = stringComponents.flatMap { Component.parse(string: $0) }
   }
 
   public var stringValue: String {
     switch components[0] {
     case let .key(key): return key
-    case let .arrayIndex(key, _): return key
+    case let .index(index): return "Index \(index)"
     }
   }
 
   public var intValue: Int? {
     switch components[0] {
     case .key: return nil
-    case .arrayIndex(_, let idx): return idx
+    case let .index(idx): return idx
     }
   }
 
@@ -64,22 +78,6 @@ public struct Path: CodingKey {
   }
 }
 
-extension Path {
-
-  private func parseArraySubscript(_ string: String) -> (String, Int?) {
-    guard string.hasSuffix("]") else { return (string, nil) }
-
-    guard let openRange = string.range(of: "[") else { return (string, nil) }
-    guard let closeRange = string.range(of: "]", options: [.backwards]) else { return (string, nil) }
-
-    let substring = string[openRange.upperBound..<closeRange.lowerBound]
-    guard let int = Int(substring) else { return (string, nil) }
-
-    return (String(string[..<openRange.lowerBound]), int)
-  }
-
-}
-
 public extension Decoder {
 
   func decoder(by stringPath: String?) throws -> Decoder {
@@ -92,7 +90,7 @@ public extension Decoder {
     var path = path
     while path.components.count > 0 {
       if let index = path.intValue {
-        var container = try decoder.container(keyedBy: Path.self).nestedUnkeyedContainer(forKey: path)
+        var container = try decoder.unkeyedContainer()
         while container.currentIndex < index {
           _ = try container.superDecoder()
         }
