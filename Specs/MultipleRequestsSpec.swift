@@ -10,8 +10,7 @@ import XCTest
 import Nimble
 import RxSwift
 import RxBlocking
-
-@testable import Gnomon
+import Gnomon
 
 // swiftlint:disable type_body_length
 
@@ -25,34 +24,6 @@ class MultipleRequestsSpec: XCTestCase {
   }
 
   func testMultipleSameType() {
-    do {
-      let requests = try (0 ... 2).map { 123 + 111 * $0 }.map {
-        return try RequestBuilder<TestModel1>()
-          .setURLString("\(Params.API.baseURL)/get?key=\($0)")
-          .setMethod(.GET).setXPath("args").build()
-      }
-
-      guard let responses = try Gnomon.models(for: requests).toBlocking().first() else {
-        throw "can't extract responses"
-      }
-
-      expect(responses).to(haveCount(3))
-
-      expect(responses[0]).notTo(beNil())
-      expect(responses[0]?.result.key) == 123
-
-      expect(responses[1]).notTo(beNil())
-      expect(responses[1]?.result.key) == 234
-
-      expect(responses[2]).notTo(beNil())
-      expect(responses[2]?.result.key) == 345
-    } catch {
-      fail("\(error)")
-      return
-    }
-  }
-
-  func testMultipleOptionalSameType() {
     do {
       var requests = try (0 ... 2).map { 123 + 111 * $0 }.map {
         return try RequestBuilder<TestModel1>()
@@ -68,16 +39,44 @@ class MultipleRequestsSpec: XCTestCase {
       }
 
       expect(responses).to(haveCount(4))
+
+      expect(responses[0].value?.result.key) == 123
+      expect(responses[1].value?.result.key) == 234
+      expect(responses[2].value?.result.key) == 345
+      expect(responses[3].error).notTo(beNil())
+    } catch {
+      fail("\(error)")
+      return
+    }
+  }
+
+  func testMultipleOptionalSameType() {
+    do {
+      var requests = try (0 ... 2).map { 123 + 111 * $0 }.map {
+        return try RequestBuilder<TestModel1?>()
+          .setURLString("\(Params.API.baseURL)/get?key=\($0)")
+          .setMethod(.GET).setXPath("args").build()
+      }
+      requests.append(try RequestBuilder()
+        .setURLString("\(Params.API.baseURL)/get?failKey=123")
+        .setMethod(.GET).setXPath("args").build())
+
+      guard let responses = try Gnomon.models(for: requests).toBlocking().first() else {
+        throw "can't extract responses"
+      }
+
+      expect(responses).to(haveCount(4))
       expect(responses[0]).notTo(beNil())
-      expect(responses[0]?.result.key).to(equal(123))
+      expect(responses[0].value?.result?.key).to(equal(123))
 
       expect(responses[1]).notTo(beNil())
-      expect(responses[1]?.result.key).to(equal(234))
+      expect(responses[1].value?.result?.key).to(equal(234))
 
       expect(responses[2]).notTo(beNil())
-      expect(responses[2]?.result.key).to(equal(345))
+      expect(responses[2].value?.result?.key).to(equal(345))
 
-      expect(responses[3]).to(beNil())
+      expect(responses[3]).notTo(beNil())
+      expect(responses[3].value?.result).to(beNil())
     } catch {
       fail("\(error)")
       return
@@ -106,13 +105,13 @@ class MultipleRequestsSpec: XCTestCase {
       expect(responses).to(haveCount(3))
 
       expect(responses[0]).notTo(beNil())
-      expect(responses[0]?.result.key) == 123
+      expect(responses[0].value?.result.key) == 123
 
       expect(responses[1]).notTo(beNil())
-      expect(responses[1]?.result.key) == 234
+      expect(responses[1].value?.result.key) == 234
 
       expect(responses[2]).notTo(beNil())
-      expect(responses[2]?.result.key) == 345
+      expect(responses[2].value?.result.key) == 345
     } catch {
       fail("\(error)")
       return
@@ -139,13 +138,15 @@ class MultipleRequestsSpec: XCTestCase {
 
       expect(responses).to(haveCount(3))
 
-      expect(responses[0]).notTo(beNil())
-      expect(responses[0]?.result.key) == 123
+      expect(responses[0].value?.result.key) == 123
 
-      expect(responses[1]).to(beNil())
+      switch responses[1] {
+      case let .error(Gnomon.Error.errorStatusCode(code, _)): expect(code) == 404
+      case let .error(error): fail("\(error)")
+      case .ok: fail("request should fail")
+      }
 
-      expect(responses[2]).notTo(beNil())
-      expect(responses[2]?.result.key) == 345
+      expect(responses[2].value?.result.key) == 345
     } catch {
       switch error {
       case Gnomon.Error.errorStatusCode(let code, let data):
@@ -211,7 +212,7 @@ class MultipleRequestsSpec: XCTestCase {
 
   func testMultipleEmptyArray() {
     do {
-      let requests = [Request<TestModel1?>]()
+      let requests = [Request<TestModel1>]()
       let optionalRequests = [Request<TestModel1?>]()
 
       expect(try Gnomon.cachedModels(for: optionalRequests).toBlocking().first()).to(haveCount(0))
@@ -219,9 +220,8 @@ class MultipleRequestsSpec: XCTestCase {
       expect(try Gnomon.models(for: requests).toBlocking().first()).to(haveCount(0))
 
       let cachedThenFetch = try Gnomon.cachedThenFetch(optionalRequests).toBlocking().toArray()
-      expect(cachedThenFetch).to(haveCount(2))
+      expect(cachedThenFetch).to(haveCount(1))
       expect(cachedThenFetch[0]).to(haveCount(0))
-      expect(cachedThenFetch[1]).to(haveCount(0))
     } catch {
       fail("\(error)")
       return

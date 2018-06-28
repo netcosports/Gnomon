@@ -158,7 +158,8 @@ class CacheSpec: XCTestCase {
         let responses = elements[0]
         expect(responses).to(haveCount(3))
         for response in responses {
-          expect(response).to(beNil())
+          expect(response).notTo(beNil())
+          expect(response.error).notTo(beNil())
         }
       case let .failed(_, error):
         throw error
@@ -176,9 +177,9 @@ class CacheSpec: XCTestCase {
           .setURLString("\(Params.API.baseURL)/get?key=\($0)")
           .setMethod(.GET).setXPath("args").build()
       }
-      let sequence = Gnomon.models(for: Array(requests.dropLast())).flatMapLatest { _ in
+      let sequence = Gnomon.models(for: Array(requests.dropLast())).debug().flatMapLatest { _ in
         return Gnomon.cachedModels(for: requests)
-      }.toBlocking().materialize()
+      }.debug().toBlocking().materialize()
 
       switch sequence {
       case let .completed(elements):
@@ -187,11 +188,11 @@ class CacheSpec: XCTestCase {
         let responses = elements[0]
 
         expect(responses).to(haveCount(3))
-        expect(responses[0]?.result?.key) == 123
-        expect(responses[0]?.type) == .localCache
-        expect(responses[1]?.result?.key) == 234
-        expect(responses[1]?.type) == .localCache
-        expect(responses[2]).to(beNil())
+        expect(responses[0].value?.result?.key) == 123
+        expect(responses[0].value?.type) == .localCache
+        expect(responses[1].value?.result?.key) == 234
+        expect(responses[1].value?.type) == .localCache
+        expect(responses[2].value).to(beNil())
       case let .failed(_, error):
         throw error
       }
@@ -220,7 +221,8 @@ class CacheSpec: XCTestCase {
         let responses = elements[0]
         expect(responses).to(haveCount(3))
         for response in responses {
-          expect(response).to(beNil())
+          expect(response).notTo(beNil())
+          expect(response.error).notTo(beNil())
         }
       case let .failed(_, error):
         throw error
@@ -251,7 +253,8 @@ class CacheSpec: XCTestCase {
         let responses = elements[0]
         expect(responses).to(haveCount(3))
         for response in responses {
-          expect(response).to(beNil())
+          expect(response).notTo(beNil())
+          expect(response.error).notTo(beNil())
         }
       case let .failed(_, error):
         throw error
@@ -281,15 +284,15 @@ class CacheSpec: XCTestCase {
         let responses = elements[0]
         expect(responses).to(haveCount(3))
 
-        expect(responses[0]).notTo(beNil())
-        expect(responses[0]?.result?.key) == 123
-        expect(responses[0]?.type) == .localCache
+        expect(responses[0].value).notTo(beNil())
+        expect(responses[0].value?.result?.key) == 123
+        expect(responses[0].value?.type) == .localCache
 
-        expect(responses[1]).notTo(beNil())
-        expect(responses[1]?.result?.key) == 234
-        expect(responses[1]?.type) == .localCache
+        expect(responses[1].value).notTo(beNil())
+        expect(responses[1].value?.result?.key) == 234
+        expect(responses[1].value?.type) == .localCache
 
-        expect(responses[2]).to(beNil())
+        expect(responses[2].value).to(beNil())
       case let .failed(_, error):
         throw error
       }

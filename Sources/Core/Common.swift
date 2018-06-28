@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import RxSwift
 
 extension String: Error {
 }
@@ -191,3 +192,56 @@ internal func validated(response: Any) throws -> (result: [String: Any], isArray
 }
 
 public typealias Interceptor = (URLRequest) -> URLRequest
+
+public enum Result<T> {
+  case ok(T)
+  case error(Error)
+}
+
+public extension Result {
+
+  var value: T? {
+    switch self {
+    case let .ok(value): return value
+    case .error: return nil
+    }
+  }
+
+  var error: Error? {
+    switch self {
+    case .ok: return nil
+    case let .error(error): return error
+    }
+  }
+
+  func map<U>(_ transform: (T) throws -> U) rethrows -> Result<U> {
+    switch self {
+    case let .ok(value):
+      return .ok(try transform(value))
+    case let .error(error):
+      return .error(error)
+    }
+  }
+
+  func value(or `default`: T) -> T {
+    switch self {
+    case let .ok(value): return value
+    case .error: return `default`
+    }
+  }
+
+}
+
+extension ObservableType {
+
+  func asResult() -> Observable<Result<E>> {
+    return materialize().map { event -> Event<Result<E>> in
+      switch event {
+      case let .next(element): return .next(.ok(element))
+      case let .error(error): return .next(.error(error))
+      case .completed: return .completed
+      }
+    }.dematerialize()
+  }
+
+}
