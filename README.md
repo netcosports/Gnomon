@@ -134,7 +134,7 @@ class UsersViewController: UIViewController, Loader {
     tableView.source.loader = self
   }
 
-  func performLoading(intent: LoaderIntent) -> SectionObservable? {
+  func load(for intent: LoaderIntent) -> SectionObservable? {
     return Astrolabe.load(pLoader: self, intent: intent)
   }
 }
