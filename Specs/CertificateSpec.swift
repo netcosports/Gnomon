@@ -23,12 +23,10 @@ class CertificateSpec: XCTestCase {
 
   func testInvalidCertificate() {
     do {
-      let builder = RequestBuilder<String>()
-        .setURLString("https://self-signed.badssl.com/").setMethod(.GET)
-      builder.setAuthenticationChallenge { challenge, completionHandler -> Void in
+      let request = try Request<String>(URLString: "https://self-signed.badssl.com/").setMethod(.GET)
+      request.authenticationChallenge = { challenge, completionHandler -> Void in
         completionHandler(.useCredential, URLCredential(trust: challenge.protectionSpace.serverTrust!))
       }
-      let request = try builder.build()
 
       guard let response = try Gnomon.models(for: request).toBlocking().first() else {
         return fail("can't extract response")
@@ -42,19 +40,15 @@ class CertificateSpec: XCTestCase {
   }
 
   func testInvalidCertificateWithoutHandler() {
-    var err: NSError?
     do {
-      let builder = RequestBuilder<String>()
-        .setURLString("https://self-signed.badssl.com/").setMethod(.GET)
-      let request = try builder.build()
-
+      let request = try Request<String>(URLString: "https://self-signed.badssl.com/").setMethod(.GET)
       let result = try Gnomon.models(for: request).toBlocking().first()
       expect(result).to(beNil())
-    } catch let e where e is String {
-      fail("\(e)")
+    } catch let error as NSError {
+      expect(error.domain) == NSURLErrorDomain
+      expect(error.code) == NSURLErrorServerCertificateUntrusted
     } catch {
-      err = error as NSError
-      expect(err).toNot(beNil())
+      fail("\(error)")
     }
   }
 

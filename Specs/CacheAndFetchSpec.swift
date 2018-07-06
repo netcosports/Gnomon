@@ -24,9 +24,8 @@ class CacheAndFetchSpec: XCTestCase {
 
   func testNoCachedValue() {
     do {
-      let request = try RequestBuilder<TestModel1?>()
-        .setURLString("\(Params.API.baseURL)/get?key=123").setMethod(.GET)
-        .setXPath("args").build()
+      let request = try Request<TestModel1?>(URLString: "\(Params.API.baseURL)/get?key=123").setMethod(.GET)
+        .setXPath("args")
       let responses = try Gnomon.cachedThenFetch(request).toBlocking().toArray()
 
       expect(responses).to(haveCount(1))
@@ -41,9 +40,8 @@ class CacheAndFetchSpec: XCTestCase {
 
   func testNoCachedValueCancel() {
     do {
-      let request = try RequestBuilder<TestModel1?>()
-        .setURLString("\(Params.API.baseURL)/get?key=123").setMethod(.GET)
-        .setXPath("args").build()
+      let request = try Request<TestModel1?>(URLString: "\(Params.API.baseURL)/get?key=123").setMethod(.GET)
+        .setXPath("args")
 
       let disposable = Gnomon.cachedThenFetch(request).subscribe()
       disposable.dispose()
@@ -55,9 +53,8 @@ class CacheAndFetchSpec: XCTestCase {
 
   func testCachedValueStored() {
     do {
-      let request = try RequestBuilder<TestModel1?>()
-        .setURLString("\(Params.API.baseURL)/cache/120?key=123").setMethod(.GET)
-        .setXPath("args").build()
+      let request = try Request<TestModel1?>(URLString: "\(Params.API.baseURL)/cache/120?key=123").setMethod(.GET)
+        .setXPath("args")
 
       let responses = try Gnomon.models(for: request)
         .flatMapLatest { response -> Observable<Response<TestModel1?>> in
@@ -79,9 +76,8 @@ class CacheAndFetchSpec: XCTestCase {
 
   func testCachedValueStoredIgnoreCacheEnabled() {
     do {
-      let request = try RequestBuilder<TestModel1?>()
-        .setURLString("\(Params.API.baseURL)/cache/120?key=123").setMethod(.GET).setDisableCache(true)
-        .setXPath("args").build()
+      let request = try Request<TestModel1?>(URLString: "\(Params.API.baseURL)/cache/120?key=123").setMethod(.GET).setDisableCache(true)
+        .setXPath("args")
 
       let responses = try Gnomon.models(for: request)
         .flatMapLatest { response -> Observable<Response<TestModel1?>> in
@@ -101,9 +97,8 @@ class CacheAndFetchSpec: XCTestCase {
 
   func testCachedValueStoredIgnoreLocalCacheEnabled() {
     do {
-      let request = try RequestBuilder<TestModel1?>()
-        .setURLString("\(Params.API.baseURL)/cache/120?key=123").setMethod(.GET).setDisableLocalCache(true)
-        .setXPath("args").build()
+      let request = try Request<TestModel1?>(URLString: "\(Params.API.baseURL)/cache/120?key=123").setMethod(.GET).setDisableLocalCache(true)
+        .setXPath("args")
 
       let responses = try Gnomon.models(for: request)
         .flatMapLatest { response -> Observable<Response<TestModel1?>> in
@@ -123,9 +118,8 @@ class CacheAndFetchSpec: XCTestCase {
 
   func testCachedValueStoredIgnoreHttpCacheEnabled() {
     do {
-      let request = try RequestBuilder<TestModel1?>()
-        .setURLString("\(Params.API.baseURL)/cache/120?key=123").setMethod(.GET).setDisableHttpCache(true)
-        .setXPath("args").build()
+      let request = try Request<TestModel1?>(URLString: "\(Params.API.baseURL)/cache/120?key=123").setMethod(.GET).setDisableHttpCache(true)
+        .setXPath("args")
 
       let responses = try Gnomon.models(for: request)
         .flatMapLatest { response -> Observable<Response<TestModel1?>> in

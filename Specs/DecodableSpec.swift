@@ -130,8 +130,8 @@ class DecodableSpec: XCTestCase {
 
   func testTeam() {
     do {
-      let request = try RequestBuilder<TeamModel>().setURLString("\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/team").build()
+      let request = try Request<TeamModel>(URLString: "\(Params.API.baseURL)/post")
+        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/team")
 
       guard let response = try Gnomon.models(for: request).toBlocking().first() else {
         return fail("can't extract response")
@@ -153,8 +153,8 @@ class DecodableSpec: XCTestCase {
 
   func testPlayer() {
     do {
-      let request = try RequestBuilder<PlayerModel>().setURLString("\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/player").build()
+      let request = try Request<PlayerModel>(URLString: "\(Params.API.baseURL)/post")
+        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/player")
 
       guard let response = try Gnomon.models(for: request).toBlocking().first() else {
         return fail("can't extract response")
@@ -171,8 +171,8 @@ class DecodableSpec: XCTestCase {
 
   func testPlayers() {
     do {
-      let request = try RequestBuilder<[PlayerModel]>().setURLString("\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/players").build()
+      let request = try Request<[PlayerModel]>(URLString: "\(Params.API.baseURL)/post")
+        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/players")
       guard let response = try Gnomon.models(for: request).toBlocking().first() else {
 
         return fail("can't extract response")
@@ -192,9 +192,9 @@ class DecodableSpec: XCTestCase {
 
   func testOptionalPlayers() {
     do {
-      let request = try RequestBuilder<[PlayerModel?]>()
-        .setURLString("\(Params.API.baseURL)/post").setMethod(.POST).setParams(.json(data))
-        .setXPath("json/data/players?").build()
+      let request = try Request<[PlayerModel?]>(URLString: "\(Params.API.baseURL)/post")
+        .setMethod(.POST).setParams(.json(data))
+        .setXPath("json/data/players?")
 
       guard let response = try Gnomon.models(for: request).toBlocking().first() else {
         return fail("can't extract response")
@@ -218,8 +218,8 @@ class DecodableSpec: XCTestCase {
 
   func testMatchWithCustomizedDecoder() {
     do {
-      let request = try RequestBuilder<MatchModel>().setURLString("\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/match").build()
+      let request = try Request<MatchModel>(URLString: "\(Params.API.baseURL)/post")
+        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/match")
 
       guard let response = try Gnomon.models(for: request).toBlocking().first() else {
         return fail("can't extract response")
@@ -246,8 +246,8 @@ class DecodableSpec: XCTestCase {
 
   func testMatchesWithCustomizedDecoder() {
     do {
-      let request = try RequestBuilder<[MatchModel]>().setURLString("\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/matches").build()
+      let request = try Request<[MatchModel]>(URLString: "\(Params.API.baseURL)/post")
+        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/matches")
 
       guard let response = try Gnomon.models(for: request).toBlocking().first() else {
         return fail("can't extract response")
@@ -274,8 +274,8 @@ class DecodableSpec: XCTestCase {
 
   func testXPathWithArrayIndex() {
     do {
-      let request = try RequestBuilder<PlayerModel>().setURLString("\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/teams[0]/players[0]").build()
+      let request = try Request<PlayerModel>(URLString: "\(Params.API.baseURL)/post")
+        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/teams[0]/players[0]")
 
       let response = try Gnomon.models(for: request).toBlocking().first()
 
@@ -294,8 +294,8 @@ class DecodableSpec: XCTestCase {
     }
 
     do {
-      let request = try RequestBuilder<PlayerModel>().setURLString("\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/teams[0]/players[1]").build()
+      let request = try Request<PlayerModel>(URLString: "\(Params.API.baseURL)/post")
+        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/teams[0]/players[1]")
 
       let response = try Gnomon.models(for: request).toBlocking().first()
 
@@ -316,8 +316,8 @@ class DecodableSpec: XCTestCase {
 
   func testXPathWithMultipleArrayIndices() {
     do {
-      let request = try RequestBuilder<PlayerModel>().setURLString("\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/teams[0]/lineups[0][0]").build()
+      let request = try Request<PlayerModel>(URLString: "\(Params.API.baseURL)/post")
+        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/teams[0]/lineups[0][0]")
 
       let response = try Gnomon.models(for: request).toBlocking().first()
 
@@ -336,8 +336,8 @@ class DecodableSpec: XCTestCase {
     }
 
     do {
-      let request = try RequestBuilder<PlayerModel>().setURLString("\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/teams[0]/lineups[0][1]").build()
+      let request = try Request<PlayerModel>(URLString: "\(Params.API.baseURL)/post")
+        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/teams[0]/lineups[0][1]")
 
       let response = try Gnomon.models(for: request).toBlocking().first()
 

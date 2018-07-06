@@ -26,8 +26,8 @@ class RequestSpec: XCTestCase {
 
   func testPlainSingleRequest() {
     do {
-      let request = try RequestBuilder<TestModel5>().setURLString("\(Params.API.baseURL)/get?key=123")
-        .setMethod(.GET).build()
+      let request = try Request<TestModel5>(URLString: "\(Params.API.baseURL)/get?key=123")
+        .setMethod(.GET)
 
       let response = try Gnomon.models(for: request).toBlocking().first()
       expect(response?.statusCode) == 200
@@ -43,8 +43,8 @@ class RequestSpec: XCTestCase {
 
   func testSingleOptionalSuccessfulRequest() {
     do {
-      let request = try RequestBuilder<TestModel5?>().setURLString("\(Params.API.baseURL)/get?key=123")
-        .setMethod(.GET).build()
+      let request = try Request<TestModel5?>(URLString: "\(Params.API.baseURL)/get?key=123")
+        .setMethod(.GET)
 
       guard let response = try Gnomon.models(for: request).toBlocking().first() else { throw "can't extract response" }
 
@@ -57,8 +57,8 @@ class RequestSpec: XCTestCase {
 
   func testSingleOptionalFailedRequest() {
     do {
-      let request = try RequestBuilder<TestModel5?>().setURLString("\(Params.API.baseURL)/get?invalid=123")
-        .setMethod(.GET).build()
+      let request = try Request<TestModel5?>(URLString: "\(Params.API.baseURL)/get?invalid=123")
+        .setMethod(.GET)
 
       guard let response = try Gnomon.models(for: request).toBlocking().first() else { throw "can't extract response" }
       expect(response.result).to(beNil())
@@ -69,12 +69,12 @@ class RequestSpec: XCTestCase {
 
   func testArrayRequest() {
     do {
-      let request = try RequestBuilder<[TestModel1]>().setURLString("\(Params.API.baseURL)/post")
+      let request = try Request<[TestModel1]>(URLString: "\(Params.API.baseURL)/post")
         .setMethod(.POST).setParams(.json(["array": [
           ["key": "123"],
           ["key": "234"],
           ["key": "345"]
-        ]])).setXPath("json/array").build()
+        ]])).setXPath("json/array")
 
       let response = try Gnomon.models(for: request).toBlocking().first()
       guard let result = response?.result else { throw "can't extract response" }
@@ -89,12 +89,12 @@ class RequestSpec: XCTestCase {
 
   func testOptionalArraySuccessfulRequest() {
     do {
-      let request = try RequestBuilder<[TestModel1]?>().setURLString("\(Params.API.baseURL)/post")
+      let request = try Request<[TestModel1]?>(URLString: "\(Params.API.baseURL)/post")
         .setMethod(.POST).setParams(.json(["array": [
           ["key": "123"],
           ["key": "234"],
           ["key": "345"]
-          ]])).setXPath("json/array").build()
+        ]])).setXPath("json/array")
 
       guard let response = try Gnomon.models(for: request).toBlocking().first() else { throw "can't extract response" }
 
@@ -111,8 +111,8 @@ class RequestSpec: XCTestCase {
 
   func testOptionalArrayFailedRequest() {
     do {
-      let request = try RequestBuilder<[TestModel1]?>().setURLString("\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(["_": []])).setXPath("json/array").build()
+      let request = try Request<[TestModel1]?>(URLString: "\(Params.API.baseURL)/post")
+        .setMethod(.POST).setParams(.json(["_": []])).setXPath("json/array")
 
       guard let response = try Gnomon.models(for: request).toBlocking().first() else { throw "can't extract response" }
       expect(response.result).to(beNil())
@@ -123,12 +123,12 @@ class RequestSpec: XCTestCase {
 
   func testArrayOfOptionalsSuccessfulRequest() {
     do {
-      let request = try RequestBuilder<[TestModel1?]>().setURLString("\(Params.API.baseURL)/post")
+      let request = try Request<[TestModel1?]>(URLString: "\(Params.API.baseURL)/post")
         .setMethod(.POST).setParams(.json(["array": [
           ["key": "123"],
           ["key": "234"],
           ["key": "345"]
-        ]])).setXPath("json/array").build()
+        ]])).setXPath("json/array")
 
       guard let response = try Gnomon.models(for: request).toBlocking().first() else { throw "can't extract response" }
 
@@ -143,12 +143,12 @@ class RequestSpec: XCTestCase {
 
   func testArrayOfOptionalsFailedRequest() {
     do {
-      let request = try RequestBuilder<[TestModel1?]>().setURLString("\(Params.API.baseURL)/post")
+      let request = try Request<[TestModel1?]>(URLString: "\(Params.API.baseURL)/post")
         .setMethod(.POST).setParams(.json(["array": [
           ["key": "123"],
           ["_key": "234"],
           ["key": "345"]
-        ]])).setXPath("json/array").build()
+        ]])).setXPath("json/array")
 
       guard let response = try Gnomon.models(for: request).toBlocking().first() else { throw "can't extract response" }
 
@@ -163,9 +163,8 @@ class RequestSpec: XCTestCase {
 
   func testSingleGETWithParamsRequest() {
     do {
-      let request = try RequestBuilder<TestModel3>()
-        .setURLString("\(Params.API.baseURL)/get?key1=123").setMethod(.GET)
-        .setParams(["key2": "234", "key3": [345, 456]]).build()
+      let request = try Request<TestModel3>(URLString: "\(Params.API.baseURL)/get?key1=123").setMethod(.GET)
+        .setParams(["key2": "234", "key3": [345, 456]])
 
       let response = try Gnomon.models(for: request).toBlocking().first()
       guard let result = response?.result else { throw "can't extract response" }
@@ -181,8 +180,8 @@ class RequestSpec: XCTestCase {
 
   func testPlainSinglePOSTWithParamsRequest() {
     do {
-      let request = try RequestBuilder<TestModel4>().setURLString("\(Params.API.baseURL)/post?key1=123")
-        .setMethod(.POST).setParams(["key2": "234"]).build()
+      let request = try Request<TestModel4>(URLString: "\(Params.API.baseURL)/post?key1=123")
+        .setMethod(.POST).setParams(["key2": "234"])
 
       let response = try Gnomon.models(for: request).toBlocking().first()
 
@@ -202,9 +201,8 @@ class RequestSpec: XCTestCase {
 
   func testPlainSinglePOSTWithJSONParamsRequest() {
     do {
-      let request: Request<TestModel6> = try RequestBuilder()
-        .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
-        .setParams(.json(["key": "123"])).setXPath("json").build()
+      let request = try Request<TestModel6>(URLString: "\(Params.API.baseURL)/post").setMethod(.POST)
+        .setParams(.json(["key": "123"])).setXPath("json")
 
       let response = try Gnomon.models(for: request).toBlocking().first()
 
@@ -223,9 +221,8 @@ class RequestSpec: XCTestCase {
 
   func testPlainSinglePOSTWithMixedParamsRequest() {
     do {
-      let request: Request<TestModel7> = try RequestBuilder()
-        .setURLString("\(Params.API.baseURL)/post?key1=123").setMethod(.POST)
-        .setParams(.json(["key2": "234"])).build()
+      let request = try Request<TestModel7>(URLString: "\(Params.API.baseURL)/post?key1=123").setMethod(.POST)
+        .setParams(.json(["key2": "234"]))
 
       let response = try Gnomon.models(for: request).toBlocking().first()
 
@@ -245,8 +242,7 @@ class RequestSpec: XCTestCase {
 
   func testStringRequest() {
     do {
-      let request = try RequestBuilder<String>()
-        .setURLString("\(Params.API.baseURL)/robots.txt").setMethod(.GET).build()
+      let request = try Request<String>(URLString: "\(Params.API.baseURL)/robots.txt").setMethod(.GET)
 
       guard let response = try Gnomon.models(for: request).toBlocking().first() else {
         throw "can't extract response"
@@ -261,8 +257,7 @@ class RequestSpec: XCTestCase {
 
   func testErrorStatusCode() {
     do {
-      let request = try RequestBuilder<TestModel1>()
-        .setURLString("\(Params.API.baseURL)/status/403").setMethod(.GET).build()
+      let request = try Request<TestModel1>(URLString: "\(Params.API.baseURL)/status/403").setMethod(.GET)
 
       _ = try Gnomon.models(for: request).toBlocking().first()
     } catch let e {
@@ -279,18 +274,6 @@ class RequestSpec: XCTestCase {
     fail("request should fail")
   }
 
-  func testPublicAccessToRequestBuilderRequest() {
-    do {
-      let builder = RequestBuilder<TestModel5>().setURLString("\(Params.API.baseURL)/get?key=123")
-        .setMethod(.GET)
-      _ = builder.request.headers
-      _ = try builder.build()
-    } catch {
-      fail("\(error)")
-      return
-    }
-  }
-
   func testCustomDataRequest() {
     do {
       guard let url = Bundle(for: type(of: self)).url(forResource: "image", withExtension: "png") else {
@@ -299,9 +282,8 @@ class RequestSpec: XCTestCase {
 
       let data = try Data(contentsOf: url)
 
-      let request: Request<DataModel> = try RequestBuilder()
-        .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
-        .setParams(.data(data, contentType: "image/png")).build()
+      let request = try Request<DataModel>(URLString: "\(Params.API.baseURL)/post").setMethod(.POST)
+        .setParams(.data(data, contentType: "image/png"))
 
       let response = try Gnomon.models(for: request).toBlocking().first()
 
@@ -320,8 +302,8 @@ class RequestSpec: XCTestCase {
 
   func testTimeoutSuccess() {
     do {
-      let request = try RequestBuilder<TestModel5>().setURLString("\(Params.API.baseURL)/get?key=123")
-        .setMethod(.GET).setTimeout(5).build()
+      let request = try Request<TestModel5>(URLString: "\(Params.API.baseURL)/get?key=123")
+        .setMethod(.GET).setTimeout(5)
 
       let response = try Gnomon.models(for: request).toBlocking().first()
       guard let result = response?.result else { throw "can't extract response" }
@@ -334,8 +316,8 @@ class RequestSpec: XCTestCase {
 
   func testTimeoutFail() {
     do {
-      let request = try RequestBuilder<TestModel5>().setURLString("\(Params.API.baseURL)/delay/2?key=123")
-        .setMethod(.GET).setTimeout(1).build()
+      let request = try Request<TestModel5>(URLString: "\(Params.API.baseURL)/delay/2?key=123")
+        .setMethod(.GET).setTimeout(1)
 
       _ = try Gnomon.models(for: request).toBlocking().first()
     } catch {

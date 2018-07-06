@@ -31,8 +31,8 @@ class InterceptorSpec: XCTestCase {
     }
 
     do {
-      let request = try RequestBuilder<TestModel8>().setURLString("\(Params.API.baseURL)/post")
-        .setParams(["test": "test"]).setMethod(.POST).build()
+      let request = try Request<TestModel8>(URLString: "\(Params.API.baseURL)/post")
+        .setParams(["test": "test"]).setMethod(.POST)
       guard let response = try Gnomon.models(for: request).toBlocking().first() else {
         return fail("can't extract response")
       }
@@ -42,8 +42,8 @@ class InterceptorSpec: XCTestCase {
     }
 
     do {
-      let request = try RequestBuilder<TestModel8>().setURLString("\(Params.API.baseURL)/get")
-        .setMethod(.GET).build()
+      let request = try Request<TestModel8>(URLString: "\(Params.API.baseURL)/get")
+        .setMethod(.GET)
       guard let response = try Gnomon.models(for: request).toBlocking().first() else {
         return fail("can't extract response")
       }
@@ -70,8 +70,8 @@ class InterceptorSpec: XCTestCase {
         }
         return request
       }
-      let request = try RequestBuilder<TestModel8>().setURLString("\(Params.API.baseURL)/post")
-        .setParams(["test": "test"]).setMethod(.POST).setInterceptor(interceptor, exclusive: true).build()
+      let request = try Request<TestModel8>(URLString: "\(Params.API.baseURL)/post")
+        .setParams(["test": "test"]).setMethod(.POST).setInterceptor(interceptor, exclusive: true)
       guard let response = try Gnomon.models(for: request).toBlocking().first() else {
         return fail("can't extract response")
       }
@@ -99,8 +99,8 @@ class InterceptorSpec: XCTestCase {
         }
         return request
       }
-      let request = try RequestBuilder<TestModel8>().setURLString("\(Params.API.baseURL)/post")
-        .setParams(["test": "test"]).setMethod(.POST).setInterceptor(interceptor, exclusive: false).build()
+      let request = try Request<TestModel8>(URLString: "\(Params.API.baseURL)/post")
+        .setParams(["test": "test"]).setMethod(.POST).setInterceptor(interceptor, exclusive: false)
       guard let response = try Gnomon.models(for: request).toBlocking().first() else {
         return fail("can't extract response")
       }
@@ -128,8 +128,8 @@ class InterceptorSpec: XCTestCase {
         }
         return request
       }
-      let request = try RequestBuilder<TestModel8>().setURLString("\(Params.API.baseURL)/post")
-        .setParams(["test": "test"]).setMethod(.POST).setInterceptor(interceptor, exclusive: false).build()
+      let request = try Request<TestModel8>(URLString: "\(Params.API.baseURL)/post")
+        .setParams(["test": "test"]).setMethod(.POST).setInterceptor(interceptor, exclusive: false)
       guard let response = try Gnomon.models(for: request).toBlocking().first() else {
         return fail("can't extract response")
       }

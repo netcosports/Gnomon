@@ -26,13 +26,11 @@ class MultipleRequestsSpec: XCTestCase {
   func testMultipleSameType() {
     do {
       var requests = try (0 ... 2).map { 123 + 111 * $0 }.map {
-        return try RequestBuilder<TestModel1>()
-          .setURLString("\(Params.API.baseURL)/get?key=\($0)")
-          .setMethod(.GET).setXPath("args").build()
+        return try Request<TestModel1>(URLString: "\(Params.API.baseURL)/get?key=\($0)")
+          .setMethod(.GET).setXPath("args")
       }
-      requests.append(try RequestBuilder()
-        .setURLString("\(Params.API.baseURL)/get?failKey=123")
-        .setMethod(.GET).setXPath("args").build())
+      requests.append(try Request(URLString: "\(Params.API.baseURL)/get?failKey=123")
+        .setMethod(.GET).setXPath("args"))
 
       guard let responses = try Gnomon.models(for: requests).toBlocking().first() else {
         throw "can't extract responses"
@@ -53,13 +51,11 @@ class MultipleRequestsSpec: XCTestCase {
   func testMultipleOptionalSameType() {
     do {
       var requests = try (0 ... 2).map { 123 + 111 * $0 }.map {
-        return try RequestBuilder<TestModel1?>()
-          .setURLString("\(Params.API.baseURL)/get?key=\($0)")
-          .setMethod(.GET).setXPath("args").build()
+        return try Request<TestModel1?>(URLString: "\(Params.API.baseURL)/get?key=\($0)")
+          .setMethod(.GET).setXPath("args")
       }
-      requests.append(try RequestBuilder()
-        .setURLString("\(Params.API.baseURL)/get?failKey=123")
-        .setMethod(.GET).setXPath("args").build())
+      requests.append(try Request(URLString: "\(Params.API.baseURL)/get?failKey=123")
+        .setMethod(.GET).setXPath("args"))
 
       guard let responses = try Gnomon.models(for: requests).toBlocking().first() else {
         throw "can't extract responses"
@@ -87,15 +83,12 @@ class MultipleRequestsSpec: XCTestCase {
   func testMultipleOrder() {
     do {
       let requests = [
-        try RequestBuilder<TestModel1>()
-          .setURLString("\(Params.API.baseURL)/delay/0.3?key=123")
-          .setMethod(.GET).setXPath("args").build(),
-        try RequestBuilder<TestModel1>()
-          .setURLString("\(Params.API.baseURL)/delay/0.2?key=234")
-          .setMethod(.GET).setXPath("args").build(),
-        try RequestBuilder<TestModel1>()
-          .setURLString("\(Params.API.baseURL)/delay/0.1?key=345")
-          .setMethod(.GET).setXPath("args").build()
+        try Request<TestModel1>(URLString: "\(Params.API.baseURL)/delay/0.3?key=123")
+          .setMethod(.GET).setXPath("args"),
+        try Request<TestModel1>(URLString: "\(Params.API.baseURL)/delay/0.2?key=234")
+          .setMethod(.GET).setXPath("args"),
+        try Request<TestModel1>(URLString: "\(Params.API.baseURL)/delay/0.1?key=345")
+          .setMethod(.GET).setXPath("args")
       ]
 
       guard let responses = try Gnomon.models(for: requests).toBlocking().first() else {
@@ -121,15 +114,12 @@ class MultipleRequestsSpec: XCTestCase {
   func testMultipleOrderOneFail() {
     do {
       let requests = [
-        try RequestBuilder<TestModel1>()
-          .setURLString("\(Params.API.baseURL)/delay/0.3?key=123")
-          .setMethod(.GET).setXPath("args").build(),
-        try RequestBuilder<TestModel1>()
-          .setURLString("\(Params.API.baseURL)/status/404?key=234")
-          .setMethod(.GET).setXPath("args").build(),
-        try RequestBuilder<TestModel1>()
-          .setURLString("\(Params.API.baseURL)/delay/0.1?key=345")
-          .setMethod(.GET).setXPath("args").build()
+        try Request<TestModel1>(URLString: "\(Params.API.baseURL)/delay/0.3?key=123")
+          .setMethod(.GET).setXPath("args"),
+        try Request<TestModel1>(URLString: "\(Params.API.baseURL)/status/404?key=234")
+          .setMethod(.GET).setXPath("args"),
+        try Request<TestModel1>(URLString: "\(Params.API.baseURL)/delay/0.1?key=345")
+          .setMethod(.GET).setXPath("args")
       ]
 
       guard let responses = try Gnomon.models(for: requests).toBlocking().first() else {
@@ -160,12 +150,10 @@ class MultipleRequestsSpec: XCTestCase {
 
   func testMultipleDifferent() {
     do {
-      let request1 = try RequestBuilder<TestModel1>()
-        .setURLString("\(Params.API.baseURL)/get?key=1")
-        .setMethod(.GET).setXPath("args").build()
-      let request2 = try RequestBuilder<TestModel2>()
-        .setURLString("\(Params.API.baseURL)/get?otherKey=2")
-        .setMethod(.GET).setXPath("args").build()
+      let request1 = try Request<TestModel1>(URLString: "\(Params.API.baseURL)/get?key=1")
+        .setMethod(.GET).setXPath("args")
+      let request2 = try Request<TestModel2>(URLString: "\(Params.API.baseURL)/get?otherKey=2")
+        .setMethod(.GET).setXPath("args")
 
       let responses = try Observable.zip(
         Gnomon.models(for: request1),
@@ -188,12 +176,10 @@ class MultipleRequestsSpec: XCTestCase {
 
   func testMultipleDifferentOneFail() {
     do {
-      let request1 = try RequestBuilder<TestModel1>()
-        .setURLString("\(Params.API.baseURL)/get?key=1")
-        .setMethod(.GET).setXPath("args").build()
-      let request2 = try RequestBuilder<TestModel2>()
-        .setURLString("\(Params.API.baseURL)/get?failKey=2")
-        .setMethod(.GET).setXPath("args").build()
+      let request1 = try Request<TestModel1>(URLString: "\(Params.API.baseURL)/get?key=1")
+        .setMethod(.GET).setXPath("args")
+      let request2 = try Request<TestModel2>(URLString: "\(Params.API.baseURL)/get?failKey=2")
+        .setMethod(.GET).setXPath("args")
 
       guard let responses = try Observable.zip(
         Gnomon.models(for: request1),

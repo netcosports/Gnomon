@@ -47,9 +47,8 @@ class MultipartSpec: XCTestCase {
 
   func testSimpleParams() {
     do {
-      let request = try RequestBuilder<MultipartModel>()
-        .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
-        .setParams(.multipart(["text": "Hello World", "number": "42"], [:])).build()
+      let request = try Request<MultipartModel>(URLString: "\(Params.API.baseURL)/post").setMethod(.POST)
+        .setParams(.multipart(["text": "Hello World", "number": "42"], [:]))
 
       guard let response = try Gnomon.models(for: request).toBlocking().first() else {
         return fail("can't extract response")
@@ -72,9 +71,8 @@ class MultipartSpec: XCTestCase {
       let data = try Data(contentsOf: url)
       let file = MultipartFile(data: data, contentType: "application/zip", filename: "test_file.zip")
 
-      let request = try RequestBuilder<MultipartModel>()
-        .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
-        .setParams(.multipart([:], ["file": file])).build()
+      let request = try Request<MultipartModel>(URLString: "\(Params.API.baseURL)/post").setMethod(.POST)
+        .setParams(.multipart([:], ["file": file]))
 
       guard let response = try Gnomon.models(for: request).toBlocking().first() else {
         return fail("can't extract response")
@@ -100,9 +98,8 @@ class MultipartSpec: XCTestCase {
       let data = try Data(contentsOf: url)
       let file = MultipartFile(data: data, contentType: "application/zip", filename: "test_file.zip")
 
-      let request = try RequestBuilder<MultipartModel>()
-        .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
-        .setParams(.multipart(["text": "Hello World", "number": "42"], ["file": file])).build()
+      let request = try Request<MultipartModel>(URLString: "\(Params.API.baseURL)/post").setMethod(.POST)
+        .setParams(.multipart(["text": "Hello World", "number": "42"], ["file": file]))
 
       guard let response = try Gnomon.models(for: request).toBlocking().first() else {
         return fail("can't extract response")

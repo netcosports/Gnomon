@@ -21,7 +21,6 @@ public extension Gnomon {
     case nonHTTPResponse(response: URLResponse)
     case invalidResponse
     case unableToParseModel(Swift.Error)
-    case invalidURL(urlString: String)
     case errorStatusCode(Int, Data)
   }
 
@@ -45,11 +44,9 @@ extension HTTPURLResponse {
 
 }
 
-// swiftlint:disable:next cyclomatic_complexity
 internal func prepareDataRequest<U>(from request: Request<U>,
                                     cachePolicy: URLRequest.CachePolicy) throws -> URLRequest {
-  guard let url = URL(string: request.URLString) else { throw Gnomon.Error.invalidURL(urlString: request.URLString) }
-  var dataRequest = URLRequest(url: url, cachePolicy: cachePolicy, timeoutInterval: request.timeout)
+  var dataRequest = URLRequest(url: request.url, cachePolicy: cachePolicy, timeoutInterval: request.timeout)
   dataRequest.httpMethod = request.method.rawValue
   if let headers = request.headers {
     for (key, value) in headers {
@@ -99,8 +96,8 @@ internal func prepareURL<T>(from request: Request<T>, params: [String: Any]?) th
     queryItems.append(contentsOf: prepare(value: params, with: nil))
   }
 
-  guard var components = URLComponents(string: request.URLString) else {
-    throw "can't parse provided URL: \(request.URLString)"
+  guard var components = URLComponents(url: request.url, resolvingAgainstBaseURL: true) else {
+    throw "can't parse provided URL: \(request.url)"
   }
   queryItems.append(contentsOf: components.queryItems ?? [])
   components.queryItems = queryItems.count > 0 ? queryItems : nil

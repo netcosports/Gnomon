@@ -23,8 +23,7 @@ class XMLSpec: XCTestCase {
 
   func testPlainXMLRequest() {
     do {
-      let request = try RequestBuilder<TestXMLModel>()
-        .setURLString("\(Params.API.baseURL)/xml").setMethod(.GET).build()
+      let request = try Request<TestXMLModel>(URLString: "\(Params.API.baseURL)/xml").setMethod(.GET)
 
       let response = try Gnomon.models(for: request).toBlocking().first()
       guard let result = response?.result else { throw "can't extract response" }
@@ -38,9 +37,8 @@ class XMLSpec: XCTestCase {
 
   func testPlainMultipleXMLRequest() {
     do {
-      let request = try RequestBuilder<[TestXMLSlideModel]>()
-        .setURLString("\(Params.API.baseURL)/xml").setXPath("slideshow/slide")
-        .setMethod(.GET).build()
+      let request = try Request<[TestXMLSlideModel]>(URLString: "\(Params.API.baseURL)/xml").setXPath("slideshow/slide")
+        .setMethod(.GET)
 
       let response = try Gnomon.models(for: request).toBlocking().first()
       guard let result = response?.result else { throw "can't extract response" }
