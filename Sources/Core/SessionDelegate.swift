@@ -4,29 +4,33 @@
 //
 
 import Foundation
+import RxSwift
 
-internal func configuration(with policy: NSURLRequest.CachePolicy) -> URLSessionConfiguration {
+func configuration(with policy: NSURLRequest.CachePolicy) -> URLSessionConfiguration {
   let configuration = URLSessionConfiguration.default
   configuration.requestCachePolicy = policy
   return configuration
 }
 
-internal class SessionDelegate: NSObject, URLSessionDataDelegate {
+protocol SessionDelegateProtocol: URLSessionDelegate {
 
-  internal var dataTaskWillCacheResponse: ((_ session: URLSession, _ dataTask: URLSessionDataTask,
-  _ proposedResponse: CachedURLResponse) -> CachedURLResponse?)?
-  internal var dataTaskDidCompletedWithData: ((_ session: URLSession, _ task: URLSessionTask,
-  _ data: Data, _ response: HTTPURLResponse) -> Void)?
-  internal var dataTaskDidCompletedWithError: ((_ session: URLSession, _ dataTask: URLSessionTask,
-  _ error: Error) -> Void)?
+  var result: Observable<(Data, HTTPURLResponse)> { get }
+  var authenticationChallenge: AuthenticationChallenge? { get set }
 
-  internal var authenticationChallenge: AuthenticationChallenge?
+}
+
+final class SessionDelegate: NSObject, URLSessionDataDelegate, SessionDelegateProtocol {
+
+  fileprivate let subject = PublishSubject<(Data, HTTPURLResponse)>()
+  var result: Observable<(Data, HTTPURLResponse)> { return subject }
+
+  var authenticationChallenge: AuthenticationChallenge?
 
   private var response: URLResponse?
   private var data = Data()
 
-  public func urlSession(_ session: URLSession, task: URLSessionTask, didReceive challenge: URLAuthenticationChallenge,
-                         completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+  func urlSession(_ session: URLSession, task: URLSessionTask, didReceive challenge: URLAuthenticationChallenge,
+                  completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
     if let authenticationChallenge = authenticationChallenge {
       authenticationChallenge(challenge, completionHandler)
     } else {
@@ -37,6 +41,10 @@ internal class SessionDelegate: NSObject, URLSessionDataDelegate {
   func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse,
                   completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
     self.response = response
+    if response.expectedContentLength > 0 {
+      data.reserveCapacity(Int(response.expectedContentLength))
+    }
+
     completionHandler(.allow)
   }
 
@@ -52,32 +60,26 @@ internal class SessionDelegate: NSObject, URLSessionDataDelegate {
   }
 
   func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-    data.enumerateBytes { bytes, _, _ in
-      self.data.append(bytes)
+    data.enumerateBytes { bytes, index, _ in
+      self.data.insert(contentsOf: bytes, at: index)
     }
   }
 
   func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
     if let error = error {
-      dataTaskDidCompletedWithError?(session, task, error)
+      subject.onError(error)
     } else {
       guard let response = response else {
-        dataTaskDidCompletedWithError?(session, task, Gnomon.Error.undefined(message: nil))
+        subject.onError(Gnomon.Error.undefined(message: nil))
         return
       }
 
       guard let httpResponse = response as? HTTPURLResponse else {
-        dataTaskDidCompletedWithError?(session, task, Gnomon.Error.nonHTTPResponse(response: response))
+        subject.onError(Gnomon.Error.nonHTTPResponse(response: response))
         return
       }
 
-      guard (200..<400) ~= httpResponse.statusCode else {
-        dataTaskDidCompletedWithError?(session, task,
-                                       Gnomon.Error.errorStatusCode(httpResponse.statusCode, data))
-        return
-      }
-
-      dataTaskDidCompletedWithData?(session, task, data, httpResponse)
+      subject.onNext((data, httpResponse))
     }
   }
 

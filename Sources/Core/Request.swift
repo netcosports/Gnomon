@@ -76,6 +76,14 @@ public class Request<Model: BaseModel> {
 
   public typealias IntermediateRequest = Request<Model>
 
+  #if TEST
+  // swiftlint:disable weak_delegate
+  lazy var cacheSessionDelegate: SessionDelegateProtocol = SessionDelegate()
+  lazy var httpSessionDelegate: SessionDelegateProtocol = SessionDelegate()
+  // swiftlint:enable weak_delegate
+  var shouldRunTask = false
+  #endif
+
 }
 
 public extension Request {

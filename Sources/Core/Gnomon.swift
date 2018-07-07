@@ -21,7 +21,7 @@ public enum Gnomon {
 
   public static func models<U>(for request: Request<U>) -> Observable<Response<U>> {
     do {
-      return try observable(for: request, inLocalCache: false).flatMap { data, response -> Observable<Response<U>> in
+      return try observable(for: request, localCache: false).flatMap { data, response -> Observable<Response<U>> in
         let type: ResponseType = response.resultFromHTTPCache && !request.disableHttpCache ? .httpCache : .regular
         return try parse(data: data, response: response, responseType: type, for: request)
           .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
@@ -37,7 +37,7 @@ public enum Gnomon {
 
   private static func cachedModels<U>(for request: Request<U>, catchErrors: Bool) -> Observable<Response<U>> {
     do {
-      let result = try observable(for: request, inLocalCache: true).flatMap { data, response in
+      let result = try observable(for: request, localCache: true).flatMap { data, response in
         return try parse(data: data, response: response, responseType: .localCache, for: request)
           .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
       }
@@ -83,10 +83,15 @@ public enum Gnomon {
     }.concat(Observable.zip(http))
   }
 
-  private static func observable<U>(for request: Request<U>, inLocalCache localCache: Bool)
-  throws -> Observable<(Data, HTTPURLResponse)> {
+  private static func observable<U>(for request: Request<U>,
+                                    localCache: Bool) throws -> Observable<(Data, HTTPURLResponse)> {
     return Observable.deferred {
+      #if TEST
+      let delegate = localCache ? request.cacheSessionDelegate : request.httpSessionDelegate
+      #else
       let delegate = SessionDelegate()
+      #endif
+
       delegate.authenticationChallenge = request.authenticationChallenge
 
       let cachePolicy: URLRequest.CachePolicy
@@ -112,36 +117,36 @@ public enum Gnomon {
 
       curlLog(request, dataRequest)
 
-      let task = Observable<(Data, HTTPURLResponse)>.create { [weak delegate] subscriber -> Disposable in
-        let task = session.dataTask(with: dataRequest)
+      let result = delegate.result.take(1).map { tuple -> (Data, HTTPURLResponse) in
+        let (data, response) = tuple
 
-        delegate?.dataTaskDidCompletedWithData = { _, _, data, response in
-          subscriber.onNext((data, response))
-          subscriber.onCompleted()
+        guard (200 ..< 400) ~= response.statusCode else {
+          throw Gnomon.Error.errorStatusCode(response.statusCode, data)
         }
-        delegate?.dataTaskDidCompletedWithError = { subscriber.onError($2) }
 
-        task.resume()
-        session.finishTasksAndInvalidate()
-
-        if #available(iOS 10.0, *) {
-          return Disposables.create { [weak task] in
-            if task?.state == .running {
-              task?.cancel()
-            }
-          }
-        } else {
-          return Disposables.create()
-        }
+        return tuple
       }
 
-      return task
+      #if TEST
+      guard request.shouldRunTask else { return result }
+      #endif
+
+      let task = session.dataTask(with: dataRequest)
+      task.resume()
+      session.finishTasksAndInvalidate()
+
+      return result.do(onDispose: {
+        if #available(iOS 10.0, *) {
+          if task.state == .running {
+            task.cancel()
+          }
+        }
+      })
     }
   }
 
   private static func parse<U>(data: Data, response httpResponse: HTTPURLResponse, responseType: ResponseType,
-                               for request: Request<U>)
-  throws -> Observable<Response<U>> {
+                               for request: Request<U>) throws -> Observable<Response<U>> {
     return Observable.create { subscriber -> Disposable in
       let result: U
       do {

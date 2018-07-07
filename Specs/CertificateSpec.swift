@@ -7,23 +7,17 @@
 //
 
 import XCTest
-import Gnomon
 import Nimble
 import RxBlocking
 
+@testable import Gnomon
+
 class CertificateSpec: XCTestCase {
-
-  override func setUp() {
-    super.setUp()
-
-    Nimble.AsyncDefaults.Timeout = 7
-    URLCache.shared.removeAllCachedResponses()
-    Gnomon.removeAllInterceptors()
-  }
 
   func testInvalidCertificate() {
     do {
-      let request = try Request<String>(URLString: "https://self-signed.badssl.com/").setMethod(.GET)
+      let request = try Request<String>(URLString: "https://self-signed.badssl.com/")
+      request.shouldRunTask = true
       request.authenticationChallenge = { challenge, completionHandler -> Void in
         completionHandler(.useCredential, URLCredential(trust: challenge.protectionSpace.serverTrust!))
       }
@@ -41,12 +35,18 @@ class CertificateSpec: XCTestCase {
 
   func testInvalidCertificateWithoutHandler() {
     do {
-      let request = try Request<String>(URLString: "https://self-signed.badssl.com/").setMethod(.GET)
-      let result = try Gnomon.models(for: request).toBlocking().first()
-      expect(result).to(beNil())
-    } catch let error as NSError {
-      expect(error.domain) == NSURLErrorDomain
-      expect(error.code) == NSURLErrorServerCertificateUntrusted
+      let request = try Request<String>(URLString: "https://self-signed.badssl.com/")
+      request.shouldRunTask = true
+
+      let result = Gnomon.models(for: request).toBlocking().materialize()
+
+      switch result {
+      case .completed: fail("request should fail")
+      case let .failed(_, error):
+        let error = error as NSError
+        expect(error.domain) == NSURLErrorDomain
+        expect(error.code) == NSURLErrorServerCertificateUntrusted
+      }
     } catch {
       fail("\(error)")
     }

@@ -7,9 +7,10 @@
 
 import XCTest
 import Nimble
-import Gnomon
 
-struct PlayerModel: DecodableModel {
+@testable import Gnomon
+
+struct PlayerModel: DecodableModel, Equatable {
 
   let firstName: String
   let lastName: String
@@ -17,6 +18,10 @@ struct PlayerModel: DecodableModel {
   enum CodingKeys: String, CodingKey {
     case firstName = "first_name"
     case lastName = "last_name"
+  }
+
+  static func ==(lhs: PlayerModel, rhs: PlayerModel) -> Bool {
+    return lhs.firstName == rhs.firstName && lhs.lastName == rhs.lastName
   }
 
 }
@@ -45,31 +50,10 @@ struct MatchModel: DecodableModel {
 
 class DecodableSpec: XCTestCase {
 
-  let data: [String: Any] = [
-    "data": [
-      "player": [
-        "first_name": "Vasya", "last_name": "Pupkin"
-      ],
-      "players": [
-        [
-          "first_name": "Vasya", "last_name": "Pupkin"
-        ],
-        [
-          "first_name": "Petya", "last_name": "Ronaldo"
-        ]
-      ],
-      "players?": [
-        [
-          "first_name": "Vasya", "last_name": "Pupkin"
-        ],
-        [
-          "first_name": "Petya", "last_name": "Ronaldo"
-        ],
-        [
-          "first_name": "Kek", "lastname": "NoKek"
-        ]
-      ],
-      "team": [
+  func testTeam() {
+    do {
+      let request = try Request<TeamModel>(URLString: "https://example.com/")
+      request.httpSessionDelegate = try TestSessionDelegate.jsonResponse(result: [
         "name": "France",
         "players": [
           [
@@ -79,90 +63,24 @@ class DecodableSpec: XCTestCase {
             "first_name": "Petya", "last_name": "Ronaldo"
           ]
         ]
-      ],
-      "teams": [
-        [
-          "name": "France",
-          "players": [
-            [
-              "first_name": "Vasya", "last_name": "Pupkin"
-            ],
-            [
-              "first_name": "Petya", "last_name": "Ronaldo"
-            ]
-          ],
-          "lineups": [
-            [
-              [
-                "first_name": "Vasya", "last_name": "Pupkin"
-              ],
-              [
-                "first_name": "Petya", "last_name": "Ronaldo"
-              ]
-            ]
-          ]
-        ]
-      ],
-      "match": [
-        "homeTeam": [
-          "name": "France", "players": []
-        ],
-        "awayTeam": [
-          "name": "Belarus", "players": []
-        ],
-        "date": 1507654800
-      ],
-      "matches": [
-        [
-          "homeTeam": [
-            "name": "France",
-            "players": []
-          ],
-          "awayTeam": [
-            "name": "Belarus",
-            "players": []
-          ],
-          "date": 1507654800
-        ]
-      ]
-    ]
-  ]
+      ], cached: false)
 
-  func testTeam() {
-    do {
-      let request = try Request<TeamModel>(URLString: "\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/team")
+      let result = Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).materialize()
 
-      guard let response = try Gnomon.models(for: request).toBlocking().first() else {
-        return fail("can't extract response")
+      switch result {
+      case let .completed(responses):
+        expect(responses).to(haveCount(1))
+
+        let team = responses[0].result
+        expect(team.name) == "France"
+        expect(team.players[0].firstName) == "Vasya"
+        expect(team.players[0].lastName) == "Pupkin"
+
+        expect(team.players[1].firstName) == "Petya"
+        expect(team.players[1].lastName) == "Ronaldo"
+      case let .failed(_, error):
+        fail("\(error)")
       }
-
-      let team = response.result
-
-      expect(team.name) == "France"
-      expect(team.players[0].firstName) == "Vasya"
-      expect(team.players[0].lastName) == "Pupkin"
-
-      expect(team.players[1].firstName) == "Petya"
-      expect(team.players[1].lastName) == "Ronaldo"
-    } catch {
-      fail("\(error)")
-      return
-    }
-  }
-
-  func testPlayer() {
-    do {
-      let request = try Request<PlayerModel>(URLString: "\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/player")
-
-      guard let response = try Gnomon.models(for: request).toBlocking().first() else {
-        return fail("can't extract response")
-      }
-
-      let player = response.result
-      expect(player.firstName) == "Vasya"
-      expect(player.lastName) == "Pupkin"
     } catch {
       fail("\(error)")
       return
@@ -171,19 +89,31 @@ class DecodableSpec: XCTestCase {
 
   func testPlayers() {
     do {
-      let request = try Request<[PlayerModel]>(URLString: "\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/players")
-      guard let response = try Gnomon.models(for: request).toBlocking().first() else {
+      let request = try Request<[PlayerModel]>(URLString: "https://example.com")
+      request.httpSessionDelegate = try TestSessionDelegate.jsonResponse(result: [
+        [
+          "first_name": "Vasya", "last_name": "Pupkin"
+        ],
+        [
+          "first_name": "Petya", "last_name": "Ronaldo"
+        ]
+      ], cached: false)
 
-        return fail("can't extract response")
+      let result = Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).materialize()
+
+      switch result {
+      case let .completed(responses):
+        expect(responses).to(haveCount(1))
+
+        let players = responses[0].result
+
+        expect(players).to(haveCount(2))
+
+        expect(players[0]) == PlayerModel(firstName: "Vasya", lastName: "Pupkin")
+        expect(players[1]) == PlayerModel(firstName: "Petya", lastName: "Ronaldo")
+      case let .failed(_, error):
+        fail("\(error)")
       }
-
-      let players = response.result
-      expect(players[0].firstName) == "Vasya"
-      expect(players[0].lastName) == "Pupkin"
-
-      expect(players[1].firstName) == "Petya"
-      expect(players[1].lastName) == "Ronaldo"
     } catch {
       fail("\(error)")
       return
@@ -192,24 +122,31 @@ class DecodableSpec: XCTestCase {
 
   func testOptionalPlayers() {
     do {
-      let request = try Request<[PlayerModel?]>(URLString: "\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(data))
-        .setXPath("json/data/players?")
+      let request = try Request<[PlayerModel?]>(URLString: "https://example.com")
+      request.httpSessionDelegate = try TestSessionDelegate.jsonResponse(result: [
+        [
+          "first_name": "Vasya", "last_name": "Pupkin"
+        ],
+        [
+          "first_name": "", "lastname": ""
+        ]
+      ], cached: false)
 
-      guard let response = try Gnomon.models(for: request).toBlocking().first() else {
-        return fail("can't extract response")
+      let result = Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).materialize()
+
+      switch result {
+      case let .completed(responses):
+        expect(responses).to(haveCount(1))
+
+        let players = responses[0].result
+
+        expect(players).to(haveCount(2))
+
+        expect(players[0]) == PlayerModel(firstName: "Vasya", lastName: "Pupkin")
+        expect(players[1]).to(beNil())
+      case let .failed(_, error):
+        fail("\(error)")
       }
-
-      let players = response.result
-      expect(players.count) == 3
-
-      expect(players[0]?.firstName) == "Vasya"
-      expect(players[0]?.lastName) == "Pupkin"
-
-      expect(players[1]?.firstName) == "Petya"
-      expect(players[1]?.lastName) == "Ronaldo"
-
-      expect(players[2]).to(beNil())
     } catch {
       fail("\(error)")
       return
@@ -218,26 +155,39 @@ class DecodableSpec: XCTestCase {
 
   func testMatchWithCustomizedDecoder() {
     do {
-      let request = try Request<MatchModel>(URLString: "\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/match")
+      let request = try Request<MatchModel>(URLString: "https://example.com")
+      request.httpSessionDelegate = try TestSessionDelegate.jsonResponse(result: [
+        "homeTeam": [
+          "name": "France", "players": []
+        ],
+        "awayTeam": [
+          "name": "Belarus", "players": []
+        ],
+        "date": 1507654800
+      ], cached: false)
 
-      guard let response = try Gnomon.models(for: request).toBlocking().first() else {
-        return fail("can't extract response")
+      let result = Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).materialize()
+
+      switch result {
+      case let .completed(responses):
+        expect(responses).to(haveCount(1))
+
+        let match = responses[0].result
+
+        expect(match.homeTeam.name) == "France"
+        expect(match.awayTeam.name) == "Belarus"
+        var components = DateComponents()
+
+        components.year = 2017
+        components.month = 10
+        components.day = 10
+        components.hour = 19
+        components.minute = 0
+        components.timeZone = TimeZone(identifier: "Europe/Paris")
+        expect(match.date) == Calendar.current.date(from: components)
+      case let .failed(_, error):
+        fail("\(error)")
       }
-
-      let match = response.result
-      expect(match.homeTeam.name) == "France"
-      expect(match.awayTeam.name) == "Belarus"
-      var components = DateComponents()
-
-      components.year = 2017
-      components.month = 10
-      components.day = 10
-      components.hour = 19
-      components.minute = 0
-      components.timeZone = TimeZone(identifier: "Europe/Paris")
-      expect(match.date) == Calendar.current.date(from: components)
-
     } catch {
       fail("\(error)")
       return
@@ -246,26 +196,67 @@ class DecodableSpec: XCTestCase {
 
   func testMatchesWithCustomizedDecoder() {
     do {
-      let request = try Request<[MatchModel]>(URLString: "\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/matches")
+      let request = try Request<[MatchModel]>(URLString: "https://example.com")
+      request.httpSessionDelegate = try TestSessionDelegate.jsonResponse(result: [
+        [
+          "homeTeam": [
+            "name": "France", "players": []
+          ],
+          "awayTeam": [
+            "name": "Belarus", "players": []
+          ],
+          "date": 1507654800
+        ]
+      ], cached: false)
 
-      guard let response = try Gnomon.models(for: request).toBlocking().first() else {
-        return fail("can't extract response")
+      let result = Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).materialize()
+
+      switch result {
+      case let .completed(responses):
+        expect(responses).to(haveCount(1))
+        expect(responses[0].result).to(haveCount(1))
+
+        let match = responses[0].result[0]
+
+        expect(match.homeTeam.name) == "France"
+        expect(match.awayTeam.name) == "Belarus"
+        var components = DateComponents()
+
+        components.year = 2017
+        components.month = 10
+        components.day = 10
+        components.hour = 19
+        components.minute = 0
+        components.timeZone = TimeZone(identifier: "Europe/Paris")
+        expect(match.date) == Calendar.current.date(from: components)
+      case let .failed(_, error):
+        fail("\(error)")
       }
+    } catch {
+      fail("\(error)")
+      return
+    }
+  }
 
-      let match = response.result[0]
-      expect(match.homeTeam.name) == "France"
-      expect(match.awayTeam.name) == "Belarus"
+  func testXPath() {
+    do {
+      let request = try Request<PlayerModel>(URLString: "https://example.com/").setXPath("json/data")
+      request.httpSessionDelegate = try TestSessionDelegate.jsonResponse(result: [
+        "json": ["data": ["first_name": "Vasya", "last_name": "Pupkin"]]
+      ], cached: false)
 
-      var components = DateComponents()
-      components.year = 2017
-      components.month = 10
-      components.day = 10
-      components.hour = 19
-      components.minute = 0
-      components.timeZone = TimeZone(identifier: "Europe/Paris")
+      let result = Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).materialize()
 
-      expect(match.date) == Calendar.current.date(from: components)
+      switch result {
+      case let .completed(responses):
+        expect(responses).to(haveCount(1))
+
+        let player = responses[0].result
+        expect(player.firstName) == "Vasya"
+        expect(player.lastName) == "Pupkin"
+      case let .failed(_, error):
+        fail("\(error)")
+      }
     } catch {
       fail("\(error)")
       return
@@ -273,41 +264,56 @@ class DecodableSpec: XCTestCase {
   }
 
   func testXPathWithArrayIndex() {
+    let data = [
+      "teams": [
+        [
+          "name": "France",
+          "players": [
+            ["first_name": "Vasya", "last_name": "Pupkin"], ["first_name": "Petya", "last_name": "Ronaldo"]
+          ]
+        ]
+      ]
+    ]
+
     do {
-      let request = try Request<PlayerModel>(URLString: "\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/teams[0]/players[0]")
+      let request = try Request<PlayerModel>(URLString: "https://example.com/")
+        .setXPath("teams[0]/players[0]")
+      request.httpSessionDelegate = try TestSessionDelegate.jsonResponse(result: data, cached: false)
 
-      let response = try Gnomon.models(for: request).toBlocking().first()
+      let result = Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).materialize()
 
-      expect(response).notTo(beNil())
+      switch result {
+      case let .completed(responses):
+        expect(responses).to(haveCount(1))
 
-      guard let player = response?.result else {
-        fail("can't extract response")
-        return
+        let player = responses[0].result
+        expect(player.firstName) == "Vasya"
+        expect(player.lastName) == "Pupkin"
+      case let .failed(_, error):
+        fail("\(error)")
       }
-
-      expect(player.firstName) == "Vasya"
-      expect(player.lastName) == "Pupkin"
     } catch {
       fail("\(error)")
       return
     }
 
     do {
-      let request = try Request<PlayerModel>(URLString: "\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/teams[0]/players[1]")
+      let request = try Request<PlayerModel>(URLString: "https://example.com/")
+        .setXPath("teams[0]/players[1]")
+      request.httpSessionDelegate = try TestSessionDelegate.jsonResponse(result: data, cached: false)
 
-      let response = try Gnomon.models(for: request).toBlocking().first()
+      let result = Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).materialize()
 
-      expect(response).notTo(beNil())
+      switch result {
+      case let .completed(responses):
+        expect(responses).to(haveCount(1))
 
-      guard let player = response?.result else {
-        fail("can't extract response")
-        return
+        let player = responses[0].result
+        expect(player.firstName) == "Petya"
+        expect(player.lastName) == "Ronaldo"
+      case let .failed(_, error):
+        fail("\(error)")
       }
-
-      expect(player.firstName) == "Petya"
-      expect(player.lastName) == "Ronaldo"
     } catch {
       fail("\(error)")
       return
@@ -315,41 +321,54 @@ class DecodableSpec: XCTestCase {
   }
 
   func testXPathWithMultipleArrayIndices() {
+    let data = [
+      "matches": [
+        [
+          "id": 1,
+          "lineups": [
+            [
+              ["first_name": "Vasya", "last_name": "Pupkin"]
+            ],
+            [
+              ["first_name": "Vanya", "last_name": "Messi"], ["first_name": "Artem", "last_name": "Dzyuba"],
+            ]
+          ]
+        ]
+      ]
+    ]
     do {
-      let request = try Request<PlayerModel>(URLString: "\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/teams[0]/lineups[0][0]")
+      let request = try Request<PlayerModel>(URLString: "https://example.com/")
+        .setXPath("matches[0]/lineups[0][0]")
+      request.httpSessionDelegate = try TestSessionDelegate.jsonResponse(result: data, cached: false)
 
-      let response = try Gnomon.models(for: request).toBlocking().first()
+      let result = Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).materialize()
 
-      expect(response).notTo(beNil())
-
-      guard let player = response?.result else {
-        fail("can't extract response")
-        return
+      switch result {
+      case let .completed(responses):
+        expect(responses).to(haveCount(1))
+        expect(responses[0].result) == PlayerModel(firstName: "Vasya", lastName: "Pupkin")
+      case let .failed(_, error):
+        fail("\(error)")
       }
-
-      expect(player.firstName) == "Vasya"
-      expect(player.lastName) == "Pupkin"
     } catch {
       fail("\(error)")
       return
     }
 
     do {
-      let request = try Request<PlayerModel>(URLString: "\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(data)).setXPath("json/data/teams[0]/lineups[0][1]")
+      let request = try Request<PlayerModel>(URLString: "https://example.com/")
+        .setXPath("matches[0]/lineups[1][1]")
+      request.httpSessionDelegate = try TestSessionDelegate.jsonResponse(result: data, cached: false)
 
-      let response = try Gnomon.models(for: request).toBlocking().first()
+      let result = Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).materialize()
 
-      expect(response).notTo(beNil())
-
-      guard let player = response?.result else {
-        fail("can't extract response")
-        return
+      switch result {
+      case let .completed(responses):
+        expect(responses).to(haveCount(1))
+        expect(responses[0].result) == PlayerModel(firstName: "Artem", lastName: "Dzyuba")
+      case let .failed(_, error):
+        fail("\(error)")
       }
-
-      expect(player.firstName) == "Petya"
-      expect(player.lastName) == "Ronaldo"
     } catch {
       fail("\(error)")
       return

@@ -38,82 +38,77 @@ struct MultipartModel: JSONModel {
 
 class MultipartSpec: XCTestCase {
 
-  override func setUp() {
-    super.setUp()
+  // TODO: should be tested in Params spec
 
-    Nimble.AsyncDefaults.Timeout = 7
-    URLCache.shared.removeAllCachedResponses()
-  }
-
-  func testSimpleParams() {
-    do {
-      let request = try Request<MultipartModel>(URLString: "\(Params.API.baseURL)/post").setMethod(.POST)
-        .setParams(.multipart(["text": "Hello World", "number": "42"], [:]))
-
-      guard let response = try Gnomon.models(for: request).toBlocking().first() else {
-        return fail("can't extract response")
-      }
-
-      expect(response.result.files).to(beEmpty())
-      expect(response.result.form).to(equal(["text": "Hello World", "number": "42"]))
-    } catch {
-      fail("\(error)")
-      return
-    }
-  }
-
-  func testFiles() {
-    do {
-      guard let url = Bundle(for: type(of: self)).url(forResource: "test_file", withExtension: "zip") else {
-        return fail("can't find test file")
-      }
-
-      let data = try Data(contentsOf: url)
-      let file = MultipartFile(data: data, contentType: "application/zip", filename: "test_file.zip")
-
-      let request = try Request<MultipartModel>(URLString: "\(Params.API.baseURL)/post").setMethod(.POST)
-        .setParams(.multipart([:], ["file": file]))
-
-      guard let response = try Gnomon.models(for: request).toBlocking().first() else {
-        return fail("can't extract response")
-      }
-
-      let files = [
-        "file": "data:application/zip;base64,\(data.base64EncodedString())"
-      ]
-      expect(response.result.files).to(equal(files))
-      expect(response.result.form).to(beEmpty())
-    } catch {
-      fail("\(error)")
-      return
-    }
-  }
-
-  func testMixed() {
-    do {
-      guard let url = Bundle(for: type(of: self)).url(forResource: "test_file", withExtension: "zip") else {
-        return fail("can't find test file")
-      }
-
-      let data = try Data(contentsOf: url)
-      let file = MultipartFile(data: data, contentType: "application/zip", filename: "test_file.zip")
-
-      let request = try Request<MultipartModel>(URLString: "\(Params.API.baseURL)/post").setMethod(.POST)
-        .setParams(.multipart(["text": "Hello World", "number": "42"], ["file": file]))
-
-      guard let response = try Gnomon.models(for: request).toBlocking().first() else {
-        return fail("can't extract response")
-      }
-
-      let files = [
-        "file": "data:application/zip;base64,\(data.base64EncodedString())"
-      ]
-      expect(response.result.files).to(equal(files))
-      expect(response.result.form).to(equal(["text": "Hello World", "number": "42"]))
-    } catch {
-      fail("\(error)")
-      return
-    }
-  }
+//  func testSimpleParams() {
+//    do {
+//      let request = try Request<MultipartModel>(URLString: "\(Params.API.baseURL)/post").setMethod(.POST)
+//        .setParams(.multipart(["text": "Hello World", "number": "42"], [:]))
+//
+//      guard let response = try Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).first() else {
+//        return fail("can't extract response")
+//      }
+//
+//      expect(response.result.files).to(beEmpty())
+//      expect(response.result.form).to(equal(["text": "Hello World", "number": "42"]))
+//    } catch {
+//      fail("\(error)")
+//      return
+//    }
+//  }
+//
+//  func testFiles() {
+//    do {
+//      guard let url = Bundle(for: type(of: self)).url(forResource: "test_file", withExtension: "zip") else {
+//        return fail("can't find test file")
+//      }
+//
+//      let data = try Data(contentsOf: url)
+//      let file = MultipartFile(data: data, contentType: "application/zip", filename: "test_file.zip")
+//
+//      let request = try Request<MultipartModel>(URLString: "\(Params.API.baseURL)/post").setMethod(.POST)
+//        .setParams(.multipart([:], ["file": file]))
+//
+//      guard let response = try Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).first() else {
+//        return fail("can't extract response")
+//      }
+//
+//      let files = [
+//        "file": "data:application/zip;base64,\(data.base64EncodedString())"
+//      ]
+//      expect(response.result.files).to(equal(files))
+//      expect(response.result.form).to(beEmpty())
+//    } catch {
+//      fail("\(error)")
+//      return
+//    }
+//  }
+//
+//  func testMixed() {
+//    do {
+//      guard let url = Bundle(for: type(of: self)).url(forResource: "test_file", withExtension: "zip") else {
+//        return fail("can't find test file")
+//      }
+//
+//      let data = try Data(contentsOf: url)
+//      let file = MultipartFile(data: data, contentType: "application/zip", filename: "test_file.zip")
+//
+//      let request = try Request<MultipartModel>(URLString: "\(Params.API.baseURL)/post").setMethod(.POST)
+//        .setParams(.multipart(["text": "Hello World", "number": "42"], ["file": file]))
+//
+//      guard let response = try Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).first() else {
+//        return fail("can't extract response")
+//      }
+//
+//      let files = [
+//        "file": "data:application/zip;base64,\(data.base64EncodedString())"
+//      ]
+//      expect(response.result.files).to(equal(files))
+//      expect(response.result.form).to(equal(["text": "Hello World", "number": "42"]))
+//    } catch {
+//      fail("\(error)")
+//      return
+//    }
+//  }
 
 }
