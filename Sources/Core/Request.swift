@@ -23,6 +23,7 @@ public enum Method: String {
 public enum RequestParams {
 
   case none
+  case query([String: Any])
   case urlEncoded([String: Any])
   case json([String: Any])
   case multipart([String: String], [String: MultipartFile])

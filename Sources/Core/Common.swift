@@ -64,8 +64,10 @@ func prepareURLRequest<U>(from request: Request<U>, cachePolicy: URLRequest.Cach
   }
 
   switch (request.method.canHaveBody, request.params) {
-  case (true, .none), (false, .none):
+  case (_, .none):
     urlRequest.url = try prepareURL(with: request.url, params: nil)
+  case let (_, .query(params)):
+    urlRequest.url = try prepareURL(with: request.url, params: params)
   case (false, let .urlEncoded(params)):
     urlRequest.url = try prepareURL(with: request.url, params: params)
   case (false, .json), (false, .multipart):

@@ -10,14 +10,14 @@
 		3AB8BBCC7D6B3A63F74773DE /* Pods_Tests_iOSTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CECD4C2682324E936658247B /* Pods_Tests_iOSTests.framework */; };
 		4558D11918401AB38E8E1786 /* Pods_Tests_tvOSTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9632BBA3EEFC5F2F3D3ECF19 /* Pods_Tests_tvOSTests.framework */; };
 		5A3F5067B300E6EC70C6343A /* URLRequestGenerationSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F55C02DF5BD105E6D8B17 /* URLRequestGenerationSpec.swift */; };
-		5A3F5171808BC8B181E358DB /* ParamsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F50274649DC4592F0DC1F /* ParamsSpec.swift */; };
+		5A3F5171808BC8B181E358DB /* RequestParamsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F50274649DC4592F0DC1F /* RequestParamsSpec.swift */; };
 		5A3F5257D72FDCEA5A1C9D92 /* TestModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F5839060F084DF565886C /* TestModels.swift */; };
 		5A3F52ADB837A90585A2E36B /* TestModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F5839060F084DF565886C /* TestModels.swift */; };
 		5A3F53D498CEFE21394BD950 /* TestSessionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F5EE6543E2602F201118B /* TestSessionDelegate.swift */; };
 		5A3F55075FB3EA0B870B1932 /* TestSessionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F5EE6543E2602F201118B /* TestSessionDelegate.swift */; };
-		5A3F556C7C7494F410997D9F /* ParamsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F50274649DC4592F0DC1F /* ParamsSpec.swift */; };
+		5A3F556C7C7494F410997D9F /* RequestParamsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F50274649DC4592F0DC1F /* RequestParamsSpec.swift */; };
 		5A3F58E93AF99A81E4E90E75 /* TestModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F5839060F084DF565886C /* TestModels.swift */; };
-		5A3F5A448169B53387D1C51F /* ParamsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F50274649DC4592F0DC1F /* ParamsSpec.swift */; };
+		5A3F5A448169B53387D1C51F /* RequestParamsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F50274649DC4592F0DC1F /* RequestParamsSpec.swift */; };
 		5A3F5A4784255F4397BD65EA /* URLRequestGenerationSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F55C02DF5BD105E6D8B17 /* URLRequestGenerationSpec.swift */; };
 		5A3F5C50406553A42C4C2425 /* TestSessionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F5EE6543E2602F201118B /* TestSessionDelegate.swift */; };
 		5A3F5CFA2FADF614EACFFB51 /* URLRequestGenerationSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F55C02DF5BD105E6D8B17 /* URLRequestGenerationSpec.swift */; };
@@ -72,7 +72,7 @@
 		0BC17A57F7A1793CA66C559C /* Pods-Tests-iOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests-iOSTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Tests-iOSTests/Pods-Tests-iOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		14B30AA46129A6E0CA108E30 /* Pods-Tests-iOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests-iOSTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Tests-iOSTests/Pods-Tests-iOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		557BF3CDC1B1F8F2B0FB4BC5 /* Pods-Tests-macOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests-macOSTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Tests-macOSTests/Pods-Tests-macOSTests.debug.xcconfig"; sourceTree = "<group>"; };
-		5A3F50274649DC4592F0DC1F /* ParamsSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParamsSpec.swift; sourceTree = "<group>"; };
+		5A3F50274649DC4592F0DC1F /* RequestParamsSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestParamsSpec.swift; sourceTree = "<group>"; };
 		5A3F55C02DF5BD105E6D8B17 /* URLRequestGenerationSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLRequestGenerationSpec.swift; sourceTree = "<group>"; };
 		5A3F5839060F084DF565886C /* TestModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestModels.swift; sourceTree = "<group>"; };
 		5A3F5EE6543E2602F201118B /* TestSessionDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestSessionDelegate.swift; sourceTree = "<group>"; };
@@ -242,7 +242,7 @@
 				B5B08E6D1F53578500D78597 /* XMLSpec.swift */,
 				B52E0CDC1F1696B9007E0478 /* XPathSpec.swift */,
 				5A3F52C736D4F22768C96873 /* Helpers */,
-				5A3F50274649DC4592F0DC1F /* ParamsSpec.swift */,
+				5A3F50274649DC4592F0DC1F /* RequestParamsSpec.swift */,
 				5A3F55C02DF5BD105E6D8B17 /* URLRequestGenerationSpec.swift */,
 			);
 			path = Specs;
@@ -593,7 +593,7 @@
 				B58927532040422400C17F0F /* XMLSpec.swift in Sources */,
 				5A3F5257D72FDCEA5A1C9D92 /* TestModels.swift in Sources */,
 				5A3F55075FB3EA0B870B1932 /* TestSessionDelegate.swift in Sources */,
-				5A3F556C7C7494F410997D9F /* ParamsSpec.swift in Sources */,
+				5A3F556C7C7494F410997D9F /* RequestParamsSpec.swift in Sources */,
 				5A3F5067B300E6EC70C6343A /* URLRequestGenerationSpec.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -616,7 +616,7 @@
 				B58927522040422300C17F0F /* XMLSpec.swift in Sources */,
 				5A3F58E93AF99A81E4E90E75 /* TestModels.swift in Sources */,
 				5A3F5C50406553A42C4C2425 /* TestSessionDelegate.swift in Sources */,
-				5A3F5171808BC8B181E358DB /* ParamsSpec.swift in Sources */,
+				5A3F5171808BC8B181E358DB /* RequestParamsSpec.swift in Sources */,
 				5A3F5CFA2FADF614EACFFB51 /* URLRequestGenerationSpec.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -639,7 +639,7 @@
 				B589275A2040498D00C17F0F /* CertificateSpec.swift in Sources */,
 				5A3F52ADB837A90585A2E36B /* TestModels.swift in Sources */,
 				5A3F53D498CEFE21394BD950 /* TestSessionDelegate.swift in Sources */,
-				5A3F5A448169B53387D1C51F /* ParamsSpec.swift in Sources */,
+				5A3F5A448169B53387D1C51F /* RequestParamsSpec.swift in Sources */,
 				5A3F5A4784255F4397BD65EA /* URLRequestGenerationSpec.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
