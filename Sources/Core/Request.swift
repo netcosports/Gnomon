@@ -105,13 +105,9 @@ public extension Request {
     return self
   }
 
+  @available(*, deprecated: 4.0, message: "use setParams(.urlEncoded([:])) method")
   @discardableResult
   public func setParams(_ value: [String: Any]?) -> IntermediateRequest {
-    if let value = value {
-      params = .urlEncoded(value)
-    } else {
-      params = .none
-    }
     return self
   }
 
