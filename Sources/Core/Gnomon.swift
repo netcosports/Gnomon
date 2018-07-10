@@ -94,28 +94,12 @@ public enum Gnomon {
 
       delegate.authenticationChallenge = request.authenticationChallenge
 
-      let cachePolicy: URLRequest.CachePolicy
-      if localCache {
-        guard !request.disableLocalCache else { throw "local cache was disabled in request" }
-        cachePolicy = .returnCacheDataDontLoad
-      } else {
-        cachePolicy = request.disableHttpCache ? .reloadIgnoringLocalCacheData : .useProtocolCachePolicy
-      }
+      let policy = try cachePolicy(for: request, localCache: localCache)
+      let session = URLSession(configuration: configuration(with: policy), delegate: delegate, delegateQueue: nil)
 
-      let session = URLSession(configuration: configuration(with: cachePolicy), delegate: delegate, delegateQueue: nil)
-      var dataRequest = try prepareDataRequest(from: request, cachePolicy: cachePolicy)
-      if let interceptor = request.interceptor {
-        if request.isInterceptorExclusive {
-          dataRequest = interceptor(dataRequest)
-        } else {
-          dataRequest = interceptor(dataRequest)
-          dataRequest = interceptors.reduce(dataRequest) { $1($0) }
-        }
-      } else {
-        dataRequest = interceptors.reduce(dataRequest) { $1($0) }
-      }
+      let urlRequest = try prepareURLRequest(from: request, cachePolicy: policy, interceptors: interceptors)
 
-      curlLog(request, dataRequest)
+      curlLog(request, urlRequest)
 
       let result = delegate.result.take(1).map { tuple -> (Data, HTTPURLResponse) in
         let (data, response) = tuple
@@ -131,7 +115,7 @@ public enum Gnomon {
       guard request.shouldRunTask else { return result }
       #endif
 
-      let task = session.dataTask(with: dataRequest)
+      let task = session.dataTask(with: urlRequest)
       task.resume()
       session.finishTasksAndInvalidate()
 
@@ -150,7 +134,8 @@ public enum Gnomon {
     return Observable.create { subscriber -> Disposable in
       let result: U
       do {
-        result = try processedResult(from: data, for: request)
+        let container = try U.dataContainer(with: data, at: request.xpath)
+        result = try U(container)
       } catch {
         subscriber.onError(error)
         return Disposables.create()

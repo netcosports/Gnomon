@@ -271,34 +271,4 @@ class RequestSpec: XCTestCase {
     }
   }
 
-  // TODO:
-//  func testTimeoutSuccess() {
-//    do {
-//      let request = try Request<TestModel5>(URLString: "\(Params.API.baseURL)/get?key=123")
-//        .setTimeout(1)
-//
-//      let response = try Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).first()
-//      guard let result = response?.result else { throw "can't extract response" }
-//
-//      expect(result.key).to(equal(123))
-//    } catch {
-//      fail("\(error)")
-//    }
-//  }
-//
-//  func testTimeoutFail() {
-//    do {
-//      let request = try Request<TestModel5>(URLString: "\(Params.API.baseURL)/delay/2?key=123")
-//        .setTimeout(1)
-//
-//      _ = try Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).first()
-//    } catch {
-//      expect(error).to(beAKindOf(NSError.self))
-//
-//      let nsError = error as NSError
-//      expect(nsError.domain) == NSURLErrorDomain
-//      expect(nsError.code) == NSURLErrorTimedOut
-//    }
-//  }
-
 }

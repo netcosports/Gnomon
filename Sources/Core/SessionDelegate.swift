@@ -6,7 +6,7 @@
 import Foundation
 import RxSwift
 
-func configuration(with policy: NSURLRequest.CachePolicy) -> URLSessionConfiguration {
+func configuration(with policy: URLRequest.CachePolicy) -> URLSessionConfiguration {
   let configuration = URLSessionConfiguration.default
   configuration.requestCachePolicy = policy
   return configuration

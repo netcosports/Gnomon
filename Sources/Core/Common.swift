@@ -44,21 +44,30 @@ extension HTTPURLResponse {
 
 }
 
-internal func prepareDataRequest<U>(from request: Request<U>,
-                                    cachePolicy: URLRequest.CachePolicy) throws -> URLRequest {
-  var dataRequest = URLRequest(url: request.url, cachePolicy: cachePolicy, timeoutInterval: request.timeout)
-  dataRequest.httpMethod = request.method.rawValue
+func cachePolicy<U>(for request: Request<U>, localCache: Bool) throws -> URLRequest.CachePolicy {
+  if localCache {
+    guard !request.disableLocalCache else { throw "local cache was disabled in request" }
+    return .returnCacheDataDontLoad
+  } else {
+    return request.disableHttpCache ? .reloadIgnoringLocalCacheData : .useProtocolCachePolicy
+  }
+}
+
+func prepareURLRequest<U>(from request: Request<U>, cachePolicy: URLRequest.CachePolicy,
+                          interceptors: [Interceptor]) throws -> URLRequest {
+  var urlRequest = URLRequest(url: request.url, cachePolicy: cachePolicy, timeoutInterval: request.timeout)
+  urlRequest.httpMethod = request.method.rawValue
   if let headers = request.headers {
     for (key, value) in headers {
-      dataRequest.setValue(value, forHTTPHeaderField: key)
+      urlRequest.setValue(value, forHTTPHeaderField: key)
     }
   }
 
   switch (request.method.canHaveBody, request.params) {
   case (true, .none), (false, .none):
-    dataRequest.url = try prepareURL(from: request, params: nil)
+    urlRequest.url = try prepareURL(with: request.url, params: nil)
   case (false, let .urlEncoded(params)):
-    dataRequest.url = try prepareURL(from: request, params: params)
+    urlRequest.url = try prepareURL(with: request.url, params: params)
   case (false, .json), (false, .multipart):
     throw "can't encode \(request.method.rawValue) request params as JSON or multipart"
   case (false, .data):
@@ -67,38 +76,55 @@ internal func prepareDataRequest<U>(from request: Request<U>,
     let queryItems = prepare(value: params, with: nil)
     var components = URLComponents()
     components.queryItems = queryItems
-    dataRequest.httpBody = components.percentEncodedQuery?.data(using: String.Encoding.utf8)
-    dataRequest.url = try prepareURL(from: request, params: nil)
-    dataRequest.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+    urlRequest.httpBody = components.percentEncodedQuery?.data(using: String.Encoding.utf8)
+    urlRequest.url = try prepareURL(with: request.url, params: nil)
+    urlRequest.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
   case (true, let .json(params)):
-    dataRequest.httpBody = try JSONSerialization.data(withJSONObject: params, options: [])
-    dataRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    dataRequest.url = try prepareURL(from: request, params: nil)
+    urlRequest.httpBody = try JSONSerialization.data(withJSONObject: params, options: [])
+    urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    urlRequest.url = try prepareURL(with: request.url, params: nil)
   case (true, let .multipart(form, files)):
     let (data, contentType) = try prepareMultipartData(with: form, files)
-    dataRequest.httpBody = data
-    dataRequest.setValue(contentType, forHTTPHeaderField: "Content-Type")
-    dataRequest.url = try prepareURL(from: request, params: nil)
+    urlRequest.httpBody = data
+    urlRequest.setValue(contentType, forHTTPHeaderField: "Content-Type")
+    urlRequest.url = try prepareURL(with: request.url, params: nil)
   case (true, let .data(data, contentType)):
-    dataRequest.httpBody = data
-    dataRequest.setValue(contentType, forHTTPHeaderField: "Content-Type")
-    dataRequest.url = try prepareURL(from: request, params: nil)
+    urlRequest.httpBody = data
+    urlRequest.setValue(contentType, forHTTPHeaderField: "Content-Type")
+    urlRequest.url = try prepareURL(with: request.url, params: nil)
   }
 
-  dataRequest.httpShouldHandleCookies = request.shouldHandleCookies
+  urlRequest.httpShouldHandleCookies = request.shouldHandleCookies
 
-  return dataRequest
+  return process(urlRequest, for: request, with: interceptors)
 }
 
-internal func prepareURL<T>(from request: Request<T>, params: [String: Any]?) throws -> URL {
+private func process<U>(_ urlRequest: URLRequest, for request: Request<U>,
+                        with interceptors: [Interceptor]) -> URLRequest {
+  if let interceptor = request.interceptor {
+    if request.isInterceptorExclusive {
+      return interceptor(urlRequest)
+    } else {
+      var urlRequest = urlRequest
+      urlRequest = interceptor(urlRequest)
+      urlRequest = interceptors.reduce(urlRequest) { $1($0) }
+      return urlRequest
+    }
+  } else {
+    return interceptors.reduce(urlRequest) { $1($0) }
+  }
+}
+
+func prepareURL(with url: URL, params: [String: Any]?) throws -> URL {
   var queryItems = [URLQueryItem]()
   if let params = params {
     queryItems.append(contentsOf: prepare(value: params, with: nil))
   }
 
-  guard var components = URLComponents(url: request.url, resolvingAgainstBaseURL: true) else {
-    throw "can't parse provided URL: \(request.url)"
+  guard var components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
+    throw "can't parse provided URL \"\(url)\""
   }
+
   queryItems.append(contentsOf: components.queryItems ?? [])
   components.queryItems = queryItems.count > 0 ? queryItems : nil
   guard let url = components.url else { throw "can't prepare URL from components: \(components)" }
@@ -137,8 +163,8 @@ private func prepare(value: Any, with key: String?) -> [URLQueryItem] {
   }
 }
 
-internal func prepareMultipartData(with form: [String: String],
-                                   _ files: [String: MultipartFile]) throws -> (data: Data, contentType: String) {
+func prepareMultipartData(with form: [String: String],
+                          _ files: [String: MultipartFile]) throws -> (data: Data, contentType: String) {
   let boundary = "__X_NST_BOUNDARY__"
   var data = Data()
   guard let boundaryData = "--\(boundary)\r\n".data(using: .utf8) else { throw "can't encode boundary" }
@@ -175,17 +201,9 @@ internal func prepareMultipartData(with form: [String: String],
   return (data, "multipart/form-data; boundary=\(boundary)")
 }
 
-internal func processedResult<U>(from data: Data, for request: Request<U>) throws -> U {
+func processedResult<U>(from data: Data, for request: Request<U>) throws -> U {
   let container = try U.dataContainer(with: data, at: request.xpath)
   return try U(container)
-}
-
-internal func validated(response: Any) throws -> (result: [String: Any], isArray: Bool) {
-  switch response {
-  case let dictionary as [String: Any]: return (dictionary, false)
-  case let array as [AnyObject]: return (["array": array], true)
-  default: throw Gnomon.Error.invalidResponse
-  }
 }
 
 public typealias Interceptor = (URLRequest) -> URLRequest

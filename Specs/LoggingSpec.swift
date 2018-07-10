@@ -19,9 +19,6 @@ class LoggingSpec: XCTestCase {
   override func setUp() {
     super.setUp()
 
-    Nimble.AsyncDefaults.Timeout = 7
-    URLCache.shared.removeAllCachedResponses()
-
     Gnomon.logging = false
     Gnomon.log = { string in
       print(string)
