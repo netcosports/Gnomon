@@ -53,17 +53,18 @@ func cachePolicy<U>(for request: Request<U>, localCache: Bool) throws -> URLRequ
   }
 }
 
+// swiftlint:disable:next cyclomatic_complexity
 func prepareURLRequest<U>(from request: Request<U>, cachePolicy: URLRequest.CachePolicy,
                           interceptors: [Interceptor]) throws -> URLRequest {
   var urlRequest = URLRequest(url: request.url, cachePolicy: cachePolicy, timeoutInterval: request.timeout)
-  urlRequest.httpMethod = request.method.rawValue
+  urlRequest.httpMethod = request.method.description
   if let headers = request.headers {
     for (key, value) in headers {
       urlRequest.setValue(value, forHTTPHeaderField: key)
     }
   }
 
-  switch (request.method.canHaveBody, request.params) {
+  switch (request.method.hasBody, request.params) {
   case (_, .none):
     urlRequest.url = try prepareURL(with: request.url, params: nil)
   case let (_, .query(params)):
@@ -71,9 +72,9 @@ func prepareURLRequest<U>(from request: Request<U>, cachePolicy: URLRequest.Cach
   case (false, let .urlEncoded(params)):
     urlRequest.url = try prepareURL(with: request.url, params: params)
   case (false, .json), (false, .multipart):
-    throw "can't encode \(request.method.rawValue) request params as JSON or multipart"
+    throw "can't encode \(request.method.description) request params as JSON or multipart"
   case (false, .data):
-    throw "can't add binary body to \(request.method.rawValue) request"
+    throw "can't add binary body to \(request.method.description) request"
   case (true, let .urlEncoded(params)):
     let queryItems = prepare(value: params, with: nil)
     var components = URLComponents()
@@ -176,7 +177,7 @@ func prepareMultipartData(with form: [String: String],
       throw "can't encode key \(key)"
     }
     data.append(dispositionData)
-    guard let valueData = (value.description + "\r\n").data(using: .utf8) else { throw "can't encode value \(value)" }
+    guard let valueData = (value + "\r\n").data(using: .utf8) else { throw "can't encode value \(value)" }
     data.append(valueData)
   }
 

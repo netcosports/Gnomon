@@ -32,16 +32,76 @@ class URLRequestGenerationSpec: XCTestCase {
   }
 
   func testMethods() {
-    for method in [Method.OPTIONS, .GET, .HEAD, .POST, .PUT, .PATCH, .DELETE, .TRACE, .CONNECT] {
-      do {
-        let request = try Request<String>(URLString: "https://example.com").setMethod(method)
-        let urlRequest = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
+    do {
+      let request = try Request<String>(URLString: "https://example.com").setMethod(.GET)
+      let urlRequest = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
 
-        expect(urlRequest.httpMethod).notTo(beNil())
-        expect(urlRequest.httpMethod) == method.rawValue
-      } catch {
-        fail("\(error)")
-      }
+      expect(urlRequest.httpMethod) == "GET"
+    } catch {
+      fail("\(error)")
+    }
+
+    do {
+      let request = try Request<String>(URLString: "https://example.com").setMethod(.HEAD)
+      let urlRequest = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
+
+      expect(urlRequest.httpMethod) == "HEAD"
+    } catch {
+      fail("\(error)")
+    }
+
+    do {
+      let request = try Request<String>(URLString: "https://example.com").setMethod(.POST)
+      let urlRequest = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
+
+      expect(urlRequest.httpMethod) == "POST"
+    } catch {
+      fail("\(error)")
+    }
+
+    do {
+      let request = try Request<String>(URLString: "https://example.com").setMethod(.PUT)
+      let urlRequest = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
+
+      expect(urlRequest.httpMethod) == "PUT"
+    } catch {
+      fail("\(error)")
+    }
+
+    do {
+      let request = try Request<String>(URLString: "https://example.com").setMethod(.PATCH)
+      let urlRequest = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
+
+      expect(urlRequest.httpMethod) == "PATCH"
+    } catch {
+      fail("\(error)")
+    }
+
+    do {
+      let request = try Request<String>(URLString: "https://example.com").setMethod(.DELETE)
+      let urlRequest = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
+
+      expect(urlRequest.httpMethod) == "DELETE"
+    } catch {
+      fail("\(error)")
+    }
+
+    do {
+      let request = try Request<String>(URLString: "https://example.com").setMethod(.custom("KEK", hasBody: true))
+      let urlRequest = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
+
+      expect(urlRequest.httpMethod) == "KEK"
+    } catch {
+      fail("\(error)")
+    }
+
+    do {
+      let request = try Request<String>(URLString: "https://example.com").setMethod(.custom("KEK", hasBody: false))
+      let urlRequest = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
+
+      expect(urlRequest.httpMethod) == "KEK"
+    } catch {
+      fail("\(error)")
     }
   }
 

@@ -8,13 +8,28 @@ import Foundation
 public typealias AuthenticationChallenge = (URLAuthenticationChallenge,
                                             (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) -> Void
 
-public enum Method: String {
-  case OPTIONS, GET, HEAD, POST, PUT, PATCH, DELETE, TRACE, CONNECT
+public enum Method: CustomStringConvertible {
 
-  public var canHaveBody: Bool {
+  case GET, HEAD, POST, PUT, PATCH, DELETE
+  case custom(String, hasBody: Bool)
+
+  public var hasBody: Bool {
     switch self {
-    case .GET, .HEAD, .DELETE: return false
-    case .CONNECT, .OPTIONS, .PATCH, .POST, .PUT, .TRACE: return true
+    case .GET, .HEAD: return false
+    case .DELETE, .PATCH, .POST, .PUT: return true
+    case let .custom(_, hasBody): return hasBody
+    }
+  }
+
+  public var description: String {
+    switch self {
+    case .GET: return "GET"
+    case .HEAD: return "HEAD"
+    case .POST: return "POST"
+    case .PUT: return "PUT"
+    case .PATCH: return "PATCH"
+    case .DELETE: return "DELETE"
+    case let .custom(method, _): return method
     }
   }
 
@@ -77,13 +92,13 @@ public class Request<Model: BaseModel> {
 
   public typealias IntermediateRequest = Request<Model>
 
-  #if TEST
+#if TEST
   // swiftlint:disable weak_delegate
   lazy var cacheSessionDelegate: SessionDelegateProtocol = SessionDelegate()
   lazy var httpSessionDelegate: SessionDelegateProtocol = SessionDelegate()
   // swiftlint:enable weak_delegate
   var shouldRunTask = false
-  #endif
+#endif
 
 }
 
