@@ -51,10 +51,10 @@ class ParamsSpec: XCTestCase {
       do {
         let request = try Request<String>(URLString: "https://example.com").setMethod(method)
           .setParams(.urlEncoded(["key1": "value1", "key2": ["1", "2"]]))
-        let urlRequest = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
-
-        expect(urlRequest.url) == URL(string: "https://example.com?key1=value1&key2%5B%5D=1&key2%5B%5D=2")!
-        expect(urlRequest.allHTTPHeaderFields!["Content-Type"]).to(beNil())
+        _ = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
+        fail("should fail")
+      } catch let error as String {
+        expect(error) == "\(method.description) request can't have a body"
       } catch {
         fail("\(error)")
       }
@@ -88,7 +88,7 @@ class ParamsSpec: XCTestCase {
         _ = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
         fail("should fail")
       } catch let error as String {
-        expect(error) == "can't encode \(method.description) request params as JSON or multipart"
+        expect(error) == "\(method.description) request can't have a body"
       } catch {
         fail("\(error)")
       }
@@ -125,7 +125,7 @@ class ParamsSpec: XCTestCase {
         _ = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
         fail("should fail")
       } catch let error as String {
-        expect(error) == "can't encode \(method.description) request params as JSON or multipart"
+        expect(error) == "\(method.description) request can't have a body"
       } catch {
         fail("\(error)")
       }
@@ -163,7 +163,7 @@ class ParamsSpec: XCTestCase {
         _ = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
         fail("should fail")
       } catch let error as String {
-        expect(error) == "can't encode \(method.description) request params as JSON or multipart"
+        expect(error) == "\(method.description) request can't have a body"
       } catch {
         fail("\(error)")
       }
@@ -204,7 +204,7 @@ class ParamsSpec: XCTestCase {
         _ = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
         fail("should fail")
       } catch let error as String {
-        expect(error) == "can't encode \(method.description) request params as JSON or multipart"
+        expect(error) == "\(method.description) request can't have a body"
       } catch {
         fail("\(error)")
       }
@@ -238,7 +238,7 @@ class ParamsSpec: XCTestCase {
         _ = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
         fail("should fail")
       } catch let error as String {
-        expect(error) == "can't add binary body to \(method.description) request"
+        expect(error) == "\(method.description) request can't have a body"
       } catch {
         fail("\(error)")
       }

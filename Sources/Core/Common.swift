@@ -53,7 +53,6 @@ func cachePolicy<U>(for request: Request<U>, localCache: Bool) throws -> URLRequ
   }
 }
 
-// swiftlint:disable:next cyclomatic_complexity
 func prepareURLRequest<U>(from request: Request<U>, cachePolicy: URLRequest.CachePolicy,
                           interceptors: [Interceptor]) throws -> URLRequest {
   var urlRequest = URLRequest(url: request.url, cachePolicy: cachePolicy, timeoutInterval: request.timeout)
@@ -69,12 +68,8 @@ func prepareURLRequest<U>(from request: Request<U>, cachePolicy: URLRequest.Cach
     urlRequest.url = try prepareURL(with: request.url, params: nil)
   case let (_, .query(params)):
     urlRequest.url = try prepareURL(with: request.url, params: params)
-  case (false, let .urlEncoded(params)):
-    urlRequest.url = try prepareURL(with: request.url, params: params)
-  case (false, .json), (false, .multipart):
-    throw "can't encode \(request.method.description) request params as JSON or multipart"
-  case (false, .data):
-    throw "can't add binary body to \(request.method.description) request"
+  case (false, _):
+    throw "\(request.method.description) request can't have a body"
   case (true, let .urlEncoded(params)):
     let queryItems = prepare(value: params, with: nil)
     var components = URLComponents()
