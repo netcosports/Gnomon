@@ -26,7 +26,7 @@ public class Gnomon {
       return try observable(for: request, inLocalCache: false).flatMap { data, response -> Observable<Response<U>> in
         let type: ResponseType = response.resultFromHTTPCache && !request.disableHttpCache ? .httpCache : .regular
         return try parse(data: data, response: response, responseType: type, for: request)
-          .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
+          .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .userInitiated))
       }
     } catch {
       return .error(error)
@@ -49,7 +49,7 @@ public class Gnomon {
     do {
       return try observable(for: request, inLocalCache: true).flatMap { data, response -> Observable<Response<U>> in
         return try parse(data: data, response: response, responseType: .localCache, for: request)
-          .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
+          .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .userInitiated))
         }.catchErrorJustReturn(Response.empty(with: .localCache))
     } catch {
       return .error(error)
