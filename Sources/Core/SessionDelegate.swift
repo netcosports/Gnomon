@@ -61,7 +61,7 @@ final class SessionDelegate: NSObject, URLSessionDataDelegate, SessionDelegatePr
 
   func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
     data.enumerateBytes { bytes, index, _ in
-      self.data.insert(contentsOf: bytes, at: index)
+      self.data.append(bytes)
     }
   }
 
