@@ -11,7 +11,7 @@ abstract_target 'Tests' do
   pod 'Nimble', '~> 7.0'
   pod 'RxBlocking'
 
-  target 'iOSTests' do 
+  target 'iOSTests' do
     platform :ios, '8.0'
   end
 
@@ -21,5 +21,13 @@ abstract_target 'Tests' do
 
   target 'macOSTests' do
     platform :osx, '10.10'
+  end
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['SWIFT_ACTIVE_COMPILATION_CONDITIONS'] = '$(inherited) TEST'
+    end
   end
 end

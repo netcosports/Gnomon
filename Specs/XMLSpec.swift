@@ -7,29 +7,33 @@
 //
 
 import XCTest
-import Gnomon
 import Nimble
 import RxBlocking
 
+@testable import Gnomon
+
 class XMLSpec: XCTestCase {
-
-  override func setUp() {
-    super.setUp()
-
-    Nimble.AsyncDefaults.Timeout = 7
-    URLCache.shared.removeAllCachedResponses()
-    Gnomon.removeAllInterceptors()
-  }
 
   func testPlainXMLRequest() {
     do {
-      let request = try RequestBuilder<SingleResult<TestXMLModel>>()
-        .setURLString("\(Params.API.baseURL)/xml").setMethod(.GET).build()
+      let request = try Request<TestXMLModel>(URLString: "https://example.com").setXPath("data")
 
-      let response = try Gnomon.models(for: request).toBlocking().first()
-      guard let result = response?.result else { throw "can't extract response" }
+      let xml = """
+<?xml version='1.0' encoding='utf8'?>
+<data key="123">
+</data>
+"""
+      request.httpSessionDelegate = try TestSessionDelegate.stringResponse(result: xml, cached: false)
 
-      expect(result.model.title).to(equal("Sample Slide Show"))
+      let result = Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).materialize()
+
+      switch result {
+      case let .completed(responses):
+        expect(responses).to(haveCount(1))
+        expect(responses[0].result.key) == 123
+      case let .failed(_, error):
+        fail("\(error)")
+      }
     } catch {
       fail("\(error)")
       return
@@ -38,15 +42,29 @@ class XMLSpec: XCTestCase {
 
   func testPlainMultipleXMLRequest() {
     do {
-      let request = try RequestBuilder<MultipleResults<TestXMLSlideModel>>()
-        .setURLString("\(Params.API.baseURL)/xml").setXPath("slideshow/slide")
-        .setMethod(.GET).build()
+      let request = try Request<[TestXMLModel]>(URLString: "https://example.com").setXPath("data/item")
 
-      let response = try Gnomon.models(for: request).toBlocking().first()
-      guard let result = response?.result else { throw "can't extract response" }
+      let xml = """
+<?xml version='1.0' encoding='utf8'?>
+<data>
+  <item key="123" />
+  <item key="234" />
+</data>
+"""
+      request.httpSessionDelegate = try TestSessionDelegate.stringResponse(result: xml, cached: false)
 
-      expect(result.models[0].title).to(equal("Wake up to WonderWidgets!"))
-      expect(result.models[1].title).to(equal("Overview"))
+      let result = Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).materialize()
+
+      switch result {
+      case let .completed(responses):
+        expect(responses).to(haveCount(1))
+
+        expect(responses[0].result).to(haveCount(2))
+        expect(responses[0].result[0].key) == 123
+        expect(responses[0].result[1].key) == 234
+      case let .failed(_, error):
+        fail("\(error)")
+      }
     } catch {
       fail("\(error)")
       return

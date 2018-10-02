@@ -19,9 +19,6 @@ class LoggingSpec: XCTestCase {
   override func setUp() {
     super.setUp()
 
-    Nimble.AsyncDefaults.Timeout = 7
-    URLCache.shared.removeAllCachedResponses()
-
     Gnomon.logging = false
     Gnomon.log = { string in
       print(string)
@@ -32,18 +29,26 @@ class LoggingSpec: XCTestCase {
     if let global = global {
       Gnomon.logging = global
     }
+
     do {
-      let builder = RequestBuilder<SingleResult<TestModel5>>().setURLString("\(Params.API.baseURL)/get?key=123")
-        .setMethod(.GET)
+      let request = try Request<TestModel1>(URLString: "https://example.com/")
+      request.httpSessionDelegate = try TestSessionDelegate.jsonResponse(result: ["key": 123], cached: false)
+
       if let reqLogging = reqLogging {
-        builder.setDebugLogging(reqLogging)
+        request.debugLogging = reqLogging
       }
-      let request = try builder.build()
 
-      let response = try Gnomon.models(for: request).toBlocking().first()
-      guard let result = response?.result else { throw "can't extract response" }
+      let result = Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).materialize()
 
-      expect(result.model.key).to(equal(123))
+      switch result {
+      case let .completed(responses):
+        expect(responses).to(haveCount(1))
+
+        let response = responses[0]
+        expect(response.result.key) == 123
+      case let .failed(_, error):
+        fail("\(error)")
+      }
     } catch {
       fail("\(error)")
     }
@@ -73,7 +78,7 @@ class LoggingSpec: XCTestCase {
     }
 
     request(global: true)
-    expect(log) == "curl -X GET --compressed \"\(Params.API.baseURL)/get?key=123\"\n"
+    expect(log) == "curl -X GET --compressed \"https://example.com/\"\n"
   }
 
   func testEnabledLoggingAndDisabledRequestLogging() {
@@ -95,7 +100,7 @@ class LoggingSpec: XCTestCase {
     }
 
     request(global: false, request: true)
-    expect(log) == "curl -X GET --compressed \"\(Params.API.baseURL)/get?key=123\"\n"
+    expect(log) == "curl -X GET --compressed \"https://example.com/\"\n"
   }
 
   func testDisabledLoggingAndDisabledRequestLogging() {

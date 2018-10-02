@@ -8,13 +8,28 @@ import Foundation
 public typealias AuthenticationChallenge = (URLAuthenticationChallenge,
                                             (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) -> Void
 
-public enum Method: String {
-  case OPTIONS, GET, HEAD, POST, PUT, PATCH, DELETE, TRACE, CONNECT
+public enum Method: CustomStringConvertible {
 
-  public var canHaveBody: Bool {
+  case GET, HEAD, POST, PUT, PATCH, DELETE
+  case custom(String, hasBody: Bool)
+
+  public var hasBody: Bool {
     switch self {
-    case .GET, .HEAD, .DELETE: return false
-    case .CONNECT, .OPTIONS, .PATCH, .POST, .PUT, .TRACE: return true
+    case .GET, .HEAD: return false
+    case .DELETE, .PATCH, .POST, .PUT: return true
+    case let .custom(_, hasBody): return hasBody
+    }
+  }
+
+  public var description: String {
+    switch self {
+    case .GET: return "GET"
+    case .HEAD: return "HEAD"
+    case .POST: return "POST"
+    case .PUT: return "PUT"
+    case .PATCH: return "PATCH"
+    case .DELETE: return "DELETE"
+    case let .custom(method, _): return method
     }
   }
 
@@ -23,6 +38,7 @@ public enum Method: String {
 public enum RequestParams {
 
   case none
+  case query([String: Any])
   case urlEncoded([String: Any])
   case json([String: Any])
   case multipart([String: String], [String: MultipartFile])
@@ -44,160 +60,141 @@ public struct MultipartFile {
 
 }
 
-@available(*, unavailable, renamed: "Request")
-public class PlainRequest<ResultType: Result> {
+public class Request<Model: BaseModel> {
+
+  public let url: URL
+
+  public init(URLString: String) throws {
+    guard let url = URL(string: URLString) else { throw "invalid url \"\(URLString)\"" }
+    self.url = url
+  }
+
+  public var xpath: String?
+  public var method = Method.GET
+  public var params = RequestParams.none
+  public var headers: [String: String]?
+
+  public var disableLocalCache: Bool = false
+  public var disableHttpCache: Bool = false
+
+  public var shouldHandleCookies: Bool = false
+
+  public var interceptor: Interceptor?
+  public var isInterceptorExclusive: Bool = false
+
+  public var authenticationChallenge: AuthenticationChallenge?
+
+  public var timeout: TimeInterval = 60
+
+  public var debugLogging: Bool?
+
+  public var response: ((Response<Model>) -> Void)?
+
+  public typealias IntermediateRequest = Request<Model>
+
+#if TEST
+  // swiftlint:disable weak_delegate
+  lazy var cacheSessionDelegate: SessionDelegateProtocol = SessionDelegate()
+  lazy var httpSessionDelegate: SessionDelegateProtocol = SessionDelegate()
+  // swiftlint:enable weak_delegate
+  var shouldRunTask = false
+#endif
 
 }
 
-public class Request<ResultType: Result> {
+public extension Request {
 
-  public typealias ModelType = ResultType.ModelType
-  public fileprivate(set) var URLString: String = ""
-  public fileprivate(set) var xpath: String?
-  public fileprivate(set) var method = Method.GET
-  public fileprivate(set) var params = RequestParams.none
-  public fileprivate(set) var headers: [String: String]?
+  @discardableResult
+  @available(*, deprecated: 4.0, message: "use Request.init(URLString:) instead of setURLString")
+  public func setURLString(_ value: String) -> IntermediateRequest { return self }
 
-  @available(*, deprecated: 1.2.1, message: "use RequestParams enum")
-  public fileprivate(set) var requestBodyAsJSON: Bool = false
+  @discardableResult
+  public func setXPath(_ value: String?) -> IntermediateRequest {
+    xpath = value
+    return self
+  }
 
-  public fileprivate(set) var disableLocalCache: Bool = false
-  public fileprivate(set) var disableHttpCache: Bool = false
+  @discardableResult
+  public func setMethod(_ value: Method) -> IntermediateRequest {
+    method = value
+    return self
+  }
 
-  public fileprivate(set) var shouldHandleCookies: Bool = false
+  @available(*, deprecated: 4.0, message: "use setParams(.urlEncoded([:])) method")
+  @discardableResult
+  public func setParams(_ value: [String: Any]?) -> IntermediateRequest {
+    return self
+  }
 
-  public fileprivate(set) var interceptor: Interceptor?
-  public fileprivate(set) var isInterceptorExclusive: Bool = false
+  @discardableResult
+  public func setParams(_ value: RequestParams) -> IntermediateRequest {
+    params = value
+    return self
+  }
 
-  public fileprivate(set) var authenticationChallenge: AuthenticationChallenge?
+  @discardableResult
+  public func setHeaders(_ value: [String: String]?) -> IntermediateRequest {
+    headers = value
+    return self
+  }
 
-  public fileprivate(set) var timeout: TimeInterval = 60
+  @discardableResult
+  public func setDisableLocalCache(_ value: Bool) -> IntermediateRequest {
+    disableLocalCache = value
+    return self
+  }
 
-  public fileprivate(set) var debugLogging: Bool?
+  @discardableResult
+  public func setDisableHttpCache(_ value: Bool) -> IntermediateRequest {
+    disableHttpCache = value
+    return self
+  }
 
-  public var response: ((Response<ResultType>) -> Void)?
+  @discardableResult
+  public func setDisableCache(_ value: Bool) -> IntermediateRequest {
+    disableLocalCache = value
+    disableHttpCache = value
+    return self
+  }
 
-  fileprivate init() {}
+  @discardableResult
+  public func setShouldHandleCookies(_ value: Bool) -> IntermediateRequest {
+    shouldHandleCookies = value
+    return self
+  }
+
+  @discardableResult
+  public func setInterceptor(_ value: @escaping Interceptor, exclusive: Bool) -> IntermediateRequest {
+    interceptor = value
+    isInterceptorExclusive = exclusive
+    return self
+  }
+
+  @discardableResult
+  public func setAuthenticationChallenge(_ value: @escaping AuthenticationChallenge) -> IntermediateRequest {
+    authenticationChallenge = value
+    return self
+  }
+
+  @discardableResult
+  public func setTimeout(_ value: TimeInterval) -> IntermediateRequest {
+    timeout = value
+    return self
+  }
+
+  @discardableResult
+  public func setDebugLogging(_ value: Bool) -> IntermediateRequest {
+    debugLogging = value
+    return self
+  }
 
 }
 
-@available(*, unavailable, renamed: "RequestBuilder")
-public struct PlainRequestBuilder<ResultType: Result> {
-}
+@available(*, deprecated: 4.0, message: "use Request.init(URLString:) instead of RequestBuilder")
+public struct RequestBuilder<Model: BaseModel> {
 
-public struct RequestBuilder<ResultType: Result> {
-
-  public private(set) var request = Request<ResultType>()
-  public typealias Builder = RequestBuilder<ResultType>
+  public typealias Builder = RequestBuilder<Model>
 
   public init() {}
-
-  @discardableResult
-  public func setURLString(_ value: String) -> Builder {
-    request.URLString = value
-    return self
-  }
-
-  @discardableResult
-  public func setXPath(_ value: String?) -> Builder {
-    request.xpath = value
-    return self
-  }
-
-  @discardableResult
-  public func setMethod(_ value: Method) -> Builder {
-    request.method = value
-    return self
-  }
-
-  @discardableResult
-  public func setParams(_ value: [String: Any]?) -> Builder {
-    if let value = value {
-      request.params = .urlEncoded(value)
-    } else {
-      request.params = .none
-    }
-    return self
-  }
-
-  @discardableResult
-  public func setParams(_ value: RequestParams) -> Builder {
-    request.params = value
-    return self
-  }
-
-  @discardableResult
-  public func setHeaders(_ value: [String: String]?) -> Builder {
-    request.headers = value
-    return self
-  }
-
-  @available(*, deprecated: 1.2.1, message: "use setParams(.json([:])) method")
-  @discardableResult
-  public func setRequestBodyAsJSON(_ value: Bool) -> Builder {
-    request.requestBodyAsJSON = value
-    return self
-  }
-
-  @discardableResult
-  public func setDisableLocalCache(_ value: Bool) -> Builder {
-    request.disableLocalCache = value
-    return self
-  }
-
-  @discardableResult
-  public func setDisableHttpCache(_ value: Bool) -> Builder {
-    request.disableHttpCache = value
-    return self
-  }
-
-  @discardableResult
-  public func setDisableCache(_ value: Bool) -> Builder {
-    request.disableLocalCache = value
-    request.disableHttpCache = value
-    return self
-  }
-
-  @discardableResult
-  public func setShouldHandleCookies(_ value: Bool) -> Builder {
-    request.shouldHandleCookies = value
-    return self
-  }
-
-  @discardableResult
-  public func setInterceptor(_ value: @escaping Interceptor, exclusive: Bool) -> Builder {
-    request.interceptor = value
-    request.isInterceptorExclusive = exclusive
-    return self
-  }
-
-  @discardableResult
-  public func setAuthenticationChallenge(_ value: @escaping AuthenticationChallenge) -> Builder {
-    request.authenticationChallenge = value
-    return self
-  }
-
-  @discardableResult
-  public func setTimeout(_ value: TimeInterval) -> Builder {
-    request.timeout = value
-    return self
-  }
-
-  @discardableResult
-  public func setDebugLogging(_ value: Bool) -> Builder {
-    request.debugLogging = value
-    return self
-  }
-
-  public func build() throws -> Request<ResultType> {
-    try validate()
-    return request
-  }
-
-  private func validate() throws {
-    guard request.URLString.count > 0 else {
-      throw "empty URL"
-    }
-  }
 
 }

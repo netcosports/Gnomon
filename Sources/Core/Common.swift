@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import RxSwift
 
 extension String: Error {
 }
@@ -20,7 +21,6 @@ public extension Gnomon {
     case nonHTTPResponse(response: URLResponse)
     case invalidResponse
     case unableToParseModel(Swift.Error)
-    case invalidURL(urlString: String)
     case errorStatusCode(Int, Data)
   }
 
@@ -44,63 +44,85 @@ extension HTTPURLResponse {
 
 }
 
-// swiftlint:disable:next cyclomatic_complexity
-internal func prepareDataRequest<U>(from request: Request<U>,
-                                    cachePolicy: URLRequest.CachePolicy) throws -> URLRequest {
-  guard let url = URL(string: request.URLString) else { throw Gnomon.Error.invalidURL(urlString: request.URLString) }
-  var dataRequest = URLRequest(url: url, cachePolicy: cachePolicy, timeoutInterval: request.timeout)
-  dataRequest.httpMethod = request.method.rawValue
+func cachePolicy<U>(for request: Request<U>, localCache: Bool) throws -> URLRequest.CachePolicy {
+  if localCache {
+    guard !request.disableLocalCache else { throw "local cache was disabled in request" }
+    return .returnCacheDataDontLoad
+  } else {
+    return request.disableHttpCache ? .reloadIgnoringLocalCacheData : .useProtocolCachePolicy
+  }
+}
+
+func prepareURLRequest<U>(from request: Request<U>, cachePolicy: URLRequest.CachePolicy,
+                          interceptors: [Interceptor]) throws -> URLRequest {
+  var urlRequest = URLRequest(url: request.url, cachePolicy: cachePolicy, timeoutInterval: request.timeout)
+  urlRequest.httpMethod = request.method.description
   if let headers = request.headers {
     for (key, value) in headers {
-      dataRequest.setValue(value, forHTTPHeaderField: key)
+      urlRequest.setValue(value, forHTTPHeaderField: key)
     }
   }
 
-  switch (request.method.canHaveBody, request.params) {
-  case (true, .none), (false, .none):
-    dataRequest.url = try prepareURL(from: request, params: nil)
-  case (false, let .urlEncoded(params)):
-    dataRequest.url = try prepareURL(from: request, params: params)
-  case (false, .json), (false, .multipart):
-    throw "can't encode \(request.method.rawValue) request params as JSON or multipart"
-  case (false, .data):
-    throw "can't add binary body to \(request.method.rawValue) request"
+  switch (request.method.hasBody, request.params) {
+  case (_, .none):
+    urlRequest.url = try prepareURL(with: request.url, params: nil)
+  case let (_, .query(params)):
+    urlRequest.url = try prepareURL(with: request.url, params: params)
+  case (false, _):
+    throw "\(request.method.description) request can't have a body"
   case (true, let .urlEncoded(params)):
     let queryItems = prepare(value: params, with: nil)
     var components = URLComponents()
     components.queryItems = queryItems
-    dataRequest.httpBody = components.percentEncodedQuery?.data(using: String.Encoding.utf8)
-    dataRequest.url = try prepareURL(from: request, params: nil)
-    dataRequest.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+    urlRequest.httpBody = components.percentEncodedQuery?.data(using: String.Encoding.utf8)
+    urlRequest.url = try prepareURL(with: request.url, params: nil)
+    urlRequest.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
   case (true, let .json(params)):
-    dataRequest.httpBody = try JSONSerialization.data(withJSONObject: params, options: [])
-    dataRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    dataRequest.url = try prepareURL(from: request, params: nil)
+    urlRequest.httpBody = try JSONSerialization.data(withJSONObject: params, options: [])
+    urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    urlRequest.url = try prepareURL(with: request.url, params: nil)
   case (true, let .multipart(form, files)):
     let (data, contentType) = try prepareMultipartData(with: form, files)
-    dataRequest.httpBody = data
-    dataRequest.setValue(contentType, forHTTPHeaderField: "Content-Type")
-    dataRequest.url = try prepareURL(from: request, params: nil)
+    urlRequest.httpBody = data
+    urlRequest.setValue(contentType, forHTTPHeaderField: "Content-Type")
+    urlRequest.url = try prepareURL(with: request.url, params: nil)
   case (true, let .data(data, contentType)):
-    dataRequest.httpBody = data
-    dataRequest.setValue(contentType, forHTTPHeaderField: "Content-Type")
-    dataRequest.url = try prepareURL(from: request, params: nil)
+    urlRequest.httpBody = data
+    urlRequest.setValue(contentType, forHTTPHeaderField: "Content-Type")
+    urlRequest.url = try prepareURL(with: request.url, params: nil)
   }
 
-  dataRequest.httpShouldHandleCookies = request.shouldHandleCookies
+  urlRequest.httpShouldHandleCookies = request.shouldHandleCookies
 
-  return dataRequest
+  return process(urlRequest, for: request, with: interceptors)
 }
 
-internal func prepareURL<T>(from request: Request<T>, params: [String: Any]?) throws -> URL {
+private func process<U>(_ urlRequest: URLRequest, for request: Request<U>,
+                        with interceptors: [Interceptor]) -> URLRequest {
+  if let interceptor = request.interceptor {
+    if request.isInterceptorExclusive {
+      return interceptor(urlRequest)
+    } else {
+      var urlRequest = urlRequest
+      urlRequest = interceptor(urlRequest)
+      urlRequest = interceptors.reduce(urlRequest) { $1($0) }
+      return urlRequest
+    }
+  } else {
+    return interceptors.reduce(urlRequest) { $1($0) }
+  }
+}
+
+func prepareURL(with url: URL, params: [String: Any]?) throws -> URL {
   var queryItems = [URLQueryItem]()
   if let params = params {
     queryItems.append(contentsOf: prepare(value: params, with: nil))
   }
 
-  guard var components = URLComponents(string: request.URLString) else {
-    throw "can't parse provided URL: \(request.URLString)"
+  guard var components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
+    throw "can't parse provided URL \"\(url)\""
   }
+
   queryItems.append(contentsOf: components.queryItems ?? [])
   components.queryItems = queryItems.count > 0 ? queryItems : nil
   guard let url = components.url else { throw "can't prepare URL from components: \(components)" }
@@ -139,8 +161,8 @@ private func prepare(value: Any, with key: String?) -> [URLQueryItem] {
   }
 }
 
-internal func prepareMultipartData(with form: [String: String],
-                                   _ files: [String: MultipartFile]) throws -> (data: Data, contentType: String) {
+func prepareMultipartData(with form: [String: String],
+                          _ files: [String: MultipartFile]) throws -> (data: Data, contentType: String) {
   let boundary = "__X_NST_BOUNDARY__"
   var data = Data()
   guard let boundaryData = "--\(boundary)\r\n".data(using: .utf8) else { throw "can't encode boundary" }
@@ -150,7 +172,7 @@ internal func prepareMultipartData(with form: [String: String],
       throw "can't encode key \(key)"
     }
     data.append(dispositionData)
-    guard let valueData = (value.description + "\r\n").data(using: .utf8) else { throw "can't encode value \(value)" }
+    guard let valueData = (value + "\r\n").data(using: .utf8) else { throw "can't encode value \(value)" }
     data.append(valueData)
   }
 
@@ -177,16 +199,62 @@ internal func prepareMultipartData(with form: [String: String],
   return (data, "multipart/form-data; boundary=\(boundary)")
 }
 
-internal func processedResult<U>(from data: Data, for request: Request<U>) throws -> U {
-  return try U(data: data, atPath: request.xpath)
-}
-
-internal func validated(response: Any) throws -> (result: [String: Any], isArray: Bool) {
-  switch response {
-  case let dictionary as [String: Any]: return (dictionary, false)
-  case let array as [AnyObject]: return (["array": array], true)
-  default: throw Gnomon.Error.invalidResponse
-  }
+func processedResult<U>(from data: Data, for request: Request<U>) throws -> U {
+  let container = try U.dataContainer(with: data, at: request.xpath)
+  return try U(container)
 }
 
 public typealias Interceptor = (URLRequest) -> URLRequest
+
+public enum Result<T> {
+  case ok(T)
+  case error(Error)
+}
+
+public extension Result {
+
+  var value: T? {
+    switch self {
+    case let .ok(value): return value
+    case .error: return nil
+    }
+  }
+
+  var error: Error? {
+    switch self {
+    case .ok: return nil
+    case let .error(error): return error
+    }
+  }
+
+  func map<U>(_ transform: (T) throws -> U) rethrows -> Result<U> {
+    switch self {
+    case let .ok(value):
+      return .ok(try transform(value))
+    case let .error(error):
+      return .error(error)
+    }
+  }
+
+  func value(or `default`: T) -> T {
+    switch self {
+    case let .ok(value): return value
+    case .error: return `default`
+    }
+  }
+
+}
+
+extension ObservableType {
+
+  func asResult() -> Observable<Result<E>> {
+    return materialize().map { event -> Event<Result<E>> in
+      switch event {
+      case let .next(element): return .next(.ok(element))
+      case let .error(error): return .next(.error(error))
+      case .completed: return .completed
+      }
+    }.dematerialize()
+  }
+
+}

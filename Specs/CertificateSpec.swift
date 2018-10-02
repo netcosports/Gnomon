@@ -7,33 +7,26 @@
 //
 
 import XCTest
-import Gnomon
 import Nimble
 import RxBlocking
 
+@testable import Gnomon
+
 class CertificateSpec: XCTestCase {
-
-  override func setUp() {
-    super.setUp()
-
-    Nimble.AsyncDefaults.Timeout = 7
-    URLCache.shared.removeAllCachedResponses()
-    Gnomon.removeAllInterceptors()
-  }
 
   func testInvalidCertificate() {
     do {
-      let builder = RequestBuilder<SingleResult<String>>()
-        .setURLString("https://self-signed.badssl.com/").setMethod(.GET)
-      builder.setAuthenticationChallenge { challenge, completionHandler -> Void in
+      let request = try Request<String>(URLString: "https://self-signed.badssl.com/")
+      request.shouldRunTask = true
+      request.authenticationChallenge = { challenge, completionHandler -> Void in
         completionHandler(.useCredential, URLCredential(trust: challenge.protectionSpace.serverTrust!))
       }
-      let request = try builder.build()
 
-      let response = try Gnomon.models(for: request).toBlocking().first()
-      guard let result = response?.result else { throw "can't extract response" }
+      guard let response = try Gnomon.models(for: request).toBlocking().first() else {
+        return fail("can't extract response")
+      }
 
-      expect(result.model.count).to(beGreaterThan(0))
+      expect(response.result.count).to(beGreaterThan(0))
     } catch {
       fail("\(error)")
       return
@@ -41,19 +34,21 @@ class CertificateSpec: XCTestCase {
   }
 
   func testInvalidCertificateWithoutHandler() {
-    var err: NSError?
     do {
-      let builder = RequestBuilder<SingleResult<String>>()
-        .setURLString("https://self-signed.badssl.com/").setMethod(.GET)
-      let request = try builder.build()
+      let request = try Request<String>(URLString: "https://self-signed.badssl.com/")
+      request.shouldRunTask = true
 
-      let result = try Gnomon.models(for: request).toBlocking().first()
-      expect(result).to(beNil())
-    } catch let e where e is String {
-      fail("\(e)")
+      let result = Gnomon.models(for: request).toBlocking().materialize()
+
+      switch result {
+      case .completed: fail("request should fail")
+      case let .failed(_, error):
+        let error = error as NSError
+        expect(error.domain) == NSURLErrorDomain
+        expect(error.code) == NSURLErrorServerCertificateUntrusted
+      }
     } catch {
-      err = error as NSError
-      expect(err).toNot(beNil())
+      fail("\(error)")
     }
   }
 

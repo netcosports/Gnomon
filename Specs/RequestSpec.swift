@@ -14,188 +14,237 @@ import SwiftyJSON
 
 @testable import Gnomon
 
+let BlockingTimeout: RxTimeInterval = 0.5
+
 class RequestSpec: XCTestCase {
 
   override func setUp() {
     super.setUp()
 
-    Nimble.AsyncDefaults.Timeout = 7
     URLCache.shared.removeAllCachedResponses()
     Gnomon.removeAllInterceptors()
   }
 
-  func testPlainSingleRequest() {
+  func testSingleRequest() {
     do {
-      let request = try RequestBuilder<SingleResult<TestModel5>>().setURLString("\(Params.API.baseURL)/get?key=123")
-        .setMethod(.GET).build()
+      let request = try Request<TestModel1>(URLString: "https://example.com/")
+      request.httpSessionDelegate = try TestSessionDelegate.jsonResponse(result: ["key": 123], cached: false)
 
-      let response = try Gnomon.models(for: request).toBlocking().first()
-      expect(response?.statusCode) == 200
-      expect(response?.headers.count) != 0
+      let result = Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).materialize()
 
-      guard let result = response?.result else { throw "can't extract response" }
+      switch result {
+      case let .completed(responses):
+        expect(responses).to(haveCount(1))
 
-      expect(result.model.key).to(equal(123))
-    } catch {
-      fail("\(error)")
-    }
-  }
-
-  func testPlainMultipleRequest() {
-    do {
-      let request = try RequestBuilder<MultipleResults<TestModel1>>().setURLString("\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(["array": [
-          ["key": "123"],
-          ["key": "234"],
-          ["key": "345"]
-        ]])).setXPath("json/array").build()
-
-      let response = try Gnomon.models(for: request).toBlocking().first()
-      guard let result = response?.result else { throw "can't extract response" }
-
-      expect(result.models[0].key).to(equal(123))
-      expect(result.models[1].key).to(equal(234))
-      expect(result.models[2].key).to(equal(345))
-    } catch {
-      fail("\(error)")
-    }
-  }
-
-  func testPlainSingleOptionalRequest() {
-    do {
-      let request = try RequestBuilder<SingleOptionalResult<TestModel1>>()
-        .setURLString("\(Params.API.baseURL)/get?key=123").setMethod(.GET)
-        .setXPath("args").build()
-
-      let response = try Gnomon.models(for: request).toBlocking().first()
-      guard let result = response?.result else { throw "can't extract response" }
-
-      expect(result.model).notTo(beNil())
-      expect(result.model?.key).to(equal(123))
-    } catch {
-      fail("\(error)")
-      return
-    }
-  }
-
-  func testPlainMultipleOptionalRequest() {
-    do {
-      let request = try RequestBuilder<MultipleOptionalResults<TestModel1>>().setURLString("\(Params.API.baseURL)/post")
-        .setMethod(.POST).setParams(.json(["array": [
-          ["key": "123"],
-          ["key": "234"],
-          ["key": "345"]
-        ]])).setXPath("json/array").build()
-
-      let response = try Gnomon.models(for: request).toBlocking().first()
-      guard let result = response?.result, result.models.count != 0 else { throw "can't extract response" }
-
-      expect(result.models[0]?.key).to(equal(123))
-      expect(result.models[1]?.key).to(equal(234))
-      expect(result.models[2]?.key).to(equal(345))
-    } catch {
-      fail("\(error)")
-      return
-    }
-  }
-
-  func testSingleGETWithParamsRequest() {
-    do {
-      let request = try RequestBuilder<SingleResult<TestModel3>>()
-        .setURLString("\(Params.API.baseURL)/get?key1=123").setMethod(.GET)
-        .setParams(["key2": "234", "key3": [345, 456]]).build()
-
-      let response = try Gnomon.models(for: request).toBlocking().first()
-      guard let result = response?.result else { throw "can't extract response" }
-
-      expect(result.model.key1).to(equal(123))
-      expect(result.model.key2).to(equal(234))
-      expect(result.model.keys).to(equal([345, 456]))
-    } catch {
-      fail("\(error)")
-      return
-    }
-  }
-
-  func testPlainSinglePOSTWithParamsRequest() {
-    do {
-      let request = try RequestBuilder<SingleResult<TestModel4>>().setURLString("\(Params.API.baseURL)/post?key1=123")
-        .setMethod(.POST).setParams(["key2": "234"]).build()
-
-      let response = try Gnomon.models(for: request).toBlocking().first()
-
-      expect(response).notTo(beNil())
-
-      guard let result = response?.result else {
-        fail("can't extract response")
-        return
+        let response = responses[0]
+        expect(response.statusCode) == 200
+        expect(response.result.key) == 123
+      case let .failed(_, error):
+        fail("\(error)")
       }
-
-      expect(result.model.key1).to(equal(123))
-      expect(result.model.key2).to(equal(234))
     } catch {
       fail("\(error)")
-      return
     }
   }
 
-  func testPlainSinglePOSTWithJSONParamsRequest() {
+  func testSingleOptionalSuccessfulRequest() {
     do {
-      let request: Request<SingleResult<TestModel6>> = try RequestBuilder()
-        .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
-        .setParams(.json(["key": "123"])).setXPath("json").build()
+      let request = try Request<TestModel1?>(URLString: "https://example.com/")
+      request.httpSessionDelegate = try TestSessionDelegate.jsonResponse(result: ["key": 123], cached: false)
 
-      let response = try Gnomon.models(for: request).toBlocking().first()
+      let result = Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).materialize()
 
-      expect(response).notTo(beNil())
+      switch result {
+      case let .completed(responses):
+        expect(responses).to(haveCount(1))
 
-      guard let result = response?.result else {
-        fail("can't extract response")
-        return
+        let response = responses[0]
+        expect(response.statusCode) == 200
+        expect(response.result?.key) == 123
+      case let .failed(_, error):
+        fail("\(error)")
       }
-
-      expect(result.model.key).to(equal(123))
     } catch {
       fail("\(error)")
-      return
     }
   }
 
-  func testPlainSinglePOSTWithMixedParamsRequest() {
+  func testSingleOptionalFailedRequest() {
     do {
-      let request: Request<SingleResult<TestModel7>> = try RequestBuilder()
-        .setURLString("\(Params.API.baseURL)/post?key1=123").setMethod(.POST)
-        .setParams(.json(["key2": "234"])).build()
+      let request = try Request<TestModel1?>(URLString: "https://example.com/")
+      request.httpSessionDelegate = try TestSessionDelegate.jsonResponse(result: ["invalid": 123], cached: false)
 
-      let response = try Gnomon.models(for: request).toBlocking().first()
+      let result = Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).materialize()
 
-      expect(response).notTo(beNil())
+      switch result {
+      case let .completed(responses):
+        expect(responses).to(haveCount(1))
 
-      guard let result = response?.result else {
-        throw "can't extract response"
+        let response = responses[0]
+        expect(response.statusCode) == 200
+        expect(response.result).to(beNil())
+      case let .failed(_, error):
+        fail("\(error)")
       }
-
-      expect(result.model.key1).to(equal(123))
-      expect(result.model.key2).to(equal(234))
     } catch {
       fail("\(error)")
-      return
+    }
+  }
+
+  func testArrayRequest() {
+    do {
+      let request = try Request<[TestModel1]>(URLString: "https://example.com/")
+      request.httpSessionDelegate = try TestSessionDelegate.jsonResponse(result: [
+        ["key": 123],
+        ["key": 234],
+        ["key": 345]
+      ], cached: false)
+
+      let result = Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).materialize()
+
+      switch result {
+      case let .completed(responses):
+        expect(responses).to(haveCount(1))
+
+        let response = responses[0]
+
+        expect(response.result).to(haveCount(3))
+        expect(response.result[0].key).to(equal(123))
+        expect(response.result[1].key).to(equal(234))
+        expect(response.result[2].key).to(equal(345))
+      case let .failed(_, error):
+        fail("\(error)")
+      }
+    } catch {
+      fail("\(error)")
+    }
+  }
+
+  func testOptionalArraySuccessfulRequest() {
+    do {
+      let request = try Request<[TestModel1]?>(URLString: "https://example.com/")
+      request.httpSessionDelegate = try TestSessionDelegate.jsonResponse(result: [
+        ["key": 123],
+        ["key": 234],
+        ["key": 345]
+      ], cached: false)
+
+      let result = Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).materialize()
+
+      switch result {
+      case let .completed(responses):
+        expect(responses).to(haveCount(1))
+
+        let response = responses[0]
+
+        expect(response.result).to(haveCount(3))
+        expect(response.result?[0].key).to(equal(123))
+        expect(response.result?[1].key).to(equal(234))
+        expect(response.result?[2].key).to(equal(345))
+      case let .failed(_, error):
+        fail("\(error)")
+      }
+    } catch {
+      fail("\(error)")
+    }
+  }
+
+  func testOptionalArrayFailedRequest() {
+    do {
+      let request = try Request<[TestModel1]?>(URLString: "https://example.com/")
+      request.httpSessionDelegate = try TestSessionDelegate.jsonResponse(result: ["invalid": "type"], cached: false)
+
+      let result = Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).materialize()
+
+      switch result {
+      case let .completed(responses):
+        expect(responses).to(haveCount(1))
+
+        let response = responses[0]
+
+        expect(response.result).to(beNil())
+      case let .failed(_, error):
+        fail("\(error)")
+      }
+    } catch {
+      fail("\(error)")
+    }
+  }
+
+  func testArrayOfOptionalsSuccessfulRequest() {
+    do {
+      let request = try Request<[TestModel1?]>(URLString: "https://example.com/")
+      request.httpSessionDelegate = try TestSessionDelegate.jsonResponse(result: [
+        ["key": 123],
+        ["key": 234],
+        ["key": 345]
+      ], cached: false)
+
+      let result = Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).materialize()
+
+      switch result {
+      case let .completed(responses):
+        expect(responses).to(haveCount(1))
+
+        let response = responses[0]
+
+        expect(response.result).to(haveCount(3))
+        expect(response.result[0]?.key).to(equal(123))
+        expect(response.result[1]?.key).to(equal(234))
+        expect(response.result[2]?.key).to(equal(345))
+      case let .failed(_, error):
+        fail("\(error)")
+      }
+    } catch {
+      fail("\(error)")
+    }
+  }
+
+  func testArrayOfOptionalsFailedRequest() {
+    do {
+      let request = try Request<[TestModel1?]>(URLString: "https://example.com/")
+      request.httpSessionDelegate = try TestSessionDelegate.jsonResponse(result: [
+        ["key": 123],
+        ["_key": 234],
+        ["key": 345]
+      ], cached: false)
+
+      let result = Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).materialize()
+
+      switch result {
+      case let .completed(responses):
+        expect(responses).to(haveCount(1))
+
+        let response = responses[0]
+
+        expect(response.result).to(haveCount(3))
+        expect(response.result[0]?.key).to(equal(123))
+        expect(response.result[1]).to(beNil())
+        expect(response.result[2]?.key).to(equal(345))
+      case let .failed(_, error):
+        fail("\(error)")
+      }
+    } catch {
+      fail("\(error)")
     }
   }
 
   func testStringRequest() {
     do {
-      let request = try RequestBuilder<SingleResult<String>>()
-        .setURLString("\(Params.API.baseURL)/robots.txt").setMethod(.GET).build()
-      let response = try Gnomon.models(for: request).toBlocking().first()
-      expect(response).toNot(beNil())
+      let request = try Request<String>(URLString: "https://example.com/")
+      request.httpSessionDelegate = try TestSessionDelegate.stringResponse(result: "test string", cached: false)
 
-      guard let result = response?.result else {
-        fail("can't extract response")
-        return
+      let result = Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).materialize()
+
+      switch result {
+      case let .completed(responses):
+        expect(responses).to(haveCount(1))
+
+        let response = responses[0]
+        expect(response.result) == "test string"
+      case let .failed(_, error):
+        fail("\(error)")
       }
-
-      expect(result.model).to(equal("User-agent: *\nDisallow: /deny\n"))
     } catch {
       fail("\(error)")
       return
@@ -204,182 +253,21 @@ class RequestSpec: XCTestCase {
 
   func testErrorStatusCode() {
     do {
-      let request = try RequestBuilder<SingleResult<TestModel1>>()
-        .setURLString("\(Params.API.baseURL)/status/403").setMethod(.GET).build()
+      let request = try Request<String>(URLString: "https://example.com/")
+      request.httpSessionDelegate = try TestSessionDelegate.stringResponse(result: "error string", statusCode: 401, cached: false)
 
-      _ = try Gnomon.models(for: request).toBlocking().first()
-    } catch let e {
-      switch e {
-      case Gnomon.Error.errorStatusCode(let code, _):
-        expect(code) == 403
-      default:
-        fail("\(e)")
-      }
+      let result = Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).materialize()
 
-      return
-    }
-
-    fail("request should fail")
-  }
-
-  func testCastSingleDictionaryToMultipleResults() {
-    do {
-      let request: Request<MultipleResults<TestModel9>> = try RequestBuilder()
-        .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
-        .setParams(.json(["root_key": ["key": "123"]])).setXPath("json/root_key").build()
-
-      let response = try Gnomon.models(for: request).toBlocking().first()
-
-      expect(response).notTo(beNil())
-
-      guard let result = response?.result else {
-        fail("can't extract response")
-        return
-      }
-
-      expect(result.models).to(haveCount(1))
-      expect(result.models[0].key) == "123"
-    } catch {
-      fail("\(error)")
-      return
-    }
-  }
-
-  func testCastSingleDictionaryToMultipleResultsButFailIfNull() {
-    do {
-      let request: Request<MultipleResults<TestModel9>> = try RequestBuilder()
-        .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
-        .setParams(.json(["root_key": NSNull()])).setXPath("json/root_key").build()
-
-      do {
-        _ = try Gnomon.models(for: request).toBlocking().first()
+      switch result {
+      case .completed:
         fail("request should fail")
-      } catch {
-        switch error {
-        case let Gnomon.Error.unableToParseModel(error):
-          guard let string = error as? String else { throw "" }
-          expect(string) == "expected dictionary or array, received null"
-        default:
-          throw error
-        }
+      case let .failed(_, Gnomon.Error.errorStatusCode(401, data)):
+        expect(String(data: data, encoding: .utf8)) == "error string"
+      case let .failed(_, error):
+        fail("\(error)")
       }
     } catch {
       fail("\(error)")
-      return
-    }
-  }
-
-  func testCastSingleDictionaryToMultipleOptionalResults() {
-    do {
-      let request: Request<MultipleOptionalResults<TestModel9>> = try RequestBuilder()
-        .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
-        .setParams(.json(["root_key": ["key": "123"]])).setXPath("json/root_key").build()
-
-      let response = try Gnomon.models(for: request).toBlocking().first()
-
-      expect(response).notTo(beNil())
-
-      guard let result = response?.result else {
-        fail("can't extract response")
-        return
-      }
-
-      expect(result.models).to(haveCount(1))
-      expect(result.models[0]?.key) == "123"
-    } catch {
-      fail("\(error)")
-      return
-    }
-  }
-
-  func testCastSingleDictionaryToMultipleOptionalResultsIfNull() {
-    do {
-      let request: Request<MultipleOptionalResults<TestModel9>> = try RequestBuilder()
-        .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
-        .setParams(.json(["root_key": NSNull()])).setXPath("json/root_key").build()
-
-      let response = try Gnomon.models(for: request).toBlocking().first()
-
-      expect(response).notTo(beNil())
-
-      guard let result = response?.result else {
-        fail("can't extract response")
-        return
-      }
-
-      expect(result.models).to(haveCount(0))
-    } catch {
-      fail("\(error)")
-      return
-    }
-  }
-
-  func testPublicAccessToRequestBuilderRequest() {
-    do {
-      let builder = RequestBuilder<SingleResult<TestModel5>>().setURLString("\(Params.API.baseURL)/get?key=123")
-        .setMethod(.GET)
-      _ = builder.request.headers
-      _ = try builder.build()
-    } catch {
-      fail("\(error)")
-      return
-    }
-  }
-
-  func testCustomDataRequest() {
-    do {
-      guard let url = Bundle(for: type(of: self)).url(forResource: "image", withExtension: "png") else {
-        return fail("can't find test file")
-      }
-
-      let data = try Data(contentsOf: url)
-
-      let request: Request<SingleResult<DataModel>> = try RequestBuilder()
-        .setURLString("\(Params.API.baseURL)/post").setMethod(.POST)
-        .setParams(.data(data, contentType: "image/png")).build()
-
-      let response = try Gnomon.models(for: request).toBlocking().first()
-
-      expect(response).notTo(beNil())
-
-      guard let result = response?.result else {
-        fail("can't extract response")
-        return
-      }
-
-      expect(result.model.data) == data
-    } catch {
-      fail("\(error)")
-      return
-    }
-  }
-
-  func testTimeoutSuccess() {
-    do {
-      let request = try RequestBuilder<SingleResult<TestModel5>>().setURLString("\(Params.API.baseURL)/get?key=123")
-        .setMethod(.GET).setTimeout(5).build()
-
-      let response = try Gnomon.models(for: request).toBlocking().first()
-      guard let result = response?.result else { throw "can't extract response" }
-
-      expect(result.model.key).to(equal(123))
-    } catch {
-      fail("\(error)")
-    }
-  }
-
-  func testTimeoutFail() {
-    do {
-      let request = try RequestBuilder<SingleResult<TestModel5>>().setURLString("\(Params.API.baseURL)/delay/2?key=123")
-        .setMethod(.GET).setTimeout(1).build()
-
-      _ = try Gnomon.models(for: request).toBlocking().first()
-    } catch {
-      expect(error).to(beAKindOf(NSError.self))
-
-      let nsError = error as NSError
-      expect(nsError.domain) == NSURLErrorDomain
-      expect(nsError.code) == NSURLErrorTimedOut
     }
   }
 

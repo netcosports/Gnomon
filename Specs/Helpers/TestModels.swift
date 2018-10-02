@@ -15,7 +15,7 @@ struct TestModel1: JSONModel {
   let key: Int
 
   init(_ json: JSON) throws {
-    guard let string = json["key"].string, let value = Int(string) else {
+    guard let value = json["key"].int else {
       throw Gnomon.Error.unableToParseModel("<key> value is invalid = <\(json["key"])>")
     }
 
@@ -59,7 +59,7 @@ struct TestModel3: JSONModel {
 
     key1 = value1
     key2 = value2
-    keys = ints.compactMap({ $0.string }).compactMap { Int($0) }
+    keys = ints.compactMap { $0.string }.compactMap { Int($0) }
   }
 
 }
@@ -173,30 +173,15 @@ struct DataModel: JSONModel {
 
 struct TestXMLModel: XMLModel {
 
-  let title: String
+  let key: Int
 
   init(_ xml: AEXMLElement) throws {
-    guard let title = xml.attributes["title"] else {
-      let value = String(describing: xml.attributes["title"])
-      throw Gnomon.Error.unableToParseModel("<_title> value is invalid = <\(value)>")
+    guard let key = xml.attributes["key"].flatMap({ Int($0) }) else {
+      let value = String(describing: xml.attributes["key"])
+      throw Gnomon.Error.unableToParseModel("<key> value is invalid = <\(value)>")
     }
 
-    self.title = title
-  }
-
-}
-
-struct TestXMLSlideModel: XMLModel {
-
-  let title: String
-
-  init(_ xml: AEXMLElement) throws {
-    guard let title = xml["title"].value else {
-      let value = String(describing: xml.attributes["title"])
-      throw Gnomon.Error.unableToParseModel("<_title> value is invalid = <\(value)>")
-    }
-
-    self.title = title
+    self.key = key
   }
 
 }

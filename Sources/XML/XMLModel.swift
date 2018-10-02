@@ -5,71 +5,57 @@
 
 import AEXML
 
-public protocol XMLModel: BaseModel {
+public protocol XMLModel: BaseModel where DataContainer == XMLContainer {
+
   init(_ xml: AEXMLElement) throws
+
 }
 
-public extension XMLModel {
+extension XMLModel {
 
-  static func model(with data: Data, atPath path: String?) throws -> Self {
-    let xml = try AEXMLDocument(xml: data)
-
-    guard let path = path else {
-      return try Self(xml.root)
-    }
-
-    let xpathed = xml.xpath(path)
-
-    guard xpathed.error == nil else {
-      throw Gnomon.Error.unableToParseModel("invalid response or xpath")
-    }
-
-    return try Self(xpathed)
+  public init(_ container: XMLContainer) throws {
+    try self.init(container.element)
   }
 
-  static func models(with data: Data, atPath path: String?) throws -> [Self] {
+}
+
+public struct XMLContainer: DataContainerProtocol {
+
+  let element: AEXMLElement
+  let document: AEXMLDocument
+
+  init(element: AEXMLElement, document: AEXMLDocument) {
+    self.element = element
+    self.document = document
+  }
+
+  public typealias Iterator = GenericDataContainerIterator<XMLContainer>
+
+  public static func container(with data: Data, at path: String?) throws -> XMLContainer {
     let xml = try AEXMLDocument(xml: data)
-    let xmlArray: [AEXMLElement]
 
     if let path = path {
       let xpathed = xml.xpath(path)
-
-      if let error = xpathed.error { throw Gnomon.Error.unableToParseModel(error) }
-      guard let all = xpathed.all else { throw Gnomon.Error.unableToParseModel("invalid response or xpath") }
-
-      xmlArray = all
-    } else {
-      guard let all = xml.root.all else { throw Gnomon.Error.unableToParseModel("invalid response or xpath") }
-      xmlArray = all
-    }
-
-    return try xmlArray.map { try Self($0) }
-  }
-
-  static func optionalModels(with data: Data, atPath path: String?) throws -> [Self?] {
-    let xml = try AEXMLDocument(xml: data)
-    let xmlArray: [AEXMLElement]
-
-    if let path = path {
-      let xpathed = xml.xpath(path)
-
-      if let error = xpathed.error { throw Gnomon.Error.unableToParseModel(error) }
-      guard let all = xpathed.all else { throw Gnomon.Error.unableToParseModel("invalid response or xpath") }
-
-      xmlArray = all
-    } else {
-      guard let all = xml.root.all else { throw Gnomon.Error.unableToParseModel("invalid response or xpath") }
-      xmlArray = all
-    }
-
-    return xmlArray.map {
-      do {
-        return try Self($0)
-      } catch {
-        Gnomon.errorLog("\(error)")
-        return nil
+      if let error = xpathed.error {
+        throw Gnomon.Error.unableToParseModel(error)
       }
+
+      return self.init(element: xpathed, document: xml)
+    } else {
+      return self.init(element: xml.root, document: xml)
     }
+  }
+
+  public func multiple() -> GenericDataContainerIterator<XMLContainer>? {
+    if let array = element.all {
+      return .init(array.map { XMLContainer(element: $0, document: document) })
+    } else {
+      return nil
+    }
+  }
+
+  public static func empty() -> XMLContainer {
+    return self.init(element: AEXMLElement(name: ""), document: AEXMLDocument())
   }
 
 }
