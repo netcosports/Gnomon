@@ -40,7 +40,7 @@ public struct GenericDataContainerIterator<E>: DataContainerIterator {
   private let array: [E]
   private var index = 0
 
-  init(_ array: [E]) {
+  public init(_ array: [E]) {
     self.array = array
   }
 
