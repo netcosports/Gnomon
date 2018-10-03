@@ -3,15 +3,15 @@ PODS:
   - FormatterKit/Resources (1.8.2)
   - FormatterKit/URLRequestFormatter (1.8.2):
     - FormatterKit/Resources
-  - Gnomon/Core (4.2):
+  - Gnomon/Core (4.0.1):
     - FormatterKit/URLRequestFormatter (>= 1.8.2)
     - RxSwift (~> 4.0)
-  - Gnomon/Decodable (4.2):
+  - Gnomon/Decodable (4.0.1):
     - Gnomon/Core
-  - Gnomon/JSON (4.2):
+  - Gnomon/JSON (4.0.1):
     - Gnomon/Core
     - SwiftyJSON (~> 4.2)
-  - Gnomon/XML (4.2):
+  - Gnomon/XML (4.0.1):
     - AEXML (~> 4.2)
     - Gnomon/Core
   - Nimble (7.3.1)
@@ -28,7 +28,7 @@ DEPENDENCIES:
   - Gnomon/XML (from `.`)
   - Nimble (~> 7.0)
   - RxBlocking
-  - SwiftLint
+  - SwiftLint (~> 0.27)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -47,13 +47,13 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AEXML: 601f41fcaa7bda7605cad153b0f43db9ec006c0f
   FormatterKit: 4b8f29acc9b872d5d12a63efb560661e8f2e1b98
-  Gnomon: e980289e349dedd8ce7609fc748937f2c4babfd0
+  Gnomon: 76640feb072a90fc9722f2f8c1c1821e3cc34e9a
   Nimble: 04f732da099ea4d153122aec8c2a88fd0c7219ae
   RxBlocking: 64c051285261ca2339481e91b5f70eb06b03660a
   RxSwift: fe0fd770a43acdb7d0a53da411c9b892e69bb6e4
   SwiftLint: 3207c1faa2240bf8973b191820a116113cd11073
   SwiftyJSON: c4bcba26dd9ec7a027fc8eade48e2c911f229e96
 
-PODFILE CHECKSUM: 025c06de2260cbce587bbd872afd6a5b243d7ae2
+PODFILE CHECKSUM: 94b0976b7a668ed06601438847d588dfa12ea490
 
 COCOAPODS: 1.5.3

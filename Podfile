@@ -3,7 +3,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 use_frameworks!
 
 abstract_target 'Tests' do
-  pod 'SwiftLint'
+  pod 'SwiftLint', '~> 0.27'
   pod 'Gnomon/Core', :path => '.'
   pod 'Gnomon/JSON', :path => '.'
   pod 'Gnomon/XML', :path => '.'
