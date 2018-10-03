@@ -40,6 +40,11 @@ fastlane remote_httpbin
 fastlane release
 ```
 
+### push
+```
+fastlane push
+```
+
 ### patch
 ```
 fastlane patch

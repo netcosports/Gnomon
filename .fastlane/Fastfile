@@ -56,6 +56,13 @@ lane :release do |options|
   pod_push(allow_warnings: true)
 end
 
+lane :push do |options|
+  pod_push(
+    path: podspec,
+    allow_warnings: true
+  )
+end
+
 lane :patch do |options|
   new_version(type: 'patch', increase: true, path: podspec)
 end
