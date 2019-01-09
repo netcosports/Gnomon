@@ -12,7 +12,7 @@ abstract_target 'Tests' do
   pod 'RxBlocking'
 
   target 'iOSTests' do
-    platform :ios, '8.0'
+    platform :ios, '9.0'
   end
 
   target 'tvOSTests' do
