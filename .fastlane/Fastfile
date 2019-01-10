@@ -42,7 +42,7 @@ lane :remote_httpbin do
 end
 
 lane :release do |options|
-  unless options[:version].nil? 
+  unless options[:version].nil?
     new_version(version: options[:version], path: podspec)
   else
     bump = options[:bump]
@@ -106,7 +106,8 @@ lane :lint do |options|
   pod_lib_lint(
     use_bundle_exec: true,
     verbose: true,
-    fail_fast: true
+    fail_fast: true,
+    allow_warnings: true
   )
 end
 
