@@ -38,12 +38,12 @@ public enum Method: CustomStringConvertible {
 public enum RequestParams {
 
   case none
+  case skipURLEncoding
   case query([String: Any])
   case urlEncoded([String: Any])
   case json([String: Any])
   case multipart([String: String], [String: MultipartFile])
   case data(Data, contentType: String)
-
 }
 
 public struct MultipartFile {

@@ -64,6 +64,8 @@ func prepareURLRequest<U>(from request: Request<U>, cachePolicy: URLRequest.Cach
   }
 
   switch (request.method.hasBody, request.params) {
+  case (_, .skipURLEncoding):
+    urlRequest.url = request.url
   case (_, .none):
     urlRequest.url = try prepareURL(with: request.url, params: nil)
   case let (_, .query(params)):
