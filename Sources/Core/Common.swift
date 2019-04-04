@@ -168,7 +168,11 @@ func prepareMultipartData(with form: [String: String],
   let boundary = "__X_NST_BOUNDARY__"
   var data = Data()
   guard let boundaryData = "--\(boundary)\r\n".data(using: .utf8) else { throw "can't encode boundary" }
-  for (key, value) in form {
+  try form.keys.sorted().forEach { key in
+    guard let value = form[key] else {
+      throw "can't encode key \(key)"
+    }
+
     data.append(boundaryData)
     guard let dispositionData = "Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: .utf8) else {
       throw "can't encode key \(key)"
@@ -178,7 +182,11 @@ func prepareMultipartData(with form: [String: String],
     data.append(valueData)
   }
 
-  for (key, file) in files {
+  try files.keys.sorted().forEach { key in
+    guard let file = files[key] else {
+      throw "can't find file for key \(key)"
+    }
+
     data.append(boundaryData)
     guard let dispositionData = "Content-Disposition: form-data; name=\"\(key)\"; filename=\"\(file.filename)\"\r\n"
       .data(using: .utf8) else { throw "can't encode key \(key)" }
