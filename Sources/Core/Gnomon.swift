@@ -56,7 +56,7 @@ public enum Gnomon {
     return cachedModels(for: request).concat(models(for: request))
   }
 
-  public static func cachedModels<U>(for requests: [Request<U>]) -> Observable<[Result<Response<U>>]> {
+  public static func cachedModels<U>(for requests: [Request<U>]) -> Observable<[Result<Response<U>, Swift.Error>]> {
     guard !requests.isEmpty else { return .just([]) }
 
     return Observable.combineLatest(requests.map { request in
@@ -64,7 +64,7 @@ public enum Gnomon {
     })
   }
 
-  public static func models<U>(for requests: [Request<U>]) -> Observable<[Result<Response<U>>]> {
+  public static func models<U>(for requests: [Request<U>]) -> Observable<[Result<Response<U>, Swift.Error>]> {
     guard !requests.isEmpty else { return .just([]) }
 
     return Observable.combineLatest(requests.map { request in
@@ -72,7 +72,7 @@ public enum Gnomon {
     })
   }
 
-  public static func cachedThenFetch<U>(_ requests: [Request<U>]) -> Observable<[Result<Response<U>>]> {
+  public static func cachedThenFetch<U>(_ requests: [Request<U>]) -> Observable<[Result<Response<U>, Swift.Error>]> {
     guard !requests.isEmpty else { return .just([]) }
 
     let cached = requests.map { cachedModels(for: $0, catchErrors: true).asResult() }

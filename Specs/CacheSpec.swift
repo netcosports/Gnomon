@@ -76,8 +76,8 @@ class CacheSpec: XCTestCase {
 
         for result in results {
           switch result {
-          case .ok: fail("request should fail")
-          case let .error(error):
+          case .success: fail("request should fail")
+          case let .failure(error):
             let error = error as NSError
             expect(error.domain) == NSURLErrorDomain
             expect(error.code) == NSURLErrorResourceUnavailable
@@ -114,25 +114,25 @@ class CacheSpec: XCTestCase {
         expect(results).to(haveCount(3))
 
         switch results[0] {
-        case let .ok(value):
+        case let .success(value):
           expect(value.result.key) == 123
           expect(value.type) == .localCache
-        case let .error(error): fail("\(error)")
+        case let .failure(error): fail("\(error)")
         }
 
         switch results[1] {
-        case .ok: fail("request should fail")
-        case let .error(error):
+        case .success: fail("request should fail")
+        case let .failure(error):
           let error = error as NSError
           expect(error.domain) == NSURLErrorDomain
           expect(error.code) == NSURLErrorResourceUnavailable
         }
 
         switch results[2] {
-        case let .ok(value):
+        case let .success(value):
           expect(value.result.key) == 345
           expect(value.type) == .localCache
-        case let .error(error): fail("\(error)")
+        case let .failure(error): fail("\(error)")
         }
       case let .failed(_, error):
         fail("\(error)")
