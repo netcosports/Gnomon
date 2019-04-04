@@ -26,7 +26,7 @@ DEPENDENCIES:
   - Gnomon/Decodable (from `.`)
   - Gnomon/JSON (from `.`)
   - Gnomon/XML (from `.`)
-  - Nimble (~> 7.3)
+  - Nimble (~> 7.0)
   - RxBlocking
   - SwiftLint (~> 0.27)
 
@@ -54,6 +54,6 @@ SPEC CHECKSUMS:
   SwiftLint: 7a0227733d786395817373b2d0ca799fd0093ff3
   SwiftyJSON: 6faa0040f8b59dead0ee07436cbf76b73c08fd08
 
-PODFILE CHECKSUM: 269c8551d3aba244fea75f68b72d7bee21bed4fb
+PODFILE CHECKSUM: 94b0976b7a668ed06601438847d588dfa12ea490
 
 COCOAPODS: 1.6.1
