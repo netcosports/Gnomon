@@ -104,93 +104,93 @@ public class Request<Model: BaseModel> {
 
 public extension Request {
 
+  @available(*, deprecated, message: "use Request.init(URLString:) instead of setURLString")
   @discardableResult
-  @available(*, deprecated: 4.0, message: "use Request.init(URLString:) instead of setURLString")
-  public func setURLString(_ value: String) -> IntermediateRequest { return self }
+  func setURLString(_ value: String) -> IntermediateRequest { return self }
 
   @discardableResult
-  public func setXPath(_ value: String?) -> IntermediateRequest {
+  func setXPath(_ value: String?) -> IntermediateRequest {
     xpath = value
     return self
   }
 
   @discardableResult
-  public func setMethod(_ value: Method) -> IntermediateRequest {
+  func setMethod(_ value: Method) -> IntermediateRequest {
     method = value
     return self
   }
 
-  @available(*, deprecated: 4.0, message: "use setParams(.urlEncoded([:])) method")
+  @available(*, deprecated, message: "use setParams(.urlEncoded([:])) method")
   @discardableResult
-  public func setParams(_ value: [String: Any]?) -> IntermediateRequest {
+  func setParams(_ value: [String: Any]?) -> IntermediateRequest {
     return self
   }
 
   @discardableResult
-  public func setParams(_ value: RequestParams) -> IntermediateRequest {
+  func setParams(_ value: RequestParams) -> IntermediateRequest {
     params = value
     return self
   }
 
   @discardableResult
-  public func setHeaders(_ value: [String: String]?) -> IntermediateRequest {
+  func setHeaders(_ value: [String: String]?) -> IntermediateRequest {
     headers = value
     return self
   }
 
   @discardableResult
-  public func setDisableLocalCache(_ value: Bool) -> IntermediateRequest {
+  func setDisableLocalCache(_ value: Bool) -> IntermediateRequest {
     disableLocalCache = value
     return self
   }
 
   @discardableResult
-  public func setDisableHttpCache(_ value: Bool) -> IntermediateRequest {
+  func setDisableHttpCache(_ value: Bool) -> IntermediateRequest {
     disableHttpCache = value
     return self
   }
 
   @discardableResult
-  public func setDisableCache(_ value: Bool) -> IntermediateRequest {
+  func setDisableCache(_ value: Bool) -> IntermediateRequest {
     disableLocalCache = value
     disableHttpCache = value
     return self
   }
 
   @discardableResult
-  public func setShouldHandleCookies(_ value: Bool) -> IntermediateRequest {
+  func setShouldHandleCookies(_ value: Bool) -> IntermediateRequest {
     shouldHandleCookies = value
     return self
   }
 
   @discardableResult
-  public func setInterceptor(_ value: @escaping Interceptor, exclusive: Bool) -> IntermediateRequest {
+  func setInterceptor(_ value: @escaping Interceptor, exclusive: Bool) -> IntermediateRequest {
     interceptor = value
     isInterceptorExclusive = exclusive
     return self
   }
 
   @discardableResult
-  public func setAuthenticationChallenge(_ value: @escaping AuthenticationChallenge) -> IntermediateRequest {
+  func setAuthenticationChallenge(_ value: @escaping AuthenticationChallenge) -> IntermediateRequest {
     authenticationChallenge = value
     return self
   }
 
   @discardableResult
-  public func setTimeout(_ value: TimeInterval) -> IntermediateRequest {
+  func setTimeout(_ value: TimeInterval) -> IntermediateRequest {
     timeout = value
     return self
   }
 
   @discardableResult
-  public func setDebugLogging(_ value: Bool) -> IntermediateRequest {
+  func setDebugLogging(_ value: Bool) -> IntermediateRequest {
     debugLogging = value
     return self
   }
 
 }
 
-@available(*, deprecated: 4.0, message: "use Request.init(URLString:) instead of RequestBuilder")
+@available(*, deprecated, message: "use Request.init(URLString:) instead of RequestBuilder")
 public struct RequestBuilder<Model: BaseModel> {
 
   public typealias Builder = RequestBuilder<Model>

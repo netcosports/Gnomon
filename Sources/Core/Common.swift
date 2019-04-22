@@ -168,7 +168,11 @@ func prepareMultipartData(with form: [String: String],
   let boundary = "__X_NST_BOUNDARY__"
   var data = Data()
   guard let boundaryData = "--\(boundary)\r\n".data(using: .utf8) else { throw "can't encode boundary" }
-  for (key, value) in form {
+  try form.keys.sorted().forEach { key in
+    guard let value = form[key] else {
+      throw "can't encode key \(key)"
+    }
+
     data.append(boundaryData)
     guard let dispositionData = "Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: .utf8) else {
       throw "can't encode key \(key)"
@@ -178,7 +182,11 @@ func prepareMultipartData(with form: [String: String],
     data.append(valueData)
   }
 
-  for (key, file) in files {
+  try files.keys.sorted().forEach { key in
+    guard let file = files[key] else {
+      throw "can't find file for key \(key)"
+    }
+
     data.append(boundaryData)
     guard let dispositionData = "Content-Disposition: form-data; name=\"\(key)\"; filename=\"\(file.filename)\"\r\n"
       .data(using: .utf8) else { throw "can't encode key \(key)" }
@@ -208,52 +216,24 @@ func processedResult<U>(from data: Data, for request: Request<U>) throws -> U {
 
 public typealias Interceptor = (URLRequest) -> URLRequest
 
-public enum Result<T> {
-  case ok(T)
-  case error(Error)
-}
+extension Result {
 
-public extension Result {
-
-  var value: T? {
-    switch self {
-    case let .ok(value): return value
-    case .error: return nil
+    var value: Success? {
+        switch self {
+        case let .success(value): return value
+        case .failure: return nil
+        }
     }
-  }
-
-  var error: Error? {
-    switch self {
-    case .ok: return nil
-    case let .error(error): return error
-    }
-  }
-
-  func map<U>(_ transform: (T) throws -> U) rethrows -> Result<U> {
-    switch self {
-    case let .ok(value):
-      return .ok(try transform(value))
-    case let .error(error):
-      return .error(error)
-    }
-  }
-
-  func value(or `default`: T) -> T {
-    switch self {
-    case let .ok(value): return value
-    case .error: return `default`
-    }
-  }
 
 }
 
 extension ObservableType {
 
-  func asResult() -> Observable<Result<E>> {
-    return materialize().map { event -> Event<Result<E>> in
+  func asResult() -> Observable<Result<E, Error>> {
+    return materialize().map { event -> Event<Result<E, Error>> in
       switch event {
-      case let .next(element): return .next(.ok(element))
-      case let .error(error): return .next(.error(error))
+      case let .next(element): return .next(.success(element))
+      case let .error(error): return .next(.failure(error))
       case .completed: return .completed
       }
     }.dematerialize()

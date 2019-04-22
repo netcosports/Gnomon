@@ -43,15 +43,15 @@ class MultipleRequestsSpec: XCTestCase {
         expect(results).to(haveCount(2))
 
         switch results[0] {
-        case let .ok(response):
+        case let .success(response):
           expect(response.result.key) == 123
-        case let .error(error): fail("\(error)")
+        case let .failure(error): fail("\(error)")
         }
 
         switch results[1] {
-        case let .ok(response):
+        case let .success(response):
           expect(response.result.key) == 234
-        case let .error(error): fail("\(error)")
+        case let .failure(error): fail("\(error)")
         }
       case let .failed(_, error):
         fail("\(error)")
@@ -86,16 +86,16 @@ class MultipleRequestsSpec: XCTestCase {
         expect(results).to(haveCount(2))
 
         switch results[0] {
-        case .ok: fail("request should fail")
-        case let .error(Gnomon.Error.unableToParseModel(message as String)):
+        case .success: fail("request should fail")
+        case let .failure(Gnomon.Error.unableToParseModel(message as String)):
           expect(message) == "<key> value is invalid = <null>"
-        case let .error(error): fail("\(error)")
+        case let .failure(error): fail("\(error)")
         }
 
         switch results[1] {
-        case let .ok(response):
+        case let .success(response):
           expect(response.result.key) == 234
-        case let .error(error): fail("\(error)")
+        case let .failure(error): fail("\(error)")
         }
       case let .failed(_, error):
         fail("\(error)")
@@ -125,15 +125,15 @@ class MultipleRequestsSpec: XCTestCase {
         expect(results).to(haveCount(2))
 
         switch results[0] {
-        case let .ok(response):
+        case let .success(response):
           expect(response.result?.key) == 123
-        case let .error(error): fail("\(error)")
+        case let .failure(error): fail("\(error)")
         }
 
         switch results[1] {
-        case let .ok(response):
+        case let .success(response):
           expect(response.result?.key) == 234
-        case let .error(error): fail("\(error)")
+        case let .failure(error): fail("\(error)")
         }
       case let .failed(_, error):
         fail("\(error)")
@@ -168,15 +168,15 @@ class MultipleRequestsSpec: XCTestCase {
         expect(results).to(haveCount(2))
 
         switch results[0] {
-        case let .ok(response):
+        case let .success(response):
           expect(response.result).to(beNil())
-        case let .error(error): fail("\(error)")
+        case let .failure(error): fail("\(error)")
         }
 
         switch results[1] {
-        case let .ok(response):
+        case let .success(response):
           expect(response.result?.key) == 234
-        case let .error(error): fail("\(error)")
+        case let .failure(error): fail("\(error)")
         }
       case let .failed(_, error):
         fail("\(error)")
@@ -207,21 +207,21 @@ class MultipleRequestsSpec: XCTestCase {
         expect(results).to(haveCount(3))
 
         switch results[0] {
-        case let .ok(response):
+        case let .success(response):
           expect(response.result.key) == 123
-        case let .error(error): fail("\(error)")
+        case let .failure(error): fail("\(error)")
         }
 
         switch results[1] {
-        case let .ok(response):
+        case let .success(response):
           expect(response.result.key) == 234
-        case let .error(error): fail("\(error)")
+        case let .failure(error): fail("\(error)")
         }
 
         switch results[2] {
-        case let .ok(response):
+        case let .success(response):
           expect(response.result.key) == 345
-        case let .error(error): fail("\(error)")
+        case let .failure(error): fail("\(error)")
         }
       case let .failed(_, error):
         fail("\(error)")
@@ -258,21 +258,21 @@ class MultipleRequestsSpec: XCTestCase {
         expect(results).to(haveCount(3))
 
         switch results[0] {
-        case let .ok(response):
+        case let .success(response):
           expect(response.result.key) == 123
-        case let .error(error): fail("\(error)")
+        case let .failure(error): fail("\(error)")
         }
 
         switch results[1] {
-        case .ok: fail("request should fail")
-        case let .error(Gnomon.Error.errorStatusCode(code, _)): expect(code) == 404
-        case let .error(error): fail("\(error)")
+        case .success: fail("request should fail")
+        case let .failure(Gnomon.Error.errorStatusCode(code, _)): expect(code) == 404
+        case let .failure(error): fail("\(error)")
         }
 
         switch results[2] {
-        case let .ok(response):
+        case let .success(response):
           expect(response.result.key) == 345
-        case let .error(error): fail("\(error)")
+        case let .failure(error): fail("\(error)")
         }
       case let .failed(_, error):
         fail("\(error)")

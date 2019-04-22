@@ -1,5 +1,5 @@
 PODS:
-  - AEXML (4.3.3)
+  - AEXML (4.4.0)
   - FormatterKit/Resources (1.8.2)
   - FormatterKit/URLRequestFormatter (1.8.2):
     - FormatterKit/Resources
@@ -14,12 +14,12 @@ PODS:
   - Gnomon/XML (4.2):
     - AEXML (~> 4.2)
     - Gnomon/Core
-  - Nimble (7.3.1)
-  - RxBlocking (4.3.1):
-    - RxSwift (~> 4.0)
-  - RxSwift (4.3.1)
-  - SwiftLint (0.27.0)
-  - SwiftyJSON (4.2.0)
+  - Nimble (7.3.4)
+  - RxBlocking (4.5.0):
+    - RxSwift (>= 4.4.2, ~> 4.4)
+  - RxSwift (4.5.0)
+  - SwiftLint (0.31.0)
+  - SwiftyJSON (4.3.0)
 
 DEPENDENCIES:
   - Gnomon/Core (from `.`)
@@ -45,15 +45,15 @@ EXTERNAL SOURCES:
     :path: "."
 
 SPEC CHECKSUMS:
-  AEXML: 601f41fcaa7bda7605cad153b0f43db9ec006c0f
+  AEXML: 16fb739dfb3809e91ebf9e9dc391482c3a6aaebf
   FormatterKit: 4b8f29acc9b872d5d12a63efb560661e8f2e1b98
-  Gnomon: ec6e7b9924d33ac635ce3b910e4a1a0ce3a86c91
-  Nimble: 04f732da099ea4d153122aec8c2a88fd0c7219ae
-  RxBlocking: 64c051285261ca2339481e91b5f70eb06b03660a
-  RxSwift: fe0fd770a43acdb7d0a53da411c9b892e69bb6e4
-  SwiftLint: 3207c1faa2240bf8973b191820a116113cd11073
-  SwiftyJSON: c4bcba26dd9ec7a027fc8eade48e2c911f229e96
+  Gnomon: b4450280396a182a4cbbbdbb2c1d56318f4b30a9
+  Nimble: 051e3d8912d40138fa5591c78594f95fb172af37
+  RxBlocking: 79413e4d916f44bb3e113c5b2cc059e36fe58910
+  RxSwift: f172070dfd1a93d70a9ab97a5a01166206e1c575
+  SwiftLint: 7a0227733d786395817373b2d0ca799fd0093ff3
+  SwiftyJSON: 6faa0040f8b59dead0ee07436cbf76b73c08fd08
 
 PODFILE CHECKSUM: 94b0976b7a668ed06601438847d588dfa12ea490
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.6.1

@@ -206,11 +206,11 @@ struct AuthorizationHeaderModel: JSONModel {
 extension Data {
 
   func sha1() -> Data {
-    return Data(bytes: bytes.sha1())
+    return Data(bytes.sha1())
   }
 
   func md5() -> Data {
-    return Data(bytes: bytes.md5())
+    return Data(bytes.md5())
   }
 
   var bytes: [UInt8] {
