@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = "Gnomon"
-  s.version = "4.2"
+  s.version = "5.0"
   s.summary = "Common Rest API manager for Netco Sports projects on Swift with RxSwift"
   s.swift_version = "5.0"
 

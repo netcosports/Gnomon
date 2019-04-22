@@ -428,7 +428,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Tests-tvOSTests/Pods-Tests-tvOSTests-frameworks.sh",
+				"${SRCROOT}/Pods/Target Support Files/Pods-Tests-tvOSTests/Pods-Tests-tvOSTests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AEXML-tvOS/AEXML.framework",
 				"${BUILT_PRODUCTS_DIR}/FormatterKit-tvOS/FormatterKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Gnomon-tvOS/Gnomon.framework",
@@ -449,7 +449,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Tests-tvOSTests/Pods-Tests-tvOSTests-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Tests-tvOSTests/Pods-Tests-tvOSTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		117B4451CDD5EC1F5F9F4CCD /* [CP] Embed Pods Frameworks */ = {
@@ -458,7 +458,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Tests-macOSTests/Pods-Tests-macOSTests-frameworks.sh",
+				"${SRCROOT}/Pods/Target Support Files/Pods-Tests-macOSTests/Pods-Tests-macOSTests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AEXML-macOS/AEXML.framework",
 				"${BUILT_PRODUCTS_DIR}/FormatterKit-macOS/FormatterKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Gnomon-macOS/Gnomon.framework",
@@ -479,7 +479,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Tests-macOSTests/Pods-Tests-macOSTests-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Tests-macOSTests/Pods-Tests-macOSTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		1EDF1805CBA33BC937AEBF6A /* [CP] Check Pods Manifest.lock */ = {
@@ -524,7 +524,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Tests-iOSTests/Pods-Tests-iOSTests-frameworks.sh",
+				"${SRCROOT}/Pods/Target Support Files/Pods-Tests-iOSTests/Pods-Tests-iOSTests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AEXML-iOS/AEXML.framework",
 				"${BUILT_PRODUCTS_DIR}/FormatterKit-iOS/FormatterKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Gnomon-iOS/Gnomon.framework",
@@ -545,7 +545,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Tests-iOSTests/Pods-Tests-iOSTests-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Tests-iOSTests/Pods-Tests-iOSTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		B56E8BA21F16655700D5F227 /* SwiftLint */ = {

@@ -3,15 +3,15 @@ PODS:
   - FormatterKit/Resources (1.8.2)
   - FormatterKit/URLRequestFormatter (1.8.2):
     - FormatterKit/Resources
-  - Gnomon/Core (4.2):
+  - Gnomon/Core (5.0):
     - FormatterKit/URLRequestFormatter (>= 1.8.2)
     - RxSwift (~> 4.2)
-  - Gnomon/Decodable (4.2):
+  - Gnomon/Decodable (5.0):
     - Gnomon/Core
-  - Gnomon/JSON (4.2):
+  - Gnomon/JSON (5.0):
     - Gnomon/Core
     - SwiftyJSON (~> 4.2)
-  - Gnomon/XML (4.2):
+  - Gnomon/XML (5.0):
     - AEXML (~> 4.2)
     - Gnomon/Core
   - Nimble (7.3.4)
@@ -47,7 +47,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AEXML: 16fb739dfb3809e91ebf9e9dc391482c3a6aaebf
   FormatterKit: 4b8f29acc9b872d5d12a63efb560661e8f2e1b98
-  Gnomon: b4450280396a182a4cbbbdbb2c1d56318f4b30a9
+  Gnomon: 9c8a51900e97aa2059d15d8d6957e06d01ee3436
   Nimble: 051e3d8912d40138fa5591c78594f95fb172af37
   RxBlocking: 79413e4d916f44bb3e113c5b2cc059e36fe58910
   RxSwift: f172070dfd1a93d70a9ab97a5a01166206e1c575
@@ -56,4 +56,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 94b0976b7a668ed06601438847d588dfa12ea490
 
-COCOAPODS: 1.6.1
+COCOAPODS: 1.5.3
