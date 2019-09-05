@@ -92,15 +92,6 @@ public enum Gnomon {
       let delegate = SessionDelegate()
       #endif
 
-      delegate.authenticationChallenge = request.authenticationChallenge
-
-      let policy = try cachePolicy(for: request, localCache: localCache)
-      let session = URLSession(configuration: configuration(with: policy), delegate: delegate, delegateQueue: nil)
-
-      let urlRequest = try prepareURLRequest(from: request, cachePolicy: policy, interceptors: interceptors)
-
-      curlLog(request, urlRequest)
-
       let result = delegate.result.take(1).map { tuple -> (Data, HTTPURLResponse) in
         let (data, response) = tuple
 
@@ -110,6 +101,15 @@ public enum Gnomon {
 
         return tuple
       }
+
+      delegate.authenticationChallenge = request.authenticationChallenge
+
+      let policy = try cachePolicy(for: request, localCache: localCache)
+      let session = URLSession(configuration: configuration(with: policy), delegate: delegate, delegateQueue: nil)
+
+      let urlRequest = try prepareURLRequest(from: request, cachePolicy: policy, interceptors: interceptors)
+
+      curlLog(request, urlRequest)
 
       #if TEST
       guard request.shouldRunTask else { return result }
@@ -125,7 +125,7 @@ public enum Gnomon {
             task.cancel()
           }
         }
-      })
+      }).share(replay: 1, scope: .whileConnected)
     }
   }
 
