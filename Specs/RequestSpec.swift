@@ -14,7 +14,7 @@ import SwiftyJSON
 
 @testable import Gnomon
 
-let BlockingTimeout: RxTimeInterval = 0.5
+let BlockingTimeout: TimeInterval = 0.5
 
 class RequestSpec: XCTestCase {
 
