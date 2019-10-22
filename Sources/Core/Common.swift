@@ -229,8 +229,8 @@ extension Result {
 
 extension ObservableType {
 
-  func asResult() -> Observable<Result<E, Error>> {
-    return materialize().map { event -> Event<Result<E, Error>> in
+  func asResult() -> Observable<Result<Element, Error>> {
+    return materialize().map { event -> Event<Result<Element, Error>> in
       switch event {
       case let .next(element): return .next(.success(element))
       case let .error(error): return .next(.failure(error))

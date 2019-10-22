@@ -5,7 +5,7 @@ PODS:
     - FormatterKit/Resources
   - Gnomon/Core (5.1):
     - FormatterKit/URLRequestFormatter (>= 1.8.2)
-    - RxSwift (~> 4.2)
+    - RxSwift (~> 5.0)
   - Gnomon/Decodable (5.1):
     - Gnomon/Core
   - Gnomon/JSON (5.1):
@@ -15,9 +15,9 @@ PODS:
     - AEXML (~> 4.2)
     - Gnomon/Core
   - Nimble (7.3.4)
-  - RxBlocking (4.5.0):
-    - RxSwift (>= 4.4.2, ~> 4.4)
-  - RxSwift (4.5.0)
+  - RxBlocking (5.0.0):
+    - RxSwift (~> 5)
+  - RxSwift (5.0.0)
   - SwiftLint (0.31.0)
   - SwiftyJSON (5.0.0)
 
@@ -47,10 +47,10 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AEXML: 16fb739dfb3809e91ebf9e9dc391482c3a6aaebf
   FormatterKit: 4b8f29acc9b872d5d12a63efb560661e8f2e1b98
-  Gnomon: 7b5c53b9e40de06367c22af8cea0a48f128b9197
+  Gnomon: c994e293f49144e0392ed52e256caf55c8961b51
   Nimble: 051e3d8912d40138fa5591c78594f95fb172af37
-  RxBlocking: 79413e4d916f44bb3e113c5b2cc059e36fe58910
-  RxSwift: f172070dfd1a93d70a9ab97a5a01166206e1c575
+  RxBlocking: c67185d26498ea3cbe3e121917c3c16739e43123
+  RxSwift: 8b0671caa829a763bbce7271095859121cbd895f
   SwiftLint: 7a0227733d786395817373b2d0ca799fd0093ff3
   SwiftyJSON: 36413e04c44ee145039d332b4f4e2d3e8d6c4db7
 
