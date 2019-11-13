@@ -20,8 +20,8 @@ let package = Package(
     ],
     targets: [
       .target(name: "Core", dependencies: ["RxSwift"], path: "./Sources/Core"),
-      .target(name: "Decodable", dependencies: [.target("Core")], path: "./Sources/Decodable"),
-      .target(name: "JSON", dependencies: [.target("Core"), "SwiftyJSON"], path: "./Sources/JSON"),
-      .target(name: "XML", dependencies: [.target("Core"), "AEXML"], path: "./Sources/XML")
+      .target(name: "Decodable", dependencies: [.target(name: "Core")], path: "./Sources/Decodable"),
+      .target(name: "JSON", dependencies: [.target(name: "Core"), "SwiftyJSON"], path: "./Sources/JSON"),
+      .target(name: "XML", dependencies: [.target(name: "Core"), "AEXML"], path: "./Sources/XML")
     ]
 )
