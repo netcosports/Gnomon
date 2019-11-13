@@ -1,8 +1,4 @@
-//
-//  Package.swift
-//
-//  Created by Eugen Filipkov on 11/13/19.
-//
+// swift-tools-version:5.0
 
 import PackageDescription
 
