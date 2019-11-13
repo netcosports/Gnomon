@@ -5,7 +5,6 @@
 
 import Foundation
 import RxSwift
-import FormatterKit
 
 public enum Gnomon {
 
@@ -164,7 +163,7 @@ public enum Gnomon {
 
   private static func curlLog<U>(_ request: Request<U>, _ dataRequest: URLRequest) {
     if let debugLogging = request.debugLogging, !debugLogging { return }
-    debugLog(TTTURLRequestFormatter.cURLCommand(from: dataRequest), request.debugLogging ?? false)
+    debugLog(URLRequestFormatter.cURLCommand(from: dataRequest), request.debugLogging ?? false)
   }
 
   internal static var debugLog: (String, Bool) -> Void = { string, force in
