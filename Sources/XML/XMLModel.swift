@@ -6,7 +6,7 @@
 import Foundation
 import AEXML
 #if SWIFT_PACKAGE
-  import Core
+  import Gnomon
 #endif
 
 public protocol XMLModel: BaseModel where DataContainer == XMLContainer {

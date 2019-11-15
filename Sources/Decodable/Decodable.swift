@@ -5,7 +5,7 @@
 
 import Foundation
 #if SWIFT_PACKAGE
-  import Core
+  import Gnomon
 #endif
 
 extension CodingUserInfoKey {
