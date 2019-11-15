@@ -25,7 +25,7 @@ class LoggingSpec: XCTestCase {
     }
   }
 
-  func request(global: Bool? = nil, request reqLogging: Bool? = nil) {
+  func request(global: Bool? = nil, request loggingPolicy: LoggingPolicy? = nil) {
     if let global = global {
       Gnomon.logging = global
     }
@@ -34,8 +34,8 @@ class LoggingSpec: XCTestCase {
       let request = try Request<TestModel1>(URLString: "https://example.com/")
       request.httpSessionDelegate = try TestSessionDelegate.jsonResponse(result: ["key": 123], cached: false)
 
-      if let reqLogging = reqLogging {
-        request.debugLogging = reqLogging
+      if let loggingPolicy = loggingPolicy {
+        request.loggingPolicy = loggingPolicy
       }
 
       let result = Gnomon.models(for: request).toBlocking(timeout: BlockingTimeout).materialize()
@@ -88,7 +88,7 @@ class LoggingSpec: XCTestCase {
       log = log ?? "" + string + "\n"
     }
 
-    request(global: true, request: false)
+    request(global: true, request: .never)
     expect(log).to(beNil())
   }
 
@@ -99,7 +99,7 @@ class LoggingSpec: XCTestCase {
       log = log ?? "" + string + "\n"
     }
 
-    request(global: false, request: true)
+    request(global: false, request: .always)
     expect(log) == "curl -X GET --compressed \"https://example.com/\"\n"
   }
 
@@ -110,7 +110,7 @@ class LoggingSpec: XCTestCase {
       log = log ?? "" + string + "\n"
     }
 
-    request(global: false, request: false)
+    request(global: false, request: .never)
     expect(log).to(beNil())
   }
 

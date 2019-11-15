@@ -46,6 +46,12 @@ public enum RequestParams {
   case data(Data, contentType: String)
 }
 
+public enum LoggingPolicy {
+  case never
+  case always
+  case onError
+}
+
 public struct MultipartFile {
 
   public let data: Data
@@ -86,7 +92,7 @@ public class Request<Model: BaseModel> {
 
   public var timeout: TimeInterval = 60
 
-  public var debugLogging: Bool?
+  public var loggingPolicy: LoggingPolicy = .never
 
   public var response: ((Response<Model>) -> Void)?
 
@@ -183,8 +189,8 @@ public extension Request {
   }
 
   @discardableResult
-  func setDebugLogging(_ value: Bool) -> IntermediateRequest {
-    debugLogging = value
+  func setLoggingPolicy(_ value: LoggingPolicy) -> IntermediateRequest {
+    loggingPolicy = value
     return self
   }
 

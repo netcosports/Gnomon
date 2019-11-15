@@ -162,13 +162,16 @@ public enum Gnomon {
   public static var logging = false
 
   private static func curlLog<U>(_ request: Request<U>, _ dataRequest: URLRequest) {
-    if let debugLogging = request.debugLogging, !debugLogging { return }
-    debugLog(URLRequestFormatter.cURLCommand(from: dataRequest), request.debugLogging ?? false)
+    guard request.loggingPolicy == .never else { return }
+    debugLog(URLRequestFormatter.cURLCommand(from: dataRequest),
+             request.loggingPolicy)
   }
 
-  internal static var debugLog: (String, Bool) -> Void = { string, force in
-    if logging || force {
+  internal static var debugLog: (String, LoggingPolicy) -> Void = { string, policy in
+    if logging || policy == .always {
       log(string)
+    } else if policy == .onError {
+      errorLog(string)
     }
   }
 
