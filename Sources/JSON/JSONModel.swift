@@ -6,7 +6,7 @@
 import Foundation
 import SwiftyJSON
 #if SWIFT_PACKAGE
-  import Core
+  import Gnomon
 #endif
 
 extension JSON {

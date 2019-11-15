@@ -8,10 +8,10 @@ let package = Package(
       .iOS(.v9), .tvOS(.v9), .macOS(.v10_10)
     ],
     products: [
-      .library(name: "Core", targets: ["Core"]),
-      .library(name: "Decodable", targets: ["Decodable"]),
-      .library(name: "JSON", targets: ["JSON"]),
-      .library(name: "XML", targets: ["XML"])
+      .library(name: "Gnomon", targets: ["Gnomon"]),
+      .library(name: "GnomonDecodable", targets: ["GnomonDecodable"]),
+      .library(name: "GnomonJSON", targets: ["GnomonJSON"]),
+      .library(name: "GnomonXML", targets: ["GnomonXML"])
     ],
     dependencies: [
       .package(url: "https://github.com/ReactiveX/RxSwift.git", .upToNextMajor(from: "5.0.1")),
@@ -19,10 +19,10 @@ let package = Package(
       .package(url: "https://github.com/tadija/AEXML.git", .upToNextMajor(from: "4.2.0"))
     ],
     targets: [
-      .target(name: "Core", dependencies: ["RxSwift"]),
-      .target(name: "Decodable", dependencies: ["Core"]),
-      .target(name: "JSON", dependencies: ["Core", "SwiftyJSON"]),
-      .target(name: "XML", dependencies: ["Core", "AEXML"])
+      .target(name: "Gnomon", dependencies: ["RxSwift"], path: "./Sources/Core"),
+      .target(name: "GnomonDecodable", dependencies: ["Gnomon"], path: "./Sources/Decodable"),
+      .target(name: "GnomonJSON", dependencies: ["Gnomon", "SwiftyJSON"], path: "./Sources/JSON"),
+      .target(name: "GnomonXML", dependencies: ["Gnomon", "AEXML"], path: "./Sources/XML")
     ],
     swiftLanguageVersions: [.v5]
 )
