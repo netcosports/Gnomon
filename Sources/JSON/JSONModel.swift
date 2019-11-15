@@ -3,7 +3,11 @@
 //  Copyright © 2017 NetcoSports. All rights reserved.
 //
 
+import Foundation
 import SwiftyJSON
+#if SWIFT_PACKAGE
+  import Core
+#endif
 
 extension JSON {
 

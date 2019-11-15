@@ -4,7 +4,7 @@
 //  Created by Eugen Filipkov on 11/12/19.
 //
 
-import UIKit
+import Foundation
 
 precedencegroup Additive {
   associativity: left

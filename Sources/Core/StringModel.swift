@@ -2,6 +2,8 @@
 //  Created by Vladimir Burdukov on 23/02/2018.
 //
 
+import Foundation
+
 public protocol StringModel: BaseModel where DataContainer == String {
   static var encoding: String.Encoding { get }
 }
