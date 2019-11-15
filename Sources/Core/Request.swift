@@ -96,6 +96,8 @@ public class Request<Model: BaseModel> {
 
   public var response: ((Response<Model>) -> Void)?
 
+  public var dispatchQoS: DispatchQoS = .userInitiated
+
   public typealias IntermediateRequest = Request<Model>
 
 #if TEST
@@ -191,6 +193,12 @@ public extension Request {
   @discardableResult
   func setLoggingPolicy(_ value: LoggingPolicy) -> IntermediateRequest {
     loggingPolicy = value
+    return self
+  }
+
+  @discardableResult
+  func setDispatchQoS(_ value: DispatchQoS) -> IntermediateRequest {
+    dispatchQoS = value
     return self
   }
 

@@ -23,7 +23,7 @@ public enum Gnomon {
       return try observable(for: request, localCache: false).flatMap { data, response -> Observable<Response<U>> in
         let type: ResponseType = response.resultFromHTTPCache && !request.disableHttpCache ? .httpCache : .regular
         return try parse(data: data, response: response, responseType: type, for: request)
-          .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .userInitiated))
+          .subscribeOn(ConcurrentDispatchQueueScheduler(qos: request.dispatchQoS))
       }
     } catch {
       return .error(error)
@@ -38,7 +38,7 @@ public enum Gnomon {
     do {
       let result = try observable(for: request, localCache: true).flatMap { data, response in
         return try parse(data: data, response: response, responseType: .localCache, for: request)
-          .subscribeOn(ConcurrentDispatchQueueScheduler(qos: . userInitiated))
+          .subscribeOn(ConcurrentDispatchQueueScheduler(qos: request.dispatchQoS))
       }
 
       if catchErrors {
