@@ -107,7 +107,7 @@
 		B56E8B8C1F16615600D5F227 /* tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = tvOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B56E8B901F16615600D5F227 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B5950C4B1F4D6BF000FD4D55 /* Fastfile */ = {isa = PBXFileReference; fileEncoding = 1; lastKnownFileType = text; path = Fastfile; sourceTree = "<group>"; };
-		B5950C581F4D6C1400FD4D55 /* Gnomon.podspec */ = {isa = PBXFileReference; fileEncoding = 1; lastKnownFileType = text; path = Gnomon.podspec; sourceTree = "<group>"; };
+		B5950C581F4D6C1400FD4D55 /* Gnomon.podspec */ = {isa = PBXFileReference; fileEncoding = 1; lastKnownFileType = text; path = Gnomon.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		B59E9BA61EC361EC002018AE /* iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B59E9BAB1EC361EC002018AE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B5B08E691F53568100D78597 /* CertificateSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CertificateSpec.swift; sourceTree = "<group>"; };
@@ -430,7 +430,6 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Tests-tvOSTests/Pods-Tests-tvOSTests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AEXML-tvOS/AEXML.framework",
-				"${BUILT_PRODUCTS_DIR}/FormatterKit-tvOS/FormatterKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Gnomon-tvOS/Gnomon.framework",
 				"${BUILT_PRODUCTS_DIR}/Nimble-tvOS/Nimble.framework",
 				"${BUILT_PRODUCTS_DIR}/RxBlocking-tvOS/RxBlocking.framework",
@@ -440,7 +439,6 @@
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AEXML.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FormatterKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Gnomon.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Nimble.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxBlocking.framework",
@@ -460,7 +458,6 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Tests-macOSTests/Pods-Tests-macOSTests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AEXML-macOS/AEXML.framework",
-				"${BUILT_PRODUCTS_DIR}/FormatterKit-macOS/FormatterKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Gnomon-macOS/Gnomon.framework",
 				"${BUILT_PRODUCTS_DIR}/Nimble-macOS/Nimble.framework",
 				"${BUILT_PRODUCTS_DIR}/RxBlocking-macOS/RxBlocking.framework",
@@ -470,7 +467,6 @@
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AEXML.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FormatterKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Gnomon.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Nimble.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxBlocking.framework",
@@ -526,7 +522,6 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Tests-iOSTests/Pods-Tests-iOSTests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AEXML-iOS/AEXML.framework",
-				"${BUILT_PRODUCTS_DIR}/FormatterKit-iOS/FormatterKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Gnomon-iOS/Gnomon.framework",
 				"${BUILT_PRODUCTS_DIR}/Nimble-iOS/Nimble.framework",
 				"${BUILT_PRODUCTS_DIR}/RxBlocking-iOS/RxBlocking.framework",
@@ -536,7 +531,6 @@
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AEXML.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FormatterKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Gnomon.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Nimble.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxBlocking.framework",

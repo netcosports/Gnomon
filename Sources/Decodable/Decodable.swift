@@ -3,6 +3,11 @@
 //  Copyright © 2017 NetcoSports. All rights reserved.
 //
 
+import Foundation
+#if SWIFT_PACKAGE
+  import Core
+#endif
+
 extension CodingUserInfoKey {
 
   static let xpath = CodingUserInfoKey(rawValue: "Gnomon.XPath")!

@@ -3,7 +3,11 @@
 //  Copyright © 2017 NetcoSports. All rights reserved.
 //
 
+import Foundation
 import AEXML
+#if SWIFT_PACKAGE
+  import Core
+#endif
 
 public protocol XMLModel: BaseModel where DataContainer == XMLContainer {
 

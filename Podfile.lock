@@ -1,10 +1,6 @@
 PODS:
   - AEXML (4.4.0)
-  - FormatterKit/Resources (1.8.2)
-  - FormatterKit/URLRequestFormatter (1.8.2):
-    - FormatterKit/Resources
   - Gnomon/Core (5.1):
-    - FormatterKit/URLRequestFormatter (>= 1.8.2)
     - RxSwift (~> 5.0)
   - Gnomon/Decodable (5.1):
     - Gnomon/Core
@@ -33,7 +29,6 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - AEXML
-    - FormatterKit
     - Nimble
     - RxBlocking
     - RxSwift
@@ -46,8 +41,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AEXML: 16fb739dfb3809e91ebf9e9dc391482c3a6aaebf
-  FormatterKit: 4b8f29acc9b872d5d12a63efb560661e8f2e1b98
-  Gnomon: c994e293f49144e0392ed52e256caf55c8961b51
+  Gnomon: c5318e279e55ef7e2b73f03c73d5e42c7f6d7404
   Nimble: 051e3d8912d40138fa5591c78594f95fb172af37
   RxBlocking: c67185d26498ea3cbe3e121917c3c16739e43123
   RxSwift: 8b0671caa829a763bbce7271095859121cbd895f
