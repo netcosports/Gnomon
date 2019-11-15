@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/netcosports/Gnomon.svg?branch=master)](https://travis-ci.org/netcosports/Gnomon)
 [![CocoaPods Compatible](https://img.shields.io/cocoapods/v/Gnomon.svg)](http://cocoapods.org/pods/Gnomon)
+[![Swift Package Manager compatible](https://img.shields.io/badge/Swift%20Package%20Manager-compatible-brightgreen.svg)](https://github.com/apple/swift-package-manager)
 
 ## Yet another networking library?
 
