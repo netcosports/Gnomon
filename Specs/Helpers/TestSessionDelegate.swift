@@ -31,7 +31,7 @@ class TestSessionDelegate: NSObject, SessionDelegateProtocol {
     }
 
     return TestSessionDelegate(Observable.just((data, response))
-                                 .delay(delay, scheduler: ConcurrentDispatchQueueScheduler(qos: .background)))
+      .delay(delay, scheduler: ConcurrentDispatchQueueScheduler(qos: .background)))
   }
 
   static func stringResponse(result: String, statusCode: Int = 200, cached: Bool) throws -> TestSessionDelegate {

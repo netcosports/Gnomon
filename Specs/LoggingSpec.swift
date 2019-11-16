@@ -78,7 +78,7 @@ class LoggingSpec: XCTestCase {
     }
 
     request(global: true)
-    expect(log) == "curl -X GET --compressed \"https://example.com/\"\n"
+    expect(log) == "curl -X GET \"https://example.com/\"\n"
   }
 
   func testEnabledLoggingAndDisabledRequestLogging() {
@@ -89,7 +89,7 @@ class LoggingSpec: XCTestCase {
     }
 
     request(global: true, request: .never)
-    expect(log).to(beNil())
+    expect(log) == "curl -X GET \"https://example.com/\"\n"
   }
 
   func testDisabledLoggingAndEnabledRequestLogging() {
@@ -100,7 +100,7 @@ class LoggingSpec: XCTestCase {
     }
 
     request(global: false, request: .always)
-    expect(log) == "curl -X GET --compressed \"https://example.com/\"\n"
+    expect(log).to(beNil())
   }
 
   func testDisabledLoggingAndDisabledRequestLogging() {
