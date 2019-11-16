@@ -1,5 +1,5 @@
-language: objective-c
-osx_image: xcode10.0
+language: swift
+osx_image: xcode11.2
 rvm: 2.5.1
 
 cache:
