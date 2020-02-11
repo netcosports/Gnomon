@@ -216,6 +216,13 @@ func processedResult<U>(from data: Data, for request: Request<U>) throws -> U {
 
 public typealias Interceptor = (URLRequest) -> URLRequest
 
+public func + (left: @escaping (URLRequest) -> URLRequest,
+               right: @escaping (URLRequest) -> URLRequest) -> (URLRequest) -> URLRequest {
+  return { input in
+    return right(left(input))
+  }
+}
+
 extension Result {
 
     var value: Success? {
