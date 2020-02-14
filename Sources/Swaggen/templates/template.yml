@@ -1,0 +1,24 @@
+formatter: swift
+options:
+  name: API
+  dependencies:
+    - name: Gnomon
+      pod: Gnomon/Decodable
+      github: netcosports/Gnomon
+  typeAliases:
+    ID: UUID
+    DateTime: Date
+    File: Data
+templateFiles:
+  - path: Podspec.podspec
+    destination: "{{ options.name }}.podspec"
+  - path: Sources/namespace.swift
+    destination: "Sources/{{ options.name }}.swift"
+  - path: Sources/Coding.swift
+  - path: Sources/SecurityRequirement.swift
+  - path: Sources/Model.swift
+    context: schemas
+    destination: "Sources/Models/{{ type }}.swift"
+  - path: Sources/Request.swift
+    context: operations
+    destination: "Sources/Requests/{{ options.name }}{% if tag %}~{{ tag|upperCamelCase }}{% endif %}~{{ type }}.swift"
