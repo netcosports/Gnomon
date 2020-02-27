@@ -1,1 +1,1 @@
-queryItems.append(URLQueryItem(name:"{{ param.value }}", value:{% if param.isArray %}{{ param.name }}.map { "\($0)" }.joined(separator: ","){% else %}"\({{ param.name }})"{% endif %}))
+queryItems.append(URLQueryItem(name: "{{ param.value }}", value: {% if param.isArray %}{{ param.name }}.map { "\($0)" }.joined(separator: ","){% else %}"\({{ param.name }})"{% endif %}))
