@@ -8,24 +8,24 @@ public struct StringCodingKey: CodingKey, ExpressibleByStringLiteral {
     private let string: String
     private let int: Int?
 
-    var stringValue: String { return string }
+    public var stringValue: String { return string }
 
-    init(string: String) {
+    public init(string: String) {
         self.string = string
         int = nil
     }
-    init?(stringValue: String) {
+    public init?(stringValue: String) {
         string = stringValue
         int = nil
     }
 
-    var intValue: Int? { return int }
-    init?(intValue: Int) {
+    public var intValue: Int? { return int }
+    public init?(intValue: Int) {
         string = String(describing: intValue)
         int = intValue
     }
 
-    init(stringLiteral value: String) {
+    public init(stringLiteral value: String) {
         string = value
         int = nil
     }
@@ -41,5 +41,5 @@ public extension KeyedDecodingContainer {
     }
 }
 
-public extension Dictionary: BaseModel, DecodableModel where Key: Decodable, Value: Decodable {
+extension Dictionary: BaseModel, DecodableModel where Key: Decodable, Value: Decodable {
 }
