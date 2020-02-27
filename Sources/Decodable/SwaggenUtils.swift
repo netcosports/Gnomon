@@ -3,7 +3,7 @@ import Foundation
   import Gnomon
 #endif
 
-struct StringCodingKey: CodingKey, ExpressibleByStringLiteral {
+public struct StringCodingKey: CodingKey, ExpressibleByStringLiteral {
 
     private let string: String
     private let int: Int?
@@ -31,7 +31,7 @@ struct StringCodingKey: CodingKey, ExpressibleByStringLiteral {
     }
 }
 
-extension KeyedDecodingContainer {
+public extension KeyedDecodingContainer {
     func decode<T>(_ key: KeyedDecodingContainer.Key) throws -> T where T: Decodable {
         return try decode(T.self, forKey: key)
     }
@@ -41,5 +41,5 @@ extension KeyedDecodingContainer {
     }
 }
 
-extension Dictionary: BaseModel, DecodableModel where Key: Decodable, Value: Decodable {
+public extension Dictionary: BaseModel, DecodableModel where Key: Decodable, Value: Decodable {
 }
