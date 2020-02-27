@@ -4,8 +4,8 @@ import Foundation
 import Gnomon
 
 extension {{ options.name }}{% if tag %}.{{ options.tagPrefix }}{{ tag|upperCamelCase }}{{ options.tagSuffix }}{% endif %} {
-
     {% for enum in requestEnums %}
+
     {% if not enum.isGlobal %}
 
     {% filter indent:4 %}{% include "Includes/Enum.stencil" enum %}{% endfilter %}
@@ -30,7 +30,6 @@ extension {{ options.name }}{% if tag %}.{{ options.tagPrefix }}{{ tag|upperCame
     /** {{ summary }} */
     {% endif %}
     {% endif %}
-
     public static func {{ type|lowerCamelCase }}(
         {% if body %}{{ body.name }}: {{ body.optionalType }}{% if nonBodyParams %},{% endif %}{% endif %}
         {% for param in nonBodyParams %}
@@ -38,7 +37,7 @@ extension {{ options.name }}{% if tag %}.{{ options.tagPrefix }}{{ tag|upperCame
         {% endfor %}
     ) throws -> Request<{{ successType|default:"String"}}> {
         var urlComonents = URLComponents(string: {{ options.name }}.baseUrlString)!
-        urlComonents.path = urlComonents.path + "{{ path }}"
+        urlComonents.path += "{{ path }}"
         {% if 0 != pathParams.count %}
         {% for param in pathParams %}
             .replacingOccurrences(of: "{" + "{{ param.value }}" + "}", with: "\({{ param.name }})")
