@@ -70,9 +70,13 @@ public class Request<Model: BaseModel> {
 
   public let url: URL
 
-  public init(URLString: String) throws {
-    guard let url = URL(string: URLString) else { throw "invalid url \"\(URLString)\"" }
+  public init(url: URL) {
     self.url = url
+  }
+
+  public convenience init(URLString: String) throws {
+    guard let url = URL(string: URLString) else { throw "invalid url \"\(URLString)\"" }
+    self.init(url: url)
   }
 
   public var xpath: String?
