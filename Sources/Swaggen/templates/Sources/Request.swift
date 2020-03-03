@@ -36,7 +36,9 @@ extension {{ options.name }}{% if tag %}.{{ options.tagPrefix }}{{ tag|upperCame
         {{param.name}}: {{param.optionalType}}{% ifnot param.required %} = nil{% endif %}{% ifnot forloop.last %}, {% endif %}
         {% endfor %}
     ) throws -> Request<{{ successType|default:"String"}}> {
-        var urlComonents = URLComponents(string: {{ options.name }}.baseUrlString)!
+        guard var urlComonents = URLComponents(string: {{ options.name }}.baseUrlString) else {
+            throw "Failed to create url components from: \({{ options.name }}.baseUrlString)"
+        }
         urlComonents.path += "{{ path }}"
         {% if 0 != pathParams.count %}
         {% for param in pathParams %}
@@ -92,7 +94,10 @@ extension {{ options.name }}{% if tag %}.{{ options.tagPrefix }}{{ tag|upperCame
 
         {% endif %}
         {# end append url encoded body parameters #}
-        let request = try Request<{{ successType|default:"String"}}>(URLString: urlComonents.url!.absoluteString)
+        guard let requestURL = urlComonents.url else {
+            throw "Failed to create url from components \(urlComonents)"
+        }
+        let request = try Request<{{ successType|default:"String"}}>(url: requestURL)
             .setMethod(.{{ method|uppercase }})
             {% if body %}
             .setParams(.data(JSONEncoder().encode({{ body.name }}), contentType: "application/json"))
