@@ -1,3 +1,4 @@
+{% set baseType %}SwaggenDecodableModel, Codable, Equatable{% endset %}
 {% if description %}
 /** {{ description }} */
 {% endif %}
@@ -8,7 +9,7 @@ public typealias {{ type }} = {{ aliasType }}
 {% elif additionalPropertiesType and allProperties.count == 0 %}
 public typealias {{ type }} = [String: {{ additionalPropertiesType }}]
 {% elif discriminatorType %}
-public enum {{ type }}: DecodableModel, Codable, Equatable {
+public enum {{ type }}: {{ baseType }} {
     {% for subType in discriminatorType.subTypes %}
     case {{ subType.name}}({{ subType.type }})
     {% endfor %}
@@ -48,7 +49,7 @@ public enum {{ type }}: DecodableModel, Codable, Equatable {
     }
 }
 {% else %}
-public {{ options.modelType }} {{ type }}: {% if parent %}{{ parent.type }}{% else %}{% if options.modelProtocol %}{{ options.modelProtocol }}{% else %}DecodableModel, Codable, Equatable{% endif %}{% endif %} {
+public {{ options.modelType }} {{ type }}: {% if parent %}{{ parent.type }}{% else %}{% if options.modelProtocol %}{{ options.modelProtocol }}{% else %}{{ baseType }}{% endif %}{% endif %} {
     {% for enum in enums %}
     {% if not enum.isGlobal %}
 
