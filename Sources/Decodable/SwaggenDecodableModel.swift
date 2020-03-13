@@ -19,13 +19,18 @@ let dateDecoder: (Decoder) throws -> Date = { decoder in
     return date
 }
 
+public protocol DateDecoderProvider {
+    static var dateDecoder: ((Decoder) throws -> Date)? { get }
+}
+
 public protocol SwaggenDecodableModel: DecodableModel {
+    associatedtype ModelDateDecoderProvider: DateDecoderProvider
 }
 
 extension SwaggenDecodableModel {
     public static var decoder: JSONDecoder {
       let jsonDecoder = JSONDecoder()
-      jsonDecoder.dateDecodingStrategy = .custom(dateDecoder)
+        jsonDecoder.dateDecodingStrategy = .custom(ModelDateDecoderProvider.dateDecoder ?? dateDecoder)
       return jsonDecoder
     }
 }
