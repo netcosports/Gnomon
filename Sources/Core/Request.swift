@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import RxSwift
 
 public typealias AuthenticationChallenge = (URLAuthenticationChallenge,
                                             (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) -> Void
@@ -89,7 +90,9 @@ public class Request<Model: BaseModel> {
 
   public var shouldHandleCookies: Bool = false
 
+  @available(*, deprecated, message: "use asyncInterceptor instead")
   public var interceptor: Interceptor?
+  public var asyncInterceptor: AsyncInterceptor?
   public var isInterceptorExclusive: Bool = false
 
   public var authenticationChallenge: AuthenticationChallenge?
@@ -175,9 +178,17 @@ public extension Request {
     return self
   }
 
+  @available(*, deprecated, message: "use setAsyncInterceptor instead")
   @discardableResult
   func setInterceptor(_ value: @escaping Interceptor, exclusive: Bool) -> IntermediateRequest {
     interceptor = value
+    isInterceptorExclusive = exclusive
+    return self
+  }
+
+  @discardableResult
+  func setAsyncInterceptor(_ exclusive: Bool = false, value: @escaping AsyncInterceptor) -> IntermediateRequest {
+    asyncInterceptor = value
     isInterceptorExclusive = exclusive
     return self
   }
