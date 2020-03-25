@@ -2,6 +2,7 @@
 
 import Foundation
 import Gnomon
+import RxSwift
 
 extension {{ options.name }}{% if tag %}.{{ options.tagPrefix }}{{ tag|upperCamelCase }}{{ options.tagSuffix }}{% endif %} {
     {% for enum in requestEnums %}
@@ -97,7 +98,7 @@ extension {{ options.name }}{% if tag %}.{{ options.tagPrefix }}{{ tag|upperCame
         guard let requestURL = urlComonents.url else {
             throw "Failed to create url from components \(urlComonents)"
         }
-        let request = try Request<{{ successType|default:"String"}}>(url: requestURL)
+        let request = Request<{{ successType|default:"String"}}>(url: requestURL)
             .setMethod(.{{ method|uppercase }})
             {% if body %}
             .setParams(.data(JSONEncoder().encode({{ body.name }}), contentType: "application/json"))
@@ -110,12 +111,12 @@ extension {{ options.name }}{% if tag %}.{{ options.tagPrefix }}{{ tag|upperCame
             {% endif %}
 
         if let requestInterceptor = {{ options.name }}.requestInterceptor {
-            request.setInterceptor({ (urlRequest: URLRequest) -> URLRequest in
+            request.setAsyncInterceptor({{ options.interceptorExlusive|default: false }}) { (urlRequest: URLRequest) -> Observable<URLRequest> in
                 return requestInterceptor(
                     urlRequest,
                     {% if not securityRequirement %}nil{% else %}SecurityRequirement(type: "{{ securityRequirement.name }}", scopes: [{% for scope in securityRequirement.scopes %}"{{ scope }}"{% ifnot forloop.last %}, {% endif %}{% endfor %}]){% endif %}
                 )
-            }, exclusive: {{ options.interceptorExlusive|default: false }})
+            }
         }
         
         return request

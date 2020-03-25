@@ -54,7 +54,7 @@ func cachePolicy<U>(for request: Request<U>, localCache: Bool) throws -> URLRequ
 }
 
 func prepareURLRequest<U>(from request: Request<U>, cachePolicy: URLRequest.CachePolicy,
-                          interceptors: [Interceptor]) throws -> URLRequest {
+                          interceptors: [AsyncInterceptor]) throws -> Observable<URLRequest> {
   var urlRequest = URLRequest(url: request.url, cachePolicy: cachePolicy, timeoutInterval: request.timeout)
   urlRequest.httpMethod = request.method.description
   if let headers = request.headers {
@@ -100,18 +100,23 @@ func prepareURLRequest<U>(from request: Request<U>, cachePolicy: URLRequest.Cach
 }
 
 private func process<U>(_ urlRequest: URLRequest, for request: Request<U>,
-                        with interceptors: [Interceptor]) -> URLRequest {
-  if let interceptor = request.interceptor {
+                        with interceptors: [AsyncInterceptor]) -> Observable<URLRequest> {
+  if let asynInterceptor = request.asyncInterceptor ?? request.interceptor.map { interceptor in { urlRequest in
+    Observable<URLRequest>.deferred { .just(interceptor(urlRequest)) }
+    }} {
     if request.isInterceptorExclusive {
-      return interceptor(urlRequest)
+      return asynInterceptor(urlRequest)
     } else {
-      var urlRequest = urlRequest
-      urlRequest = interceptor(urlRequest)
-      urlRequest = interceptors.reduce(urlRequest) { $1($0) }
+      var urlRequest = asynInterceptor(urlRequest)
+      urlRequest = interceptors.reduce(urlRequest) { request, interceptor in
+        request.flatMap { interceptor($0) }
+      }
       return urlRequest
     }
   } else {
-    return interceptors.reduce(urlRequest) { $1($0) }
+    return interceptors.reduce(.just(urlRequest)) { request, interceptor in
+      request.flatMap { interceptor($0) }
+    }
   }
 }
 
@@ -215,6 +220,7 @@ func processedResult<U>(from data: Data, for request: Request<U>) throws -> U {
 }
 
 public typealias Interceptor = (URLRequest) -> URLRequest
+public typealias AsyncInterceptor = (URLRequest) -> Observable<URLRequest>
 
 public func + (left: @escaping (URLRequest) -> URLRequest,
                right: @escaping (URLRequest) -> URLRequest) -> (URLRequest) -> URLRequest {

@@ -8,13 +8,20 @@ import RxSwift
 
 public enum Gnomon {
 
-  fileprivate static var interceptors: [Interceptor] = []
+  fileprivate static var interceptors: [AsyncInterceptor] = []
 
+  @available(*, deprecated, message: "use addAsyncRequestInterceptor instead")
   public static func addRequestInterceptor(_ interceptor: @escaping Interceptor) {
-    interceptors.append(interceptor)
+    interceptors.append { urlRequest in
+      Observable.deferred { .just(interceptor(urlRequest)) }
+    }
   }
 
-  public static func removeAllInterceptors() {
+  public static func addAsyncRequestInterceptor(_ asyncInterceptor: @escaping AsyncInterceptor) {
+    interceptors.append(asyncInterceptor)
+  }
+
+    public static func removeAllInterceptors() {
     interceptors.removeAll()
   }
 
@@ -83,7 +90,7 @@ public enum Gnomon {
   }
 
   private static func observable<U>(for request: Request<U>,
-                                    localCache: Bool) throws -> Observable<(Data, HTTPURLResponse)> {
+                                    localCache: Bool) -> Observable<(Data, HTTPURLResponse)> {
     return Observable.deferred {
       #if TEST
       let delegate = localCache ? request.cacheSessionDelegate : request.httpSessionDelegate
@@ -106,25 +113,26 @@ public enum Gnomon {
       let policy = try cachePolicy(for: request, localCache: localCache)
       let session = URLSession(configuration: configuration(with: policy), delegate: delegate, delegateQueue: nil)
 
-      let urlRequest = try prepareURLRequest(from: request, cachePolicy: policy, interceptors: interceptors)
+      return (try prepareURLRequest(from: request, cachePolicy: policy, interceptors: interceptors)).flatMap { urlRequest -> Observable<(Data, HTTPURLResponse)> in
 
-      curlLog(request, urlRequest)
+        curlLog(request, urlRequest)
 
-      #if TEST
-      guard request.shouldRunTask else { return result }
-      #endif
+        #if TEST
+        guard request.shouldRunTask else { return result }
+        #endif
 
-      let task = session.dataTask(with: urlRequest)
-      task.resume()
-      session.finishTasksAndInvalidate()
+        let task = session.dataTask(with: urlRequest)
+        task.resume()
+        session.finishTasksAndInvalidate()
 
-      return result.do(onDispose: {
-        if #available(iOS 10.0, *) {
-          if task.state == .running {
-            task.cancel()
+        return result.do(onDispose: {
+          if #available(iOS 10.0, *) {
+            if task.state == .running {
+              task.cancel()
+            }
           }
-        }
-      }).share(replay: 1, scope: .whileConnected)
+        }).share(replay: 1, scope: .whileConnected)
+      }
     }
   }
 
