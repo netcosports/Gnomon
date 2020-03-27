@@ -101,7 +101,7 @@ extension {{ options.name }}{% if tag %}.{{ options.tagPrefix }}{{ tag|upperCame
         let request = Request<{{ successType|default:"String"}}>(url: requestURL)
             .setMethod(.{{ method|uppercase }})
             {% if body %}
-            .setParams(.data(JSONEncoder().encode({{ body.name }}), contentType: "application/json"))
+            .setParams(.data(try JSONEncoder().encode({{ body.name }}), contentType: "application/json"))
             {% endif %}
             {% if headerParams %}
             .setHeaders(headers)
