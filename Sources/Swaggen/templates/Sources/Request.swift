@@ -43,7 +43,12 @@ extension {{ options.name }}{% if tag %}.{{ options.tagPrefix }}{{ tag|upperCame
         urlComonents.path += "{{ path }}"
         {% if 0 != pathParams.count %}
         {% for param in pathParams %}
-            .replacingOccurrences(of: "{" + "{{ param.value }}" + "}", with: "\({{ param.name }})")
+            .replacingOccurrences(of: "{" + "{{ param.value }}" + "}",
+            {% if param.type == "DateTime" %}
+            with: try {{ options.name }}.dateSerializer?({{ param.name }}) ?? defaultDateSerializer({{ param.name }}))
+            {% else %}
+            with: String(describing: {{ param.name }}))
+            {% endif %}
         {% endfor %}
 
         {% endif %}
@@ -118,7 +123,7 @@ extension {{ options.name }}{% if tag %}.{{ options.tagPrefix }}{{ tag|upperCame
                 )
             }
         }
-        
+
         return request
     }
 }
