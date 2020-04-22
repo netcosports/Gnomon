@@ -178,7 +178,6 @@ public extension Request {
     return self
   }
 
-  @available(*, deprecated, message: "use setAsyncInterceptor instead")
   @discardableResult
   func setInterceptor(_ value: @escaping Interceptor, exclusive: Bool) -> IntermediateRequest {
     interceptor = value

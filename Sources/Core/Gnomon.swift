@@ -10,7 +10,6 @@ public enum Gnomon {
 
   fileprivate static var interceptors: [AsyncInterceptor] = []
 
-  @available(*, deprecated, message: "use addAsyncRequestInterceptor instead")
   public static func addRequestInterceptor(_ interceptor: @escaping Interceptor) {
     interceptors.append { urlRequest in
       Observable.deferred { .just(interceptor(urlRequest)) }
