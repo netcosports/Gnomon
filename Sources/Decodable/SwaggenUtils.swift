@@ -37,7 +37,11 @@ public extension KeyedDecodingContainer {
     }
     
     func decodeIfPresent<T>(_ key: KeyedDecodingContainer.Key) throws -> T? where T: Decodable {
+        #if DEBUG
         return try decodeIfPresent(T.self, forKey: key)
+        #else
+        return try? decode(T.self, forKey: key)
+        #endif
     }
 }
 
