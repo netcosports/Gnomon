@@ -1,5 +1,7 @@
 {% set baseType %}SwaggenDecodableModel, Codable, Equatable{% endset %}
 {% set ModelDateDecoderProvider %}public typealias ModelDateDecoderProvider = {{ options.name }}{% endset %}
+{% set ModelDateEncoderProvider %}public typealias ModelDateEncoderProvider = {{ options.name }}{% endset %}
+
 {% if description %}
 /** {{ description }} */
 {% endif %}
@@ -12,6 +14,7 @@ public typealias {{ type }} = [String: {{ additionalPropertiesType }}]
 {% elif discriminatorType %}
 public enum {{ type }}: {{ baseType }} {
     {{ ModelDateDecoderProvider }}
+    {{ ModelDateEncoderProvider }}
     {% for subType in discriminatorType.subTypes %}
     case {{ subType.name}}({{ subType.type }})
     {% endfor %}
@@ -53,6 +56,7 @@ public enum {{ type }}: {{ baseType }} {
 {% else %}
 public {{ options.modelType }} {{ type }}: {% if parent %}{{ parent.type }}{% else %}{% if options.modelProtocol %}{{ options.modelProtocol }}{% else %}{{ baseType }}{% endif %}{% endif %} {
     {{ ModelDateDecoderProvider }}
+    {{ ModelDateEncoderProvider }}
     {% for enum in enums %}
     {% if not enum.isGlobal %}
 

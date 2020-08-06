@@ -2,11 +2,12 @@
 import Gnomon
 import RxSwift
 
-public enum {{ options.name }}: DateDecoderProvider {
+public enum {{ options.name }}: DateDecoderProvider, DateEncoderProvider {
 
     public static var baseUrlString = "{{ servers[0].url|default:"" }}"
     public static var requestInterceptor: ((URLRequest, SecurityRequirement?) -> Observable<URLRequest>)?
     public static var dateDecoder: ((Decoder) throws -> Date)?
+    public static var dateEncoder: ((Date, Encoder) throws -> ())?
     public static var dateSerializer: ((Date) throws -> String)?
 
     {% for tag in tags %}
