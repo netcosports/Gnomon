@@ -210,6 +210,13 @@ public extension Request {
     return self
   }
 
+	@available(*, deprecated, message: "use setLoggingPolicy(_ value: LoggingPolicy) method")
+	@discardableResult
+	func setDebugLogging(_ value: Bool) -> IntermediateRequest {
+		loggingPolicy = value ? .always : .never
+		return self
+	}
+
   @discardableResult
   func setDispatchQoS(_ value: DispatchQoS) -> IntermediateRequest {
     dispatchQoS = value
