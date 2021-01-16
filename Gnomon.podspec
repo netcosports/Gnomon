@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = "Gnomon"
-  s.version = "5.2.4"
+  s.version = "5.2.3"
   s.summary = "Common Rest API manager for Netco Sports projects on Swift with RxSwift"
 
   s.license = { :type => "MIT" }
