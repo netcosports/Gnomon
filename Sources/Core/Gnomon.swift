@@ -36,11 +36,11 @@ public enum Gnomon {
     }
   }
 
-  public static func cachedModels<U>(for request: Request<U>) -> Observable<Response<U>> {
-    return cachedModels(for: request, catchErrors: true)
+  public static func cachedModels<U>(for request: Request<U>, catchErrors: Bool = true) -> Observable<Response<U>> {
+    return cachedModelsInner(for: request, catchErrors: catchErrors)
   }
 
-  private static func cachedModels<U>(for request: Request<U>, catchErrors: Bool) -> Observable<Response<U>> {
+  private static func cachedModelsInner<U>(for request: Request<U>, catchErrors: Bool) -> Observable<Response<U>> {
     do {
       let result = try observable(for: request, localCache: true).flatMap { data, response in
         return try parse(data: data, response: response, responseType: .localCache, for: request)
@@ -48,7 +48,9 @@ public enum Gnomon {
       }
 
       if catchErrors {
-        return result.catchError { _ in return Observable<Response<U>>.empty() }
+        return result.catchError { _ in
+          return Observable<Response<U>>.empty()
+        }
       } else {
         return result
       }
@@ -61,11 +63,11 @@ public enum Gnomon {
     return cachedModels(for: request).concat(models(for: request))
   }
 
-  public static func cachedModels<U>(for requests: [Request<U>]) -> Observable<[Result<Response<U>, Swift.Error>]> {
+  public static func cachedModels<U>(for requests: [Request<U>], catchErrors: Bool = false) -> Observable<[Result<Response<U>, Swift.Error>]> {
     guard !requests.isEmpty else { return .just([]) }
 
     return Observable.combineLatest(requests.map { request in
-      cachedModels(for: request, catchErrors: false).asResult()
+      cachedModelsInner(for: request, catchErrors: catchErrors).asResult()
     })
   }
 
