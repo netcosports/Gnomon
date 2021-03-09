@@ -13,6 +13,7 @@ class URLRequestGenerationSpec: XCTestCase {
     do {
       let request = try Request<String>(URLString: "https://example.com")
       let urlRequest = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
+        .toBlocking().first()!
 
       expect(urlRequest.url) == URL(string: "https://example.com")!
     } catch {
@@ -35,7 +36,7 @@ class URLRequestGenerationSpec: XCTestCase {
     do {
       let request = try Request<String>(URLString: "https://example.com").setMethod(.GET)
       let urlRequest = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
-
+        .toBlocking().first()!
       expect(urlRequest.httpMethod) == "GET"
     } catch {
       fail("\(error)")
@@ -44,7 +45,7 @@ class URLRequestGenerationSpec: XCTestCase {
     do {
       let request = try Request<String>(URLString: "https://example.com").setMethod(.HEAD)
       let urlRequest = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
-
+        .toBlocking().first()!
       expect(urlRequest.httpMethod) == "HEAD"
     } catch {
       fail("\(error)")
@@ -53,7 +54,7 @@ class URLRequestGenerationSpec: XCTestCase {
     do {
       let request = try Request<String>(URLString: "https://example.com").setMethod(.POST)
       let urlRequest = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
-
+        .toBlocking().first()!
       expect(urlRequest.httpMethod) == "POST"
     } catch {
       fail("\(error)")
@@ -62,7 +63,7 @@ class URLRequestGenerationSpec: XCTestCase {
     do {
       let request = try Request<String>(URLString: "https://example.com").setMethod(.PUT)
       let urlRequest = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
-
+        .toBlocking().first()!
       expect(urlRequest.httpMethod) == "PUT"
     } catch {
       fail("\(error)")
@@ -71,7 +72,7 @@ class URLRequestGenerationSpec: XCTestCase {
     do {
       let request = try Request<String>(URLString: "https://example.com").setMethod(.PATCH)
       let urlRequest = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
-
+        .toBlocking().first()!
       expect(urlRequest.httpMethod) == "PATCH"
     } catch {
       fail("\(error)")
@@ -80,7 +81,7 @@ class URLRequestGenerationSpec: XCTestCase {
     do {
       let request = try Request<String>(URLString: "https://example.com").setMethod(.DELETE)
       let urlRequest = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
-
+        .toBlocking().first()!
       expect(urlRequest.httpMethod) == "DELETE"
     } catch {
       fail("\(error)")
@@ -89,7 +90,7 @@ class URLRequestGenerationSpec: XCTestCase {
     do {
       let request = try Request<String>(URLString: "https://example.com").setMethod(.custom("KEK", hasBody: true))
       let urlRequest = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
-
+        .toBlocking().first()!
       expect(urlRequest.httpMethod) == "KEK"
     } catch {
       fail("\(error)")
@@ -98,7 +99,7 @@ class URLRequestGenerationSpec: XCTestCase {
     do {
       let request = try Request<String>(URLString: "https://example.com").setMethod(.custom("KEK", hasBody: false))
       let urlRequest = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
-
+        .toBlocking().first()!
       expect(urlRequest.httpMethod) == "KEK"
     } catch {
       fail("\(error)")
@@ -109,7 +110,7 @@ class URLRequestGenerationSpec: XCTestCase {
     do {
       let request = try Request<String>(URLString: "https://example.com").setHeaders(["MySuperTestHeader": "kek"])
       let urlRequest = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
-
+        .toBlocking().first()!
       expect(urlRequest.allHTTPHeaderFields) == ["MySuperTestHeader": "kek"]
     } catch {
       fail("\(error)")
@@ -192,6 +193,7 @@ class URLRequestGenerationSpec: XCTestCase {
     do {
       let request = try Request<String>(URLString: "https://example.com")
       let urlRequest = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
+        .toBlocking().first()!
 
       expect(urlRequest.httpShouldHandleCookies).to(beFalsy())
     } catch {
@@ -201,6 +203,7 @@ class URLRequestGenerationSpec: XCTestCase {
     do {
       let request = try Request<String>(URLString: "https://example.com").setShouldHandleCookies(false)
       let urlRequest = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
+        .toBlocking().first()!
 
       expect(urlRequest.httpShouldHandleCookies).to(beFalsy())
     } catch {
@@ -210,6 +213,7 @@ class URLRequestGenerationSpec: XCTestCase {
     do {
       let request = try Request<String>(URLString: "https://example.com").setShouldHandleCookies(true)
       let urlRequest = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
+        .toBlocking().first()!
 
       expect(urlRequest.httpShouldHandleCookies).to(beTruthy())
     } catch {
@@ -224,9 +228,9 @@ class URLRequestGenerationSpec: XCTestCase {
         { request in
           var request = request
           request.url = request.url.map { $0.appendingPathComponent("kek") }
-          return request
+          return .just(request)
         }
-      ])
+      ]).toBlocking().first()!
 
       expect(urlRequest.url) == URL(string: "https://example.com/kek")!
     } catch {
@@ -247,9 +251,9 @@ class URLRequestGenerationSpec: XCTestCase {
         { request in
           var request = request
           request.url = request.url.map { $0.appendingPathComponent("kek") }
-          return request
+          return .just(request)
         }
-      ])
+      ]).toBlocking().first()!
 
       expect(urlRequest.url) == URL(string: "https://kekxample.com")!
     } catch {
@@ -270,9 +274,9 @@ class URLRequestGenerationSpec: XCTestCase {
         { request in
           var request = request
           request.url = request.url.map { $0.appendingPathComponent("kek") }
-          return request
+          return .just(request)
         }
-      ])
+      ]).toBlocking().first()!
 
       expect(urlRequest.url) == URL(string: "https://kekxample.com/kek")!
     } catch {
@@ -293,9 +297,9 @@ class URLRequestGenerationSpec: XCTestCase {
         { request in
           var request = request
           request.url = request.url.map { $0.appendingPathComponent("kek") }
-          return request
+          return .just(request)
         }
-      ])
+      ]).toBlocking().first()!
 
       expect(urlRequest.url) == URL(string: "https://example.com/lol/kek")!
     } catch {
@@ -307,7 +311,7 @@ class URLRequestGenerationSpec: XCTestCase {
     do {
       let request = try Request<String>(URLString: "https://example.com")
       let urlRequest = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
-
+        .toBlocking().first()!
       expect(urlRequest.timeoutInterval) == 60
     } catch {
       fail("\(error)")
@@ -316,7 +320,7 @@ class URLRequestGenerationSpec: XCTestCase {
     do {
       let request = try Request<String>(URLString: "https://example.com").setTimeout(5)
       let urlRequest = try prepareURLRequest(from: request, cachePolicy: .useProtocolCachePolicy, interceptors: [])
-
+        .toBlocking().first()!
       expect(urlRequest.timeoutInterval) == 5
     } catch {
       fail("\(error)")
