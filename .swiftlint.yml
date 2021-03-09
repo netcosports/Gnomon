@@ -1,5 +1,6 @@
 excluded:
   - Pods
+  - Sources/Swaggen
 included:
   - iOSTests
   - tvOSTests

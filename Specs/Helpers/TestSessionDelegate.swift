@@ -22,11 +22,6 @@ class TestSessionDelegate: NSObject, SessionDelegateProtocol {
   }
 
   static func jsonResponse(result: Any, statusCode: Int = 200, cached: Bool,
-                           delay: TimeInterval = 0) throws -> TestSessionDelegate {
-    return try jsonResponseRxTimeInterval(result: result, statusCode: statusCode, cached: cached, delay: .milliseconds(Int(delay * 1000)))
-  }
-
-  static func jsonResponseRxTimeInterval(result: Any, statusCode: Int = 200, cached: Bool,
                            delay: RxTimeInterval = .milliseconds(0)) throws -> TestSessionDelegate {
     let data = try JSONSerialization.data(withJSONObject: result)
     var response = self.response(statusCode: statusCode)

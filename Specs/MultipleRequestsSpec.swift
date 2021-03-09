@@ -191,9 +191,10 @@ class MultipleRequestsSpec: XCTestCase {
     do {
       let requests = try [0, 1, 2].map { value -> Request<TestModel1> in
         let request = try Request<TestModel1>(URLString: "https://example.com")
+        let delay = RxTimeInterval.milliseconds(Int(0.4 - Double(value) * 0.1))
         request.httpSessionDelegate = try TestSessionDelegate.jsonResponse(result: ["key": 123 + 111 * value],
                                                                            cached: false,
-                                                                           delay: 0.4 - Double(value) * 0.1)
+                                                                           delay: delay)
         return request
       }
 
@@ -236,14 +237,15 @@ class MultipleRequestsSpec: XCTestCase {
     do {
       let requests = try [0, 1, 2].map { value -> Request<TestModel1> in
         let request = try Request<TestModel1>(URLString: "https://example.com")
+        let delay = RxTimeInterval.milliseconds(Int(0.4 - Double(value) * 0.1))
         if value == 1 {
           request.httpSessionDelegate = try TestSessionDelegate.jsonResponse(result: ["invalid": "key"],
                                                                              statusCode: 404, cached: false,
-                                                                             delay: 0.4 - Double(value) * 0.1)
+                                                                             delay: delay)
         } else {
           request.httpSessionDelegate = try TestSessionDelegate.jsonResponse(result: ["key": 123 + 111 * value],
                                                                              cached: false,
-                                                                             delay: 0.4 - Double(value) * 0.1)
+                                                                             delay: delay)
         }
         return request
       }
