@@ -9,17 +9,17 @@ Pod::Spec.new do |s|
     "Vladimir Burdukov" => "vladimir.burdukov@netcosports.com"
   }
   s.source = { :git => "https://github.com/netcosports/Gnomon.git", :tag => s.version.to_s }
-  s.ios.deployment_target = "9.0"
-  s.tvos.deployment_target = "9.0"
+  s.ios.deployment_target = "11.0"
+  s.tvos.deployment_target = "11.0"
   s.osx.deployment_target = "10.10"
 
   s.default_subspec = "JSON"
 
-  s.swift_versions = ['5.0', '5.1']
+  s.swift_versions = ['5.3']
 
   s.subspec "Core" do |sub|
     sub.source_files = "Sources/Core/*.swift"
-    sub.dependency "RxSwift", "~> 5"
+    sub.dependency "RxSwift", "~> 6"
   end
 
   s.subspec "Decodable" do |sub|
