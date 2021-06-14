@@ -68,3 +68,12 @@ extension SwaggenDecodableModel {
     return jsonDecoder
   }
 }
+
+
+public extension Array where Element: SwaggenDecodableModel {
+
+  static var encoder: JSONEncoder {
+    return Element.encoder
+  }
+}
+
