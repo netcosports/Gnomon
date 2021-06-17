@@ -22,7 +22,7 @@ class TestSessionDelegate: NSObject, SessionDelegateProtocol {
   }
 
   static func jsonResponse(result: Any, statusCode: Int = 200, cached: Bool,
-                           delay: TimeInterval = 0) throws -> TestSessionDelegate {
+                           delay: RxTimeInterval = .milliseconds(0)) throws -> TestSessionDelegate {
     let data = try JSONSerialization.data(withJSONObject: result)
     var response = self.response(statusCode: statusCode)
 
@@ -31,7 +31,7 @@ class TestSessionDelegate: NSObject, SessionDelegateProtocol {
     }
 
     return TestSessionDelegate(Observable.just((data, response))
-      .delay(delay, scheduler: ConcurrentDispatchQueueScheduler(qos: .background)))
+                                .delay(delay, scheduler: ConcurrentDispatchQueueScheduler(qos: .background)))
   }
 
   static func stringResponse(result: String, statusCode: Int = 200, cached: Bool) throws -> TestSessionDelegate {

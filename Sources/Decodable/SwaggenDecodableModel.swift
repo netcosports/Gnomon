@@ -19,7 +19,7 @@ let dateDecoder: (Decoder) throws -> Date = { decoder in
   return date
 }
 
-let dateEncoder: (Date, Encoder) throws -> () = { date, encoder in
+let dateEncoder: (Date, Encoder) throws -> Void = { date, encoder in
   var container = encoder.singleValueContainer()
 
   let formatterWithoutMilliseconds = DateFormatter()
@@ -37,7 +37,7 @@ public protocol DateDecoderProvider {
 }
 
 public protocol DateEncoderProvider {
-  static var dateEncoder: ((Date, Encoder) throws -> ())? { get }
+  static var dateEncoder: ((Date, Encoder) throws -> Void)? { get }
 }
 
 public protocol EncodableModel {
