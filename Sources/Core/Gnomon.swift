@@ -144,7 +144,7 @@ public enum Gnomon {
       do {
         let container = try U.dataContainer(with: data, at: request.xpath)
         result = try U(container)
-      } catch {
+      } catch let error {
         subscriber.onError(error)
         return Disposables.create()
       }
