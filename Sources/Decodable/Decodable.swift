@@ -24,13 +24,13 @@ public extension DecodableModel {
 
   static var decoder: JSONDecoder { return JSONDecoder() }
 
-    static func dataContainer(with data: Data, at path: String?) throws -> DecoderContainer {
+	static func dataContainer(with data: Data, at path: String?) throws -> DecoderContainer {
     let decoder = Self.decoder
     decoder.userInfo[.xpath] = path
     return try decoder.decode(DecoderContainer.self, from: data)
   }
 
-    init(_ container: DecoderContainer) throws {
+	init(_ container: DecoderContainer) throws {
     try self.init(from: container.decoder)
   }
 

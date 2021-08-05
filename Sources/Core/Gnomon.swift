@@ -144,7 +144,8 @@ public enum Gnomon {
       do {
         let container = try U.dataContainer(with: data, at: request.xpath)
         result = try U(container)
-      } catch {
+      } catch let error {
+				Gnomon.errorLog(error: error)
         subscriber.onError(error)
         return Disposables.create()
       }
@@ -175,6 +176,12 @@ public enum Gnomon {
     debugLog(URLRequestFormatter.cURLCommand(from: dataRequest),
              request.loggingPolicy)
   }
+
+	internal static func errorLog(error: Swift.Error) {
+		if logging {
+			print(error)
+		}
+	}
 
   internal static var debugLog: (String, LoggingPolicy) -> Void = { string, policy in
     if logging || policy == .always {
