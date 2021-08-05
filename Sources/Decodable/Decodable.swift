@@ -30,7 +30,7 @@ public extension DecodableModel {
     return try decoder.decode(DecoderContainer.self, from: data)
   }
 
-    init(_ container: DecoderContainer) throws {
+	init(_ container: DecoderContainer) throws {
     try self.init(from: container.decoder)
   }
 

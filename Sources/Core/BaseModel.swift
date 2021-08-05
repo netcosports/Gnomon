@@ -94,11 +94,13 @@ extension Optional: BaseModel where Wrapped: BaseModel {
   }
 
   public init(_ container: DataContainer) throws {
-    if let wrapped = try? Wrapped.init(container) {
-      self = .some(wrapped)
-    } else {
-      self = .none
-    }
+		do {
+			let wrapped = try Wrapped.init(container)
+			self = .some(wrapped)
+		} catch let error {
+			Gnomon.errorLog(error: error)
+			self = .none
+		}
   }
 
 }
