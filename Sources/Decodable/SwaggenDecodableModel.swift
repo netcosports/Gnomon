@@ -1,3 +1,5 @@
+import Foundation
+
 let dateDecoder: (Decoder) throws -> Date = { decoder in
   let container = try decoder.singleValueContainer()
   let string = try container.decode(String.self)
