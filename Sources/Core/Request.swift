@@ -71,11 +71,11 @@ public class Request<Model: BaseModel> {
 
   public let url: URL
 
-  public init(url: URL) {
+    public init(_ type: Model.Type = Model.self, url: URL) {
     self.url = url
   }
 
-  public convenience init(URLString: String) throws {
+    public convenience init(_ type: Model.Type = Model.self, URLString: String) throws {
     guard let url = URL(string: URLString) else { throw "invalid url \"\(URLString)\"" }
     self.init(url: url)
   }
