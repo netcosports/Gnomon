@@ -1,13 +1,13 @@
 PODS:
   - AEXML (4.6.1)
-  - Gnomon/Core (5.2.4):
+  - Gnomon/Core (6.7.1):
     - RxSwift
-  - Gnomon/Decodable (5.2.4):
+  - Gnomon/Decodable (6.7.1):
     - Gnomon/Core
-  - Gnomon/JSON (5.2.4):
+  - Gnomon/JSON (6.7.1):
     - Gnomon/Core
     - SwiftyJSON
-  - Gnomon/XML (5.2.4):
+  - Gnomon/XML (6.7.1):
     - AEXML
     - Gnomon/Core
   - Nimble (10.0.0)
@@ -41,7 +41,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AEXML: 1e255ecc6597212f97a7454a69ebd3ede64ac1cf
-  Gnomon: 07eee05e4cf4c38f65232f11a4aa0a348c6d4ab0
+  Gnomon: da80969ab131481ab4be4be39c86c4290ead23b1
   Nimble: 5316ef81a170ce87baf72dd961f22f89a602ff84
   RxBlocking: 48b86e3ed2a9a19150491e8dc5409973baac2eb1
   RxSwift: b9a93a26031785159e11abd40d1a55bcb8057e52
