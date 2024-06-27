@@ -3,20 +3,20 @@ source 'https://github.com/CocoaPods/Specs.git'
 use_frameworks!
 
 abstract_target 'Tests' do
-  pod 'SwiftLint', '~> 0.27'
+  pod 'SwiftLint'
   pod 'Gnomon/Core', :path => '.'
   pod 'Gnomon/JSON', :path => '.'
   pod 'Gnomon/XML', :path => '.'
   pod 'Gnomon/Decodable', :path => '.'
-  pod 'Nimble', '~> 7.0'
+  pod 'Nimble'
   pod 'RxBlocking'
 
   target 'iOSTests' do
-    platform :ios, '11.0'
+    platform :ios, '12.0'
   end
 
   target 'tvOSTests' do
-    platform :tvos, '11.0'
+    platform :tvos, '12.0'
   end
 
   target 'macOSTests' do

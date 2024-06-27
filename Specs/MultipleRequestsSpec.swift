@@ -20,7 +20,7 @@ class MultipleRequestsSpec: XCTestCase {
   override func setUp() {
     super.setUp()
 
-    Nimble.AsyncDefaults.Timeout = 7
+    Nimble.AsyncDefaults.timeout = .seconds(7)
     URLCache.shared.removeAllCachedResponses()
   }
 
