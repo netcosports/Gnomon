@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
 
   s.subspec "Core" do |sub|
     sub.source_files = "Sources/Core/*.swift"
-    sub.dependency "RxSwift", "~> 6"
+    sub.dependency "RxSwift"
   end
 
   s.subspec "Decodable" do |sub|
@@ -29,13 +29,13 @@ Pod::Spec.new do |s|
 
   s.subspec "JSON" do |sub|
     sub.source_files = "Sources/JSON/*.swift"
-    sub.dependency "SwiftyJSON", "~> 5"
+    sub.dependency "SwiftyJSON"
     sub.dependency "Gnomon/Core"
   end
 
   s.subspec "XML" do |sub|
     sub.source_files = "Sources/XML/*.swift"
-    sub.dependency "AEXML", "~> 4.2"
+    sub.dependency "AEXML"
     sub.dependency "Gnomon/Core"
   end
 end
