@@ -171,7 +171,7 @@ public enum Gnomon {
   public static var logging = false
 
   private static func curlLog<U>(_ request: Request<U>, _ dataRequest: URLRequest) {
-    guard request.loggingPolicy == .never else { return }
+    guard request.loggingPolicy != .never else { return }
     debugLog(URLRequestFormatter.cURLCommand(from: dataRequest),
              request.loggingPolicy)
   }
